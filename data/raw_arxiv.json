@@ -1,0 +1,1002 @@
+[
+  {
+    "threat_id": "ARX-2603.12230v1",
+    "title": "Security Considerations for Artificial Intelligence Agents",
+    "description": "This article, a lightly adapted version of Perplexity's response to NIST/CAISI Request for Information 2025-0035, details our observations and recommendations concerning the security of frontier AI agents. These insights are informed by Perplexity's experience operating general-purpose agentic systems used by millions of users and thousands of enterprises in both controlled and open-world environments. Agent architectures change core assumptions around code-data separation, authority boundaries,",
+    "authors": "Ninghui Li, Kaiyuan Zhang, Kyle Polley",
+    "url": "https://arxiv.org/abs/2603.12230v1",
+    "published": "2026-03-12T17:49:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12155v1",
+    "title": "GlyphBanana: Advancing Precise Text Rendering Through Agentic Workflows",
+    "description": "Despite recent advances in generative models driving significant progress in text rendering, accurately generating complex text and mathematical formulas remains a formidable challenge. This difficulty primarily stems from the limited instruction-following capabilities of current models when encountering out-of-distribution prompts. To address this, we introduce GlyphBanana, alongside a corresponding benchmark specifically designed for rendering complex characters and formulas. GlyphBanana emplo",
+    "authors": "Zexuan Yan, Jiarui Jin, Yue Ma",
+    "url": "https://arxiv.org/abs/2603.12155v1",
+    "published": "2026-03-12T16:53:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12145v1",
+    "title": "Automatic Generation of High-Performance RL Environments",
+    "description": "Translating complex reinforcement learning (RL) environments into high-performance implementations has traditionally required months of specialized engineering. We present a reusable recipe - a generic prompt template, hierarchical verification, and iterative agent-assisted repair - that produces semantically equivalent high-performance environments for <$10 in compute cost. We demonstrate three distinct workflows across five environments. Direct translation (no prior performance implementation ",
+    "authors": "Seth Karten, Rahul Dev Appapogu, Chi Jin",
+    "url": "https://arxiv.org/abs/2603.12145v1",
+    "published": "2026-03-12T16:45:47Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12133v1",
+    "title": "TopoBench: Benchmarking LLMs on Hard Topological Reasoning",
+    "description": "Solving topological grid puzzles requires reasoning over global spatial invariants such as connectivity, loop closure, and region symmetry and remains challenging for even the most powerful large language models (LLMs). To study these abilities under controlled settings, we introduce TopoBench, a benchmark of six puzzle families across three difficulty levels. We evaluate strong reasoning LLMs on TopoBench and find that even frontier models solve fewer than one quarter of hard instances, with tw",
+    "authors": "Mayug Maniparambil, Nils Hoehing, Janak Kapuriya",
+    "url": "https://arxiv.org/abs/2603.12133v1",
+    "published": "2026-03-12T16:37:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12109v1",
+    "title": "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM agents",
+    "description": "Reinforcement learning (RL) with outcome-based rewards has achieved significant success in training large language model (LLM) agents for complex reasoning tasks. However, in active reasoning where agents need to strategically ask questions to acquire task-relevant information, we find that LLM agents trained with RL often suffer from information self-locking: the agent ceases to ask informative questions and struggles to internalize already-obtained information. To understand the phenomenon, we",
+    "authors": "Deyu Zou, Yongqiang Chen, Fan Feng",
+    "url": "https://arxiv.org/abs/2603.12109v1",
+    "published": "2026-03-12T16:14:14Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12091v1",
+    "title": "Resource-Efficient Iterative LLM-Based NAS with Feedback Memory",
+    "description": "Neural Architecture Search (NAS) automates network design, but conventional methods demand substantial computational resources. We propose a closed-loop pipeline leveraging large language models (LLMs) to iteratively generate, evaluate, and refine convolutional neural network architectures for image classification on a single consumer-grade GPU without LLM fine-tuning. Central to our approach is a historical feedback memory inspired by Markov chains: a sliding window of $K{=}5$ recent improvemen",
+    "authors": "Xiaojie Gu, Dmitry Ignatov, Radu Timofte",
+    "url": "https://arxiv.org/abs/2603.12091v1",
+    "published": "2026-03-12T16:00:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12089v1",
+    "title": "EmbTracker: Traceable Black-box Watermarking for Federated Language Models",
+    "description": "Federated Language Model (FedLM) allows a collaborative learning without sharing raw data, yet it introduces a critical vulnerability, as every untrustworthy client may leak the received functional model instance. Current watermarking schemes for FedLM often require white-box access and client-side cooperation, providing only group-level proof of ownership rather than individual traceability. We propose EmbTracker, a server-side, traceable black-box watermarking framework specifically designed f",
+    "authors": "Haodong Zhao, Jinming Hu, Yijie Bai",
+    "url": "https://arxiv.org/abs/2603.12089v1",
+    "published": "2026-03-12T15:57:32Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12062v1",
+    "title": "Systematic Security Analysis of the Iridium Satellite Radio Link",
+    "description": "The Iridium Low Earth Orbit (LEO) satellite constellation remains a unique provider of global communications for critical industries, governments, and private users, serving over 2.5 million active subscribers despite recent market competition. In contrast to terrestrial wireless standards such as 3GPP, Iridium protocol specifications are proprietary and have not undergone rigorous, public, and systematic security evaluation. In this work, we present the first comprehensive security analysis of ",
+    "authors": "Eric Jedermann, Piotr Kulpinski, Martin Strohmeier",
+    "url": "https://arxiv.org/abs/2603.12062v1",
+    "published": "2026-03-12T15:29:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.12023v1",
+    "title": "Cascade: Composing Software-Hardware Attack Gadgets for Adversarial Threat Amplification in Compound AI Systems",
+    "description": "Rapid progress in generative AI has given rise to Compound AI systems - pipelines comprised of multiple large language models (LLM), software tools and database systems. Compound AI systems are constructed on a layered traditional software stack running on a distributed hardware infrastructure. Many of the diverse software components are vulnerable to traditional security flaws documented in the Common Vulnerabilities and Exposures (CVE) database, while the underlying distributed hardware infras",
+    "authors": "Sarbartha Banerjee, Prateek Sahu, Anjo Vahldiek-Oberwagner",
+    "url": "https://arxiv.org/abs/2603.12023v1",
+    "published": "2026-03-12T15:03:51Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.11938v1",
+    "title": "Prototype-Based Knowledge Guidance for Fine-Grained Structured Radiology Reporting",
+    "description": "Structured radiology reporting promises faster, more consistent communication than free text, but automation remains difficult as models must make many fine-grained, discrete decisions about rare findings and attributes from limited structured supervision. In contrast, free-text reports are produced at scale in routine care and implicitly encode fine-grained, image-linked information through detailed descriptions. To leverage this unstructured knowledge, we propose ProtoSR, an approach for injec",
+    "authors": "Chantal Pellegrini, Adrian Delchev, Ege \u00d6zsoy",
+    "url": "https://arxiv.org/abs/2603.11938v1",
+    "published": "2026-03-12T13:51:13Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.11909v1",
+    "title": "EnTransformer: A Deep Generative Transformer for Multivariate Probabilistic Forecasting",
+    "description": "Reliable uncertainty quantification is critical in multivariate time series forecasting problems arising in domains such as energy systems and transportation networks, among many others. Although Transformer-based architectures have recently achieved strong performance for sequence modeling, most probabilistic forecasting approaches rely on restrictive parametric likelihoods or quantile-based objectives. They can struggle to capture complex joint predictive distributions across multiple correlat",
+    "authors": "Rajdeep Pathak, Rahul Goswami, Madhurima Panja",
+    "url": "https://arxiv.org/abs/2603.11909v1",
+    "published": "2026-03-12T13:25:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.11875v1",
+    "title": "The Mirror Design Pattern: Strict Data Geometry over Model Scale for Prompt Injection Detection",
+    "description": "Prompt injection defenses are often framed as semantic understanding problems and delegated to increasingly large neural detectors. For the first screening layer, however, the requirements are different: the detector runs on every request and therefore must be fast, deterministic, non-promptable, and auditable. We introduce Mirror, a data-curation design pattern that organizes prompt injection corpora into matched positive and negative cells so that a classifier learns control-plane attack mecha",
+    "authors": "J Alex Corll",
+    "url": "https://arxiv.org/abs/2603.11875v1",
+    "published": "2026-03-12T12:50:57Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.657771"
+  },
+  {
+    "threat_id": "ARX-2603.11862v1",
+    "title": "You Told Me to Do It: Measuring Instructional Text-induced Private Data Leakage in LLM Agents",
+    "description": "High-privilege LLM agents that autonomously process external documentation are increasingly trusted to automate tasks by reading and executing project instructions, yet they are granted terminal access, filesystem control, and outbound network connectivity with minimal security oversight. We identify and systematically measure a fundamental vulnerability in this trust model, which we term the \\emph{Trusted Executor Dilemma}: agents execute documentation-embedded instructions, including adversari",
+    "authors": "Ching-Yu Kao, Xinfeng Li, Shenyu Dai",
+    "url": "https://arxiv.org/abs/2603.11862v1",
+    "published": "2026-03-12T12:35:46Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11853v1",
+    "title": "OpenClaw PRISM: A Zero-Fork, Defense-in-Depth Runtime Security Layer for Tool-Augmented LLM Agents",
+    "description": "Tool-augmented LLM agents introduce security risks that extend beyond user-input filtering, including indirect prompt injection through fetched content, unsafe tool execution, credential leakage, and tampering with local control files. We present OpenClaw PRISM, a zero-fork runtime security layer for OpenClaw-based agent gateways. PRISM combines an in-process plugin with optional sidecar services and distributes enforcement across ten lifecycle hooks spanning message ingress, prompt construction",
+    "authors": "Frank Li",
+    "url": "https://arxiv.org/abs/2603.11853v1",
+    "published": "2026-03-12T12:20:12Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11736v1",
+    "title": "Gender Bias in Generative AI-assisted Recruitment Processes",
+    "description": "In recent years, generative artificial intelligence (GenAI) systems have assumed increasingly crucial roles in selection processes, personnel recruitment and analysis of candidates' profiles. However, the employment of large language models (LLMs) risks reproducing, and in some cases amplifying, gender stereotypes and bias already present in the labour market. The objective of this paper is to evaluate and measure this phenomenon, analysing how a state-of-the-art generative model (GPT-5) suggest",
+    "authors": "Martina Ullasci, Marco Rondina, Riccardo Coppola",
+    "url": "https://arxiv.org/abs/2603.11736v1",
+    "published": "2026-03-12T09:42:56Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11709v1",
+    "title": "Scaling Laws for Educational AI Agents",
+    "description": "While scaling laws for Large Language Models (LLMs) have been extensively studied along dimensions of model parameters, training data, and compute, the scaling behavior of LLM-based educational agents remains unexplored. We propose that educational agent capability scales not merely with the underlying model size, but through structured dimensions that we collectively term the Agent Scaling Law: role definition clarity, skill depth, tool completeness, runtime capability, and educator expertise i",
+    "authors": "Mengsong Wu, Hao Hao, Shuzhen Bi",
+    "url": "https://arxiv.org/abs/2603.11709v1",
+    "published": "2026-03-12T09:14:50Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11698v1",
+    "title": "OSCBench: Benchmarking Object State Change in Text-to-Video Generation",
+    "description": "Text-to-video (T2V) generation models have made rapid progress in producing visually high-quality and temporally coherent videos. However, existing benchmarks primarily focus on perceptual quality, text-video alignment, or physical plausibility, leaving a critical aspect of action understanding largely unexplored: object state change (OSC) explicitly specified in the text prompt. OSC refers to the transformation of an object's state induced by an action, such as peeling a potato or slicing a lem",
+    "authors": "Xianjing Han, Bin Zhu, Shiqi Hu",
+    "url": "https://arxiv.org/abs/2603.11698v1",
+    "published": "2026-03-12T09:08:01Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11676v1",
+    "title": "Stable Spike: Dual Consistency Optimization via Bitwise AND Operations for Spiking Neural Networks",
+    "description": "Although the temporal spike dynamics of spiking neural networks (SNNs) enable low-power temporal pattern capture capabilities, they also incur inherent inconsistencies that severely compromise representation. In this paper, we perform dual consistency optimization via Stable Spike to mitigate this problem, thereby improving the recognition performance of SNNs. With the hardware-friendly ``AND\" bit operation, we efficiently decouple the stable spike skeleton from the multi-timestep spike maps, th",
+    "authors": "Yongqi Ding, Kunshan Yang, Linze Li",
+    "url": "https://arxiv.org/abs/2603.11676v1",
+    "published": "2026-03-12T08:42:32Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659505"
+  },
+  {
+    "threat_id": "ARX-2603.11631v1",
+    "title": "VisDoT : Enhancing Visual Reasoning through Human-Like Interpretation Grounding and Decomposition of Thought",
+    "description": "Large vision-language models (LVLMs) struggle to reliably detect visual primitives in charts and align them with semantic representations, which severely limits their performance on complex visual reasoning. This lack of perceptual grounding constitutes a major bottleneck for chart-based reasoning. We propose VisDoT, a framework that enhances visual reasoning through human-like interpretation grounding. We formalize four perceptual tasks based on the theory of graphical perception, including pos",
+    "authors": "Eunsoo Lee, Jeongwoo Lee, Minki Hong",
+    "url": "https://arxiv.org/abs/2603.11631v1",
+    "published": "2026-03-12T07:47:46Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659888"
+  },
+  {
+    "threat_id": "ARX-2603.11619v1",
+    "title": "Taming OpenClaw: Security Analysis and Mitigation of Autonomous LLM Agent Threats",
+    "description": "Autonomous Large Language Model (LLM) agents, exemplified by OpenClaw, demonstrate remarkable capabilities in executing complex, long-horizon tasks. However, their tightly coupled instant-messaging interaction paradigm and high-privilege execution capabilities substantially expand the system attack surface. In this paper, we present a comprehensive security threat analysis of OpenClaw. To structure our analysis, we introduce a five-layer lifecycle-oriented security framework that captures key st",
+    "authors": "Xinhao Deng, Yixiang Zhang, Jiaqing Wu",
+    "url": "https://arxiv.org/abs/2603.11619v1",
+    "published": "2026-03-12T07:24:05Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:33.659888"
+  },
+  {
+    "threat_id": "ARX-2603.12261v1",
+    "title": "The Latent Color Subspace: Emergent Order in High-Dimensional Chaos",
+    "description": "Text-to-image generation models have advanced rapidly, yet achieving fine-grained control over generated images remains difficult, largely due to limited understanding of how semantic information is encoded. We develop an interpretation of the color representation in the Variational Autoencoder latent space of FLUX.1 [Dev], revealing a structure reflecting Hue, Saturation, and Lightness. We verify our Latent Color Subspace (LCS) interpretation by demonstrating that it can both predict and explic",
+    "authors": "Mateusz Pach, Jessica Bader, Quentin Bouniot",
+    "url": "https://arxiv.org/abs/2603.12261v1",
+    "published": "2026-03-12T17:59:48Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12249v1",
+    "title": "SciMDR: Benchmarking and Advancing Scientific Multimodal Document Reasoning",
+    "description": "Constructing scientific multimodal document reasoning datasets for foundation model training involves an inherent trade-off among scale, faithfulness, and realism. To address this challenge, we introduce the synthesize-and-reground framework, a two-stage pipeline comprising: (1) Claim-Centric QA Synthesis, which generates faithful, isolated QA pairs and reasoning on focused segments, and (2) Document-Scale Regrounding, which programmatically re-embeds these pairs into full-document tasks to ensu",
+    "authors": "Ziyu Chen, Yilun Zhao, Chengye Wang",
+    "url": "https://arxiv.org/abs/2603.12249v1",
+    "published": "2026-03-12T17:57:52Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12246v1",
+    "title": "Examining Reasoning LLMs-as-Judges in Non-Verifiable LLM Post-Training",
+    "description": "Reasoning LLMs-as-Judges, which can benefit from inference-time scaling, provide a promising path for extending the success of reasoning models to non-verifiable domains where the output correctness/quality cannot be directly checked. However, while reasoning judges have shown better performance on static evaluation benchmarks, their effectiveness in actual policy training has not been systematically examined. Therefore, we conduct a rigorous study to investigate the actual impact of non-reasoni",
+    "authors": "Yixin Liu, Yue Yu, DiJia Su",
+    "url": "https://arxiv.org/abs/2603.12246v1",
+    "published": "2026-03-12T17:57:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12244v1",
+    "title": "Separable neural architectures as a primitive for unified predictive and generative intelligence",
+    "description": "Intelligent systems across physics, language and perception often exhibit factorisable structure, yet are typically modelled by monolithic neural architectures that do not explicitly exploit this structure. The separable neural architecture (SNA) addresses this by formalising a representational class that unifies additive, quadratic and tensor-decomposed neural models. By constraining interaction order and tensor rank, SNAs impose a structural inductive bias that factorises high-dimensional mapp",
+    "authors": "Reza T. Batley, Apurba Sarker, Rajib Mostakim",
+    "url": "https://arxiv.org/abs/2603.12244v1",
+    "published": "2026-03-12T17:56:54Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12230v1",
+    "title": "Security Considerations for Artificial Intelligence Agents",
+    "description": "This article, a lightly adapted version of Perplexity's response to NIST/CAISI Request for Information 2025-0035, details our observations and recommendations concerning the security of frontier AI agents. These insights are informed by Perplexity's experience operating general-purpose agentic systems used by millions of users and thousands of enterprises in both controlled and open-world environments. Agent architectures change core assumptions around code-data separation, authority boundaries,",
+    "authors": "Ninghui Li, Kaiyuan Zhang, Kyle Polley",
+    "url": "https://arxiv.org/abs/2603.12230v1",
+    "published": "2026-03-12T17:49:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12228v1",
+    "title": "Neural Thickets: Diverse Task Experts Are Dense Around Pretrained Weights",
+    "description": "Pretraining produces a learned parameter vector that is typically treated as a starting point for further iterative adaptation. In this work, we instead view the outcome of pretraining as a distribution over parameter vectors, whose support already contains task-specific experts. We show that in small models such expert solutions occupy a negligible fraction of the volume of this distribution, making their discovery reliant on structured optimization methods such as gradient descent. In contrast",
+    "authors": "Yulu Gan, Phillip Isola",
+    "url": "https://arxiv.org/abs/2603.12228v1",
+    "published": "2026-03-12T17:49:30Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12226v1",
+    "title": "Sparking Scientific Creativity via LLM-Driven Interdisciplinary Inspiration",
+    "description": "Despite interdisciplinary research leading to larger and longer-term impact, most work remains confined to single-domain academic silos. Recent AI-based approaches to scientific discovery show promise for interdisciplinary research, but many prioritize rapidly designing experiments and solutions, bypassing the exploratory, collaborative reasoning processes that drive creative interdisciplinary breakthroughs. As a result, prior efforts largely prioritize automating scientific discovery rather tha",
+    "authors": "Priyanka Kargupta, Shuhaib Mehri, Dilek Hakkani-Tur",
+    "url": "https://arxiv.org/abs/2603.12226v1",
+    "published": "2026-03-12T17:48:34Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12215v1",
+    "title": "RDNet: Region Proportion-Aware Dynamic Adaptive Salient Object Detection Network in Optical Remote Sensing Images",
+    "description": "Salient object detection (SOD) in remote sensing images faces significant challenges due to large variations in object sizes, the computational cost of self-attention mechanisms, and the limitations of CNN-based extractors in capturing global context and long-range dependencies. Existing methods that rely on fixed convolution kernels often struggle to adapt to diverse object scales, leading to detail loss or irrelevant feature aggregation. To address these issues, this work aims to enhance robus",
+    "authors": "Bin Wan, Runmin Cong, Xiaofei Zhou",
+    "url": "https://arxiv.org/abs/2603.12215v1",
+    "published": "2026-03-12T17:34:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12195v1",
+    "title": "Privacy in ERP Systems: Behavioral Models of Developers and Consultants",
+    "description": "Applications like Enterprise Resource Planning (ERP) systems have become an indispensable part of the corporate digital infrastructure. These systems store sensitive data about customers, suppliers, and employees, and thus companies have to process these data in accordance with applicable regulations like the GDPR (the EU General Data Protection Regulation). This can be challenging due to a variety of reasons. For example, prior research has shown that developers sometimes lack knowledge about p",
+    "authors": "Alicia Pang, Katsiaryna Labunets, Olga Gadyatskaya",
+    "url": "https://arxiv.org/abs/2603.12195v1",
+    "published": "2026-03-12T17:24:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12188v1",
+    "title": "Compiling Temporal Numeric Planning into Discrete PDDL+: Extended Version",
+    "description": "Since the introduction of the PDDL+ modeling language, it was known that temporal planning with durative actions (as in PDDL 2.1) could be compiled into PDDL+. However, no practical compilation was presented in the literature ever since. We present a practical compilation from temporal planning with durative actions into PDDL+, fully capturing the semantics and only assuming the non-self-overlapping of actions. Our compilation is polynomial, retains the plan length up to a constant factor and is",
+    "authors": "Andrea Micheli, Enrico Scala, Alessandro Valentini",
+    "url": "https://arxiv.org/abs/2603.12188v1",
+    "published": "2026-03-12T17:19:30Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12183v1",
+    "title": "Proof-Carrying Materials: Falsifiable Safety Certificates for Machine-Learned Interatomic Potentials",
+    "description": "Machine-learned interatomic potentials (MLIPs) are deployed for high-throughput materials screening without formal reliability guarantees. We show that a single MLIP used as a stability filter misses 93% of density functional theory (DFT)-stable materials (recall 0.07) on a 25,000-material benchmark. Proof-Carrying Materials (PCM) closes this gap through three stages: adversarial falsification across compositional space, bootstrap envelope refinement with 95% confidence intervals, and Lean 4 for",
+    "authors": "Abhinaba Basu, Pavan Chakraborty",
+    "url": "https://arxiv.org/abs/2603.12183v1",
+    "published": "2026-03-12T17:13:25Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12180v1",
+    "title": "Strategic Navigation or Stochastic Search? How Agents and Humans Reason Over Document Collections",
+    "description": "Multimodal agents offer a promising path to automating complex document-intensive workflows. Yet, a critical question remains: do these agents demonstrate genuine strategic reasoning, or merely stochastic trial-and-error search? To address this, we introduce MADQA, a benchmark of 2,250 human-authored questions grounded in 800 heterogeneous PDF documents. Guided by Classical Test Theory, we design it to maximize discriminative power across varying levels of agentic abilities. To evaluate agentic ",
+    "authors": "\u0141ukasz Borchmann, Jordy Van Landeghem, Micha\u0142 Turski",
+    "url": "https://arxiv.org/abs/2603.12180v1",
+    "published": "2026-03-12T17:11:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12176v1",
+    "title": "BehaviorVLM: Unified Finetuning-Free Behavioral Understanding with Vision-Language Reasoning",
+    "description": "Understanding freely moving animal behavior is central to neuroscience, where pose estimation and behavioral understanding form the foundation for linking neural activity to natural actions. Yet both tasks still depend heavily on human annotation or unstable unsupervised pipelines, limiting scalability and reproducibility. We present BehaviorVLM, a unified vision-language framework for pose estimation and behavioral understanding that requires no task-specific finetuning and minimal human labeli",
+    "authors": "Jingyang Ke, Weihan Li, Amartya Pradhan",
+    "url": "https://arxiv.org/abs/2603.12176v1",
+    "published": "2026-03-12T17:09:20Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12163v1",
+    "title": "A Quantitative Characterization of Forgetting in Post-Training",
+    "description": "Continual post-training of generative models is widely used, yet a principled understanding of when and why forgetting occurs remains limited. We develop theoretical results under a two-mode mixture abstraction (representing old and new tasks), proposed by Chen et al. (2025) (arXiv:2510.18874), and formalize forgetting in two forms: (i) mass forgetting, where the old mixture weight collapses to zero, and (ii) old-component drift, where an already-correct old component shifts during training. For",
+    "authors": "Krishnakumar Balasubramanian, Shiva Prasad Kasiviswanathan",
+    "url": "https://arxiv.org/abs/2603.12163v1",
+    "published": "2026-03-12T17:00:16Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12155v1",
+    "title": "GlyphBanana: Advancing Precise Text Rendering Through Agentic Workflows",
+    "description": "Despite recent advances in generative models driving significant progress in text rendering, accurately generating complex text and mathematical formulas remains a formidable challenge. This difficulty primarily stems from the limited instruction-following capabilities of current models when encountering out-of-distribution prompts. To address this, we introduce GlyphBanana, alongside a corresponding benchmark specifically designed for rendering complex characters and formulas. GlyphBanana emplo",
+    "authors": "Zexuan Yan, Jiarui Jin, Yue Ma",
+    "url": "https://arxiv.org/abs/2603.12155v1",
+    "published": "2026-03-12T16:53:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12151v1",
+    "title": "IsoCompute Playbook: Optimally Scaling Sampling Compute for LLM RL",
+    "description": "While scaling laws guide compute allocation for LLM pre-training, analogous prescriptions for reinforcement learning (RL) post-training of large language models (LLMs) remain poorly understood. We study the compute-optimal allocation of sampling compute for on-policy RL methods in LLMs, framing scaling as a compute-constrained optimization over three resources: parallel rollouts per problem, number of problems per batch, and number of update steps. We find that the compute-optimal number of para",
+    "authors": "Zhoujun Cheng, Yutao Xie, Yuxiao Qu",
+    "url": "https://arxiv.org/abs/2603.12151v1",
+    "published": "2026-03-12T16:49:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12146v1",
+    "title": "FlashMotion: Few-Step Controllable Video Generation with Trajectory Guidance",
+    "description": "Recent advances in trajectory-controllable video generation have achieved remarkable progress. Previous methods mainly use adapter-based architectures for precise motion control along predefined trajectories. However, all these methods rely on a multi-step denoising process, leading to substantial time redundancy and computational overhead. While existing video distillation methods successfully distill multi-step generators into few-step, directly applying these approaches to trajectory-controll",
+    "authors": "Quanhao Li, Zhen Xing, Rui Wang",
+    "url": "https://arxiv.org/abs/2603.12146v1",
+    "published": "2026-03-12T16:45:53Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12133v1",
+    "title": "TopoBench: Benchmarking LLMs on Hard Topological Reasoning",
+    "description": "Solving topological grid puzzles requires reasoning over global spatial invariants such as connectivity, loop closure, and region symmetry and remains challenging for even the most powerful large language models (LLMs). To study these abilities under controlled settings, we introduce TopoBench, a benchmark of six puzzle families across three difficulty levels. We evaluate strong reasoning LLMs on TopoBench and find that even frontier models solve fewer than one quarter of hard instances, with tw",
+    "authors": "Mayug Maniparambil, Nils Hoehing, Janak Kapuriya",
+    "url": "https://arxiv.org/abs/2603.12133v1",
+    "published": "2026-03-12T16:37:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12129v1",
+    "title": "Increasing intelligence in AI agents can worsen collective outcomes",
+    "description": "When resources are scarce, will a population of AI agents coordinate in harmony, or descend into tribal chaos? Diverse decision-making AI from different developers is entering everyday devices -- from phones and medical devices to battlefield drones and cars -- and these AI agents typically compete for finite shared resources such as charging slots, relay bandwidth, and traffic priority. Yet their collective dynamics and hence risks to users and society are poorly understood. Here we study AI-ag",
+    "authors": "Neil F. Johnson",
+    "url": "https://arxiv.org/abs/2603.12129v1",
+    "published": "2026-03-12T16:31:28Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12117v1",
+    "title": "SommBench: Assessing Sommelier Expertise of Language Models",
+    "description": "With the rapid advances of large language models, it becomes increasingly important to systematically evaluate their multilingual and multicultural capabilities. Previous cultural evaluation benchmarks focus mainly on basic cultural knowledge that can be encoded in linguistic form. Here, we propose SommBench, a multilingual benchmark to assess sommelier expertise, a domain deeply grounded in the senses of smell and taste. While language models learn about sensory properties exclusively through t",
+    "authors": "William Brach, Tomas Bedej, Jacob Nielsen",
+    "url": "https://arxiv.org/abs/2603.12117v1",
+    "published": "2026-03-12T16:19:04Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.085502"
+  },
+  {
+    "threat_id": "ARX-2603.12246v1",
+    "title": "Examining Reasoning LLMs-as-Judges in Non-Verifiable LLM Post-Training",
+    "description": "Reasoning LLMs-as-Judges, which can benefit from inference-time scaling, provide a promising path for extending the success of reasoning models to non-verifiable domains where the output correctness/quality cannot be directly checked. However, while reasoning judges have shown better performance on static evaluation benchmarks, their effectiveness in actual policy training has not been systematically examined. Therefore, we conduct a rigorous study to investigate the actual impact of non-reasoni",
+    "authors": "Yixin Liu, Yue Yu, DiJia Su",
+    "url": "https://arxiv.org/abs/2603.12246v1",
+    "published": "2026-03-12T17:57:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12237v1",
+    "title": "STAMP: Selective Task-Aware Mechanism for Text Privacy",
+    "description": "We present STAMP (Selective Task-Aware Mechanism for Text Privacy), a new framework for task-aware text privatization that achieves an improved privacy-utility trade-off. STAMP selectively allocates privacy budgets across tokens by jointly considering (i) each token's importance to the downstream task (as measured via a task- or query-specific representation), and (ii) its privacy sensitivity (e.g., names, dates, identifiers). This token-level partitioning enables fine-grained, group-wise contro",
+    "authors": "Fengwei Tian, Payel Bhattacharjee, Heidi Hanson",
+    "url": "https://arxiv.org/abs/2603.12237v1",
+    "published": "2026-03-12T17:55:07Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12230v1",
+    "title": "Security Considerations for Artificial Intelligence Agents",
+    "description": "This article, a lightly adapted version of Perplexity's response to NIST/CAISI Request for Information 2025-0035, details our observations and recommendations concerning the security of frontier AI agents. These insights are informed by Perplexity's experience operating general-purpose agentic systems used by millions of users and thousands of enterprises in both controlled and open-world environments. Agent architectures change core assumptions around code-data separation, authority boundaries,",
+    "authors": "Ninghui Li, Kaiyuan Zhang, Kyle Polley",
+    "url": "https://arxiv.org/abs/2603.12230v1",
+    "published": "2026-03-12T17:49:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12226v1",
+    "title": "Sparking Scientific Creativity via LLM-Driven Interdisciplinary Inspiration",
+    "description": "Despite interdisciplinary research leading to larger and longer-term impact, most work remains confined to single-domain academic silos. Recent AI-based approaches to scientific discovery show promise for interdisciplinary research, but many prioritize rapidly designing experiments and solutions, bypassing the exploratory, collaborative reasoning processes that drive creative interdisciplinary breakthroughs. As a result, prior efforts largely prioritize automating scientific discovery rather tha",
+    "authors": "Priyanka Kargupta, Shuhaib Mehri, Dilek Hakkani-Tur",
+    "url": "https://arxiv.org/abs/2603.12226v1",
+    "published": "2026-03-12T17:48:34Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12195v1",
+    "title": "Privacy in ERP Systems: Behavioral Models of Developers and Consultants",
+    "description": "Applications like Enterprise Resource Planning (ERP) systems have become an indispensable part of the corporate digital infrastructure. These systems store sensitive data about customers, suppliers, and employees, and thus companies have to process these data in accordance with applicable regulations like the GDPR (the EU General Data Protection Regulation). This can be challenging due to a variety of reasons. For example, prior research has shown that developers sometimes lack knowledge about p",
+    "authors": "Alicia Pang, Katsiaryna Labunets, Olga Gadyatskaya",
+    "url": "https://arxiv.org/abs/2603.12195v1",
+    "published": "2026-03-12T17:24:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12176v1",
+    "title": "BehaviorVLM: Unified Finetuning-Free Behavioral Understanding with Vision-Language Reasoning",
+    "description": "Understanding freely moving animal behavior is central to neuroscience, where pose estimation and behavioral understanding form the foundation for linking neural activity to natural actions. Yet both tasks still depend heavily on human annotation or unstable unsupervised pipelines, limiting scalability and reproducibility. We present BehaviorVLM, a unified vision-language framework for pose estimation and behavioral understanding that requires no task-specific finetuning and minimal human labeli",
+    "authors": "Jingyang Ke, Weihan Li, Amartya Pradhan",
+    "url": "https://arxiv.org/abs/2603.12176v1",
+    "published": "2026-03-12T17:09:20Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12151v1",
+    "title": "IsoCompute Playbook: Optimally Scaling Sampling Compute for LLM RL",
+    "description": "While scaling laws guide compute allocation for LLM pre-training, analogous prescriptions for reinforcement learning (RL) post-training of large language models (LLMs) remain poorly understood. We study the compute-optimal allocation of sampling compute for on-policy RL methods in LLMs, framing scaling as a compute-constrained optimization over three resources: parallel rollouts per problem, number of problems per batch, and number of update steps. We find that the compute-optimal number of para",
+    "authors": "Zhoujun Cheng, Yutao Xie, Yuxiao Qu",
+    "url": "https://arxiv.org/abs/2603.12151v1",
+    "published": "2026-03-12T16:49:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12142v1",
+    "title": "Understanding Disclosure Risk in Differential Privacy with Applications to Noise Calibration and Auditing (Extended Version)",
+    "description": "Differential Privacy (DP) is widely adopted in data management systems to enable data sharing with formal disclosure guarantees. A central systems challenge is understanding how DP noise translates into effective protection against inference attacks, since this directly determines achievable utility. Most existing analyses focus only on membership inference -- capturing only a threat -- or rely on reconstruction robustness (ReRo). However, under realistic assumptions, we show that ReRo can yield",
+    "authors": "Patricia Guerra-Balboa, Annika Sauer, H\u00e9ber H. Arcolezi",
+    "url": "https://arxiv.org/abs/2603.12142v1",
+    "published": "2026-03-12T16:43:55Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12133v1",
+    "title": "TopoBench: Benchmarking LLMs on Hard Topological Reasoning",
+    "description": "Solving topological grid puzzles requires reasoning over global spatial invariants such as connectivity, loop closure, and region symmetry and remains challenging for even the most powerful large language models (LLMs). To study these abilities under controlled settings, we introduce TopoBench, a benchmark of six puzzle families across three difficulty levels. We evaluate strong reasoning LLMs on TopoBench and find that even frontier models solve fewer than one quarter of hard instances, with tw",
+    "authors": "Mayug Maniparambil, Nils Hoehing, Janak Kapuriya",
+    "url": "https://arxiv.org/abs/2603.12133v1",
+    "published": "2026-03-12T16:37:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12129v1",
+    "title": "Increasing intelligence in AI agents can worsen collective outcomes",
+    "description": "When resources are scarce, will a population of AI agents coordinate in harmony, or descend into tribal chaos? Diverse decision-making AI from different developers is entering everyday devices -- from phones and medical devices to battlefield drones and cars -- and these AI agents typically compete for finite shared resources such as charging slots, relay bandwidth, and traffic priority. Yet their collective dynamics and hence risks to users and society are poorly understood. Here we study AI-ag",
+    "authors": "Neil F. Johnson",
+    "url": "https://arxiv.org/abs/2603.12129v1",
+    "published": "2026-03-12T16:31:28Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12109v1",
+    "title": "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM agents",
+    "description": "Reinforcement learning (RL) with outcome-based rewards has achieved significant success in training large language model (LLM) agents for complex reasoning tasks. However, in active reasoning where agents need to strategically ask questions to acquire task-relevant information, we find that LLM agents trained with RL often suffer from information self-locking: the agent ceases to ask informative questions and struggles to internalize already-obtained information. To understand the phenomenon, we",
+    "authors": "Deyu Zou, Yongqiang Chen, Fan Feng",
+    "url": "https://arxiv.org/abs/2603.12109v1",
+    "published": "2026-03-12T16:14:14Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12094v1",
+    "title": "Human-Centred LLM Privacy Audits: Findings and Frictions",
+    "description": "Large language models (LLMs) learn statistical associations from massive training corpora and user interactions, and deployed systems can surface or infer information about individuals. Yet people lack practical ways to inspect what a model associates with their name. We report interim findings from an ongoing study and introduce LMP2, a browser-based self-audit tool. In two user studies ($N_{total}{=}458$), GPT-4o predicts 11 of 50 features for everyday people with $\\ge$60\\% accuracy, and parti",
+    "authors": "Dimitri Staufer, Kirsten Morehouse, David Hartmann",
+    "url": "https://arxiv.org/abs/2603.12094v1",
+    "published": "2026-03-12T16:01:01Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12091v1",
+    "title": "Resource-Efficient Iterative LLM-Based NAS with Feedback Memory",
+    "description": "Neural Architecture Search (NAS) automates network design, but conventional methods demand substantial computational resources. We propose a closed-loop pipeline leveraging large language models (LLMs) to iteratively generate, evaluate, and refine convolutional neural network architectures for image classification on a single consumer-grade GPU without LLM fine-tuning. Central to our approach is a historical feedback memory inspired by Markov chains: a sliding window of $K{=}5$ recent improvemen",
+    "authors": "Xiaojie Gu, Dmitry Ignatov, Radu Timofte",
+    "url": "https://arxiv.org/abs/2603.12091v1",
+    "published": "2026-03-12T16:00:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12089v1",
+    "title": "EmbTracker: Traceable Black-box Watermarking for Federated Language Models",
+    "description": "Federated Language Model (FedLM) allows a collaborative learning without sharing raw data, yet it introduces a critical vulnerability, as every untrustworthy client may leak the received functional model instance. Current watermarking schemes for FedLM often require white-box access and client-side cooperation, providing only group-level proof of ownership rather than individual traceability. We propose EmbTracker, a server-side, traceable black-box watermarking framework specifically designed f",
+    "authors": "Haodong Zhao, Jinming Hu, Yijie Bai",
+    "url": "https://arxiv.org/abs/2603.12089v1",
+    "published": "2026-03-12T15:57:32Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12062v1",
+    "title": "Systematic Security Analysis of the Iridium Satellite Radio Link",
+    "description": "The Iridium Low Earth Orbit (LEO) satellite constellation remains a unique provider of global communications for critical industries, governments, and private users, serving over 2.5 million active subscribers despite recent market competition. In contrast to terrestrial wireless standards such as 3GPP, Iridium protocol specifications are proprietary and have not undergone rigorous, public, and systematic security evaluation. In this work, we present the first comprehensive security analysis of ",
+    "authors": "Eric Jedermann, Piotr Kulpinski, Martin Strohmeier",
+    "url": "https://arxiv.org/abs/2603.12062v1",
+    "published": "2026-03-12T15:29:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12023v1",
+    "title": "Cascade: Composing Software-Hardware Attack Gadgets for Adversarial Threat Amplification in Compound AI Systems",
+    "description": "Rapid progress in generative AI has given rise to Compound AI systems - pipelines comprised of multiple large language models (LLM), software tools and database systems. Compound AI systems are constructed on a layered traditional software stack running on a distributed hardware infrastructure. Many of the diverse software components are vulnerable to traditional security flaws documented in the Common Vulnerabilities and Exposures (CVE) database, while the underlying distributed hardware infras",
+    "authors": "Sarbartha Banerjee, Prateek Sahu, Anjo Vahldiek-Oberwagner",
+    "url": "https://arxiv.org/abs/2603.12023v1",
+    "published": "2026-03-12T15:03:51Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12018v1",
+    "title": "An Intent of Collaboration: On Agencies between Designers and Emerging (Intelligent) Technologies",
+    "description": "Amidst the emergence of powerful intelligent technologies such as LLMs and text-to-image AIs that promise to enhance creative processes, designers face the challenges of remaining empowered and creative while working with these foreign digital partners. While generative AIs offer versatile, informative, and occasionally poetic outcomes, their lack of embodied knowledge presents an even greater challenge to designers in gaining fruitful outcomes, such as in the field of Digital Craftsmanship. In ",
+    "authors": "Pei-Ying Lin, Julie Heij, Iris Borst",
+    "url": "https://arxiv.org/abs/2603.12018v1",
+    "published": "2026-03-12T15:00:18Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12011v1",
+    "title": "Can RL Improve Generalization of LLM Agents? An Empirical Study",
+    "description": "Reinforcement fine-tuning (RFT) has shown promise for training LLM agents to perform multi-turn decision-making based on environment feedback. However, most existing evaluations remain largely in-domain: training and testing are conducted in the same environment or even on the same tasks. In real-world deployment, agents may operate in unseen environments with different background knowledge, observation spaces, and action interfaces. To characterize the generalization profile of RFT under such s",
+    "authors": "Zhiheng Xi, Xin Guo, Jiaqi Liu",
+    "url": "https://arxiv.org/abs/2603.12011v1",
+    "published": "2026-03-12T14:54:59Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12000v1",
+    "title": "Credibility Matters: Motivations, Characteristics, and Influence Mechanisms of Crypto Key Opinion Leaders",
+    "description": "Crypto Key Opinion Leaders (KOLs) shape Web3 narratives and retail investment behaviour. In volatile, high-risk markets, their credibility becomes a key determinant of their influence on followers. Yet prior research has focused on lifestyle influencers or generic financial commentary, leaving crypto KOLs' understandings of motivation, credibility, and responsibility underexplored. Drawing on interviews with 13 KOLs and self-determination theory (SDT), we examine how psychological needs are nego",
+    "authors": "Alexander Kropiunig, Svetlana Kremer, Bernhard Haslhofer",
+    "url": "https://arxiv.org/abs/2603.12000v1",
+    "published": "2026-03-12T14:47:47Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.11991v1",
+    "title": "BTZSC: A Benchmark for Zero-Shot Text Classification Across Cross-Encoders, Embedding Models, Rerankers and LLMs",
+    "description": "Zero-shot text classification (ZSC) offers the promise of eliminating costly task-specific annotation by matching texts directly to human-readable label descriptions. While early approaches have predominantly relied on cross-encoder models fine-tuned for natural language inference (NLI), recent advances in text-embedding models, rerankers, and instruction-tuned large language models (LLMs) have challenged the dominance of NLI-based architectures. Yet, systematically comparing these diverse appro",
+    "authors": "Ilias Aarab",
+    "url": "https://arxiv.org/abs/2603.11991v1",
+    "published": "2026-03-12T14:43:20Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.484796"
+  },
+  {
+    "threat_id": "ARX-2603.12261v1",
+    "title": "The Latent Color Subspace: Emergent Order in High-Dimensional Chaos",
+    "description": "Text-to-image generation models have advanced rapidly, yet achieving fine-grained control over generated images remains difficult, largely due to limited understanding of how semantic information is encoded. We develop an interpretation of the color representation in the Variational Autoencoder latent space of FLUX.1 [Dev], revealing a structure reflecting Hue, Saturation, and Lightness. We verify our Latent Color Subspace (LCS) interpretation by demonstrating that it can both predict and explic",
+    "authors": "Mateusz Pach, Jessica Bader, Quentin Bouniot",
+    "url": "https://arxiv.org/abs/2603.12261v1",
+    "published": "2026-03-12T17:59:48Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12249v1",
+    "title": "SciMDR: Benchmarking and Advancing Scientific Multimodal Document Reasoning",
+    "description": "Constructing scientific multimodal document reasoning datasets for foundation model training involves an inherent trade-off among scale, faithfulness, and realism. To address this challenge, we introduce the synthesize-and-reground framework, a two-stage pipeline comprising: (1) Claim-Centric QA Synthesis, which generates faithful, isolated QA pairs and reasoning on focused segments, and (2) Document-Scale Regrounding, which programmatically re-embeds these pairs into full-document tasks to ensu",
+    "authors": "Ziyu Chen, Yilun Zhao, Chengye Wang",
+    "url": "https://arxiv.org/abs/2603.12249v1",
+    "published": "2026-03-12T17:57:52Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12246v1",
+    "title": "Examining Reasoning LLMs-as-Judges in Non-Verifiable LLM Post-Training",
+    "description": "Reasoning LLMs-as-Judges, which can benefit from inference-time scaling, provide a promising path for extending the success of reasoning models to non-verifiable domains where the output correctness/quality cannot be directly checked. However, while reasoning judges have shown better performance on static evaluation benchmarks, their effectiveness in actual policy training has not been systematically examined. Therefore, we conduct a rigorous study to investigate the actual impact of non-reasoni",
+    "authors": "Yixin Liu, Yue Yu, DiJia Su",
+    "url": "https://arxiv.org/abs/2603.12246v1",
+    "published": "2026-03-12T17:57:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12244v1",
+    "title": "Separable neural architectures as a primitive for unified predictive and generative intelligence",
+    "description": "Intelligent systems across physics, language and perception often exhibit factorisable structure, yet are typically modelled by monolithic neural architectures that do not explicitly exploit this structure. The separable neural architecture (SNA) addresses this by formalising a representational class that unifies additive, quadratic and tensor-decomposed neural models. By constraining interaction order and tensor rank, SNAs impose a structural inductive bias that factorises high-dimensional mapp",
+    "authors": "Reza T. Batley, Apurba Sarker, Rajib Mostakim",
+    "url": "https://arxiv.org/abs/2603.12244v1",
+    "published": "2026-03-12T17:56:54Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12230v1",
+    "title": "Security Considerations for Artificial Intelligence Agents",
+    "description": "This article, a lightly adapted version of Perplexity's response to NIST/CAISI Request for Information 2025-0035, details our observations and recommendations concerning the security of frontier AI agents. These insights are informed by Perplexity's experience operating general-purpose agentic systems used by millions of users and thousands of enterprises in both controlled and open-world environments. Agent architectures change core assumptions around code-data separation, authority boundaries,",
+    "authors": "Ninghui Li, Kaiyuan Zhang, Kyle Polley",
+    "url": "https://arxiv.org/abs/2603.12230v1",
+    "published": "2026-03-12T17:49:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12228v1",
+    "title": "Neural Thickets: Diverse Task Experts Are Dense Around Pretrained Weights",
+    "description": "Pretraining produces a learned parameter vector that is typically treated as a starting point for further iterative adaptation. In this work, we instead view the outcome of pretraining as a distribution over parameter vectors, whose support already contains task-specific experts. We show that in small models such expert solutions occupy a negligible fraction of the volume of this distribution, making their discovery reliant on structured optimization methods such as gradient descent. In contrast",
+    "authors": "Yulu Gan, Phillip Isola",
+    "url": "https://arxiv.org/abs/2603.12228v1",
+    "published": "2026-03-12T17:49:30Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12226v1",
+    "title": "Sparking Scientific Creativity via LLM-Driven Interdisciplinary Inspiration",
+    "description": "Despite interdisciplinary research leading to larger and longer-term impact, most work remains confined to single-domain academic silos. Recent AI-based approaches to scientific discovery show promise for interdisciplinary research, but many prioritize rapidly designing experiments and solutions, bypassing the exploratory, collaborative reasoning processes that drive creative interdisciplinary breakthroughs. As a result, prior efforts largely prioritize automating scientific discovery rather tha",
+    "authors": "Priyanka Kargupta, Shuhaib Mehri, Dilek Hakkani-Tur",
+    "url": "https://arxiv.org/abs/2603.12226v1",
+    "published": "2026-03-12T17:48:34Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12215v1",
+    "title": "RDNet: Region Proportion-Aware Dynamic Adaptive Salient Object Detection Network in Optical Remote Sensing Images",
+    "description": "Salient object detection (SOD) in remote sensing images faces significant challenges due to large variations in object sizes, the computational cost of self-attention mechanisms, and the limitations of CNN-based extractors in capturing global context and long-range dependencies. Existing methods that rely on fixed convolution kernels often struggle to adapt to diverse object scales, leading to detail loss or irrelevant feature aggregation. To address these issues, this work aims to enhance robus",
+    "authors": "Bin Wan, Runmin Cong, Xiaofei Zhou",
+    "url": "https://arxiv.org/abs/2603.12215v1",
+    "published": "2026-03-12T17:34:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12195v1",
+    "title": "Privacy in ERP Systems: Behavioral Models of Developers and Consultants",
+    "description": "Applications like Enterprise Resource Planning (ERP) systems have become an indispensable part of the corporate digital infrastructure. These systems store sensitive data about customers, suppliers, and employees, and thus companies have to process these data in accordance with applicable regulations like the GDPR (the EU General Data Protection Regulation). This can be challenging due to a variety of reasons. For example, prior research has shown that developers sometimes lack knowledge about p",
+    "authors": "Alicia Pang, Katsiaryna Labunets, Olga Gadyatskaya",
+    "url": "https://arxiv.org/abs/2603.12195v1",
+    "published": "2026-03-12T17:24:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12188v1",
+    "title": "Compiling Temporal Numeric Planning into Discrete PDDL+: Extended Version",
+    "description": "Since the introduction of the PDDL+ modeling language, it was known that temporal planning with durative actions (as in PDDL 2.1) could be compiled into PDDL+. However, no practical compilation was presented in the literature ever since. We present a practical compilation from temporal planning with durative actions into PDDL+, fully capturing the semantics and only assuming the non-self-overlapping of actions. Our compilation is polynomial, retains the plan length up to a constant factor and is",
+    "authors": "Andrea Micheli, Enrico Scala, Alessandro Valentini",
+    "url": "https://arxiv.org/abs/2603.12188v1",
+    "published": "2026-03-12T17:19:30Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12183v1",
+    "title": "Proof-Carrying Materials: Falsifiable Safety Certificates for Machine-Learned Interatomic Potentials",
+    "description": "Machine-learned interatomic potentials (MLIPs) are deployed for high-throughput materials screening without formal reliability guarantees. We show that a single MLIP used as a stability filter misses 93% of density functional theory (DFT)-stable materials (recall 0.07) on a 25,000-material benchmark. Proof-Carrying Materials (PCM) closes this gap through three stages: adversarial falsification across compositional space, bootstrap envelope refinement with 95% confidence intervals, and Lean 4 for",
+    "authors": "Abhinaba Basu, Pavan Chakraborty",
+    "url": "https://arxiv.org/abs/2603.12183v1",
+    "published": "2026-03-12T17:13:25Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12180v1",
+    "title": "Strategic Navigation or Stochastic Search? How Agents and Humans Reason Over Document Collections",
+    "description": "Multimodal agents offer a promising path to automating complex document-intensive workflows. Yet, a critical question remains: do these agents demonstrate genuine strategic reasoning, or merely stochastic trial-and-error search? To address this, we introduce MADQA, a benchmark of 2,250 human-authored questions grounded in 800 heterogeneous PDF documents. Guided by Classical Test Theory, we design it to maximize discriminative power across varying levels of agentic abilities. To evaluate agentic ",
+    "authors": "\u0141ukasz Borchmann, Jordy Van Landeghem, Micha\u0142 Turski",
+    "url": "https://arxiv.org/abs/2603.12180v1",
+    "published": "2026-03-12T17:11:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12176v1",
+    "title": "BehaviorVLM: Unified Finetuning-Free Behavioral Understanding with Vision-Language Reasoning",
+    "description": "Understanding freely moving animal behavior is central to neuroscience, where pose estimation and behavioral understanding form the foundation for linking neural activity to natural actions. Yet both tasks still depend heavily on human annotation or unstable unsupervised pipelines, limiting scalability and reproducibility. We present BehaviorVLM, a unified vision-language framework for pose estimation and behavioral understanding that requires no task-specific finetuning and minimal human labeli",
+    "authors": "Jingyang Ke, Weihan Li, Amartya Pradhan",
+    "url": "https://arxiv.org/abs/2603.12176v1",
+    "published": "2026-03-12T17:09:20Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12163v1",
+    "title": "A Quantitative Characterization of Forgetting in Post-Training",
+    "description": "Continual post-training of generative models is widely used, yet a principled understanding of when and why forgetting occurs remains limited. We develop theoretical results under a two-mode mixture abstraction (representing old and new tasks), proposed by Chen et al. (2025) (arXiv:2510.18874), and formalize forgetting in two forms: (i) mass forgetting, where the old mixture weight collapses to zero, and (ii) old-component drift, where an already-correct old component shifts during training. For",
+    "authors": "Krishnakumar Balasubramanian, Shiva Prasad Kasiviswanathan",
+    "url": "https://arxiv.org/abs/2603.12163v1",
+    "published": "2026-03-12T17:00:16Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12155v1",
+    "title": "GlyphBanana: Advancing Precise Text Rendering Through Agentic Workflows",
+    "description": "Despite recent advances in generative models driving significant progress in text rendering, accurately generating complex text and mathematical formulas remains a formidable challenge. This difficulty primarily stems from the limited instruction-following capabilities of current models when encountering out-of-distribution prompts. To address this, we introduce GlyphBanana, alongside a corresponding benchmark specifically designed for rendering complex characters and formulas. GlyphBanana emplo",
+    "authors": "Zexuan Yan, Jiarui Jin, Yue Ma",
+    "url": "https://arxiv.org/abs/2603.12155v1",
+    "published": "2026-03-12T16:53:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12151v1",
+    "title": "IsoCompute Playbook: Optimally Scaling Sampling Compute for LLM RL",
+    "description": "While scaling laws guide compute allocation for LLM pre-training, analogous prescriptions for reinforcement learning (RL) post-training of large language models (LLMs) remain poorly understood. We study the compute-optimal allocation of sampling compute for on-policy RL methods in LLMs, framing scaling as a compute-constrained optimization over three resources: parallel rollouts per problem, number of problems per batch, and number of update steps. We find that the compute-optimal number of para",
+    "authors": "Zhoujun Cheng, Yutao Xie, Yuxiao Qu",
+    "url": "https://arxiv.org/abs/2603.12151v1",
+    "published": "2026-03-12T16:49:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12146v1",
+    "title": "FlashMotion: Few-Step Controllable Video Generation with Trajectory Guidance",
+    "description": "Recent advances in trajectory-controllable video generation have achieved remarkable progress. Previous methods mainly use adapter-based architectures for precise motion control along predefined trajectories. However, all these methods rely on a multi-step denoising process, leading to substantial time redundancy and computational overhead. While existing video distillation methods successfully distill multi-step generators into few-step, directly applying these approaches to trajectory-controll",
+    "authors": "Quanhao Li, Zhen Xing, Rui Wang",
+    "url": "https://arxiv.org/abs/2603.12146v1",
+    "published": "2026-03-12T16:45:53Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12142v1",
+    "title": "Understanding Disclosure Risk in Differential Privacy with Applications to Noise Calibration and Auditing (Extended Version)",
+    "description": "Differential Privacy (DP) is widely adopted in data management systems to enable data sharing with formal disclosure guarantees. A central systems challenge is understanding how DP noise translates into effective protection against inference attacks, since this directly determines achievable utility. Most existing analyses focus only on membership inference -- capturing only a threat -- or rely on reconstruction robustness (ReRo). However, under realistic assumptions, we show that ReRo can yield",
+    "authors": "Patricia Guerra-Balboa, Annika Sauer, H\u00e9ber H. Arcolezi",
+    "url": "https://arxiv.org/abs/2603.12142v1",
+    "published": "2026-03-12T16:43:55Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12133v1",
+    "title": "TopoBench: Benchmarking LLMs on Hard Topological Reasoning",
+    "description": "Solving topological grid puzzles requires reasoning over global spatial invariants such as connectivity, loop closure, and region symmetry and remains challenging for even the most powerful large language models (LLMs). To study these abilities under controlled settings, we introduce TopoBench, a benchmark of six puzzle families across three difficulty levels. We evaluate strong reasoning LLMs on TopoBench and find that even frontier models solve fewer than one quarter of hard instances, with tw",
+    "authors": "Mayug Maniparambil, Nils Hoehing, Janak Kapuriya",
+    "url": "https://arxiv.org/abs/2603.12133v1",
+    "published": "2026-03-12T16:37:21Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12129v1",
+    "title": "Increasing intelligence in AI agents can worsen collective outcomes",
+    "description": "When resources are scarce, will a population of AI agents coordinate in harmony, or descend into tribal chaos? Diverse decision-making AI from different developers is entering everyday devices -- from phones and medical devices to battlefield drones and cars -- and these AI agents typically compete for finite shared resources such as charging slots, relay bandwidth, and traffic priority. Yet their collective dynamics and hence risks to users and society are poorly understood. Here we study AI-ag",
+    "authors": "Neil F. Johnson",
+    "url": "https://arxiv.org/abs/2603.12129v1",
+    "published": "2026-03-12T16:31:28Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:34.911124"
+  },
+  {
+    "threat_id": "ARX-2603.12230v1",
+    "title": "Security Considerations for Artificial Intelligence Agents",
+    "description": "This article, a lightly adapted version of Perplexity's response to NIST/CAISI Request for Information 2025-0035, details our observations and recommendations concerning the security of frontier AI agents. These insights are informed by Perplexity's experience operating general-purpose agentic systems used by millions of users and thousands of enterprises in both controlled and open-world environments. Agent architectures change core assumptions around code-data separation, authority boundaries,",
+    "authors": "Ninghui Li, Kaiyuan Zhang, Kyle Polley",
+    "url": "https://arxiv.org/abs/2603.12230v1",
+    "published": "2026-03-12T17:49:39Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12183v1",
+    "title": "Proof-Carrying Materials: Falsifiable Safety Certificates for Machine-Learned Interatomic Potentials",
+    "description": "Machine-learned interatomic potentials (MLIPs) are deployed for high-throughput materials screening without formal reliability guarantees. We show that a single MLIP used as a stability filter misses 93% of density functional theory (DFT)-stable materials (recall 0.07) on a 25,000-material benchmark. Proof-Carrying Materials (PCM) closes this gap through three stages: adversarial falsification across compositional space, bootstrap envelope refinement with 95% confidence intervals, and Lean 4 for",
+    "authors": "Abhinaba Basu, Pavan Chakraborty",
+    "url": "https://arxiv.org/abs/2603.12183v1",
+    "published": "2026-03-12T17:13:25Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12180v1",
+    "title": "Strategic Navigation or Stochastic Search? How Agents and Humans Reason Over Document Collections",
+    "description": "Multimodal agents offer a promising path to automating complex document-intensive workflows. Yet, a critical question remains: do these agents demonstrate genuine strategic reasoning, or merely stochastic trial-and-error search? To address this, we introduce MADQA, a benchmark of 2,250 human-authored questions grounded in 800 heterogeneous PDF documents. Guided by Classical Test Theory, we design it to maximize discriminative power across varying levels of agentic abilities. To evaluate agentic ",
+    "authors": "\u0141ukasz Borchmann, Jordy Van Landeghem, Micha\u0142 Turski",
+    "url": "https://arxiv.org/abs/2603.12180v1",
+    "published": "2026-03-12T17:11:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12155v1",
+    "title": "GlyphBanana: Advancing Precise Text Rendering Through Agentic Workflows",
+    "description": "Despite recent advances in generative models driving significant progress in text rendering, accurately generating complex text and mathematical formulas remains a formidable challenge. This difficulty primarily stems from the limited instruction-following capabilities of current models when encountering out-of-distribution prompts. To address this, we introduce GlyphBanana, alongside a corresponding benchmark specifically designed for rendering complex characters and formulas. GlyphBanana emplo",
+    "authors": "Zexuan Yan, Jiarui Jin, Yue Ma",
+    "url": "https://arxiv.org/abs/2603.12155v1",
+    "published": "2026-03-12T16:53:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12145v1",
+    "title": "Automatic Generation of High-Performance RL Environments",
+    "description": "Translating complex reinforcement learning (RL) environments into high-performance implementations has traditionally required months of specialized engineering. We present a reusable recipe - a generic prompt template, hierarchical verification, and iterative agent-assisted repair - that produces semantically equivalent high-performance environments for <$10 in compute cost. We demonstrate three distinct workflows across five environments. Direct translation (no prior performance implementation ",
+    "authors": "Seth Karten, Rahul Dev Appapogu, Chi Jin",
+    "url": "https://arxiv.org/abs/2603.12145v1",
+    "published": "2026-03-12T16:45:47Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12129v1",
+    "title": "Increasing intelligence in AI agents can worsen collective outcomes",
+    "description": "When resources are scarce, will a population of AI agents coordinate in harmony, or descend into tribal chaos? Diverse decision-making AI from different developers is entering everyday devices -- from phones and medical devices to battlefield drones and cars -- and these AI agents typically compete for finite shared resources such as charging slots, relay bandwidth, and traffic priority. Yet their collective dynamics and hence risks to users and society are poorly understood. Here we study AI-ag",
+    "authors": "Neil F. Johnson",
+    "url": "https://arxiv.org/abs/2603.12129v1",
+    "published": "2026-03-12T16:31:28Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12110v1",
+    "title": "Taming the Adversary: Stable Minimax Deep Deterministic Policy Gradient via Fractional Objectives",
+    "description": "Reinforcement learning (RL) has achieved remarkable success in a wide range of control and decision-making tasks. However, RL agents often exhibit unstable or degraded performance when deployed in environments subject to unexpected external disturbances and model uncertainties. Consequently, ensuring reliable performance under such conditions remains a critical challenge. In this paper, we propose minimax deep deterministic policy gradient (MMDDPG), a framework for learning disturbance-resilient",
+    "authors": "Taeho Lee, Donghwan Lee",
+    "url": "https://arxiv.org/abs/2603.12110v1",
+    "published": "2026-03-12T16:15:06Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12109v1",
+    "title": "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM agents",
+    "description": "Reinforcement learning (RL) with outcome-based rewards has achieved significant success in training large language model (LLM) agents for complex reasoning tasks. However, in active reasoning where agents need to strategically ask questions to acquire task-relevant information, we find that LLM agents trained with RL often suffer from information self-locking: the agent ceases to ask informative questions and struggles to internalize already-obtained information. To understand the phenomenon, we",
+    "authors": "Deyu Zou, Yongqiang Chen, Fan Feng",
+    "url": "https://arxiv.org/abs/2603.12109v1",
+    "published": "2026-03-12T16:14:14Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12096v1",
+    "title": "A Robust and Efficient Multi-Agent Reinforcement Learning Framework for Traffic Signal Control",
+    "description": "Reinforcement Learning (RL) in Traffic Signal Control (TSC) faces significant hurdles in real-world deployment due to limited generalization to dynamic traffic flow variations. Existing approaches often overfit static patterns and use action spaces incompatible with driver expectations. This paper proposes a robust Multi-Agent Reinforcement Learning (MARL) framework validated in the Vissim traffic simulator. The framework integrates three mechanisms: (1) Turning Ratio Randomization, a training s",
+    "authors": "Sheng-You Huang, Hsiao-Chuan Chang, Yen-Chi Chen",
+    "url": "https://arxiv.org/abs/2603.12096v1",
+    "published": "2026-03-12T16:02:28Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12056v1",
+    "title": "XSkill: Continual Learning from Experience and Skills in Multimodal Agents",
+    "description": "Multimodal agents can now tackle complex reasoning tasks with diverse tools, yet they still suffer from inefficient tool use and inflexible orchestration in open-ended settings. A central challenge is enabling such agents to continually improve without parameter updates by learning from past trajectories. We identify two complementary forms of reusable knowledge essential for this goal: experiences, providing concise action-level guidance for tool selection and decision making, and skills, provi",
+    "authors": "Guanyu Jiang, Zhaochen Su, Xiaoye Qu",
+    "url": "https://arxiv.org/abs/2603.12056v1",
+    "published": "2026-03-12T15:25:57Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12038v1",
+    "title": "Slow-Fast Inference: Training-Free Inference Acceleration via Within-Sentence Support Stability",
+    "description": "Long-context autoregressive decoding remains expensive because each decoding step must repeatedly process a growing history. We observe a consistent pattern during decoding: within a sentence, and more generally within a short semantically coherent span, the dominant attention support often remains largely stable. Motivated by this observation, we propose Slow-Fast Inference (SFI), a training-free decoding framework that decouples generation into frequent low-cost fast steps and occasional dense",
+    "authors": "Xingyu Xie, Zhaochen Yu, Yue Liao",
+    "url": "https://arxiv.org/abs/2603.12038v1",
+    "published": "2026-03-12T15:14:48Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12023v1",
+    "title": "Cascade: Composing Software-Hardware Attack Gadgets for Adversarial Threat Amplification in Compound AI Systems",
+    "description": "Rapid progress in generative AI has given rise to Compound AI systems - pipelines comprised of multiple large language models (LLM), software tools and database systems. Compound AI systems are constructed on a layered traditional software stack running on a distributed hardware infrastructure. Many of the diverse software components are vulnerable to traditional security flaws documented in the Common Vulnerabilities and Exposures (CVE) database, while the underlying distributed hardware infras",
+    "authors": "Sarbartha Banerjee, Prateek Sahu, Anjo Vahldiek-Oberwagner",
+    "url": "https://arxiv.org/abs/2603.12023v1",
+    "published": "2026-03-12T15:03:51Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12020v1",
+    "title": "Sim-to-reality adaptation for Deep Reinforcement Learning applied to an underwater docking application",
+    "description": "Deep Reinforcement Learning (DRL) offers a robust alternative to traditional control methods for autonomous underwater docking, particularly in adapting to unpredictable environmental conditions. However, bridging the \"sim-to-real\" gap and managing high training latencies remain significant bottlenecks for practical deployment. This paper presents a systematic approach for autonomous docking using the Girona Autonomous Underwater Vehicle (AUV) by leveraging a high-fidelity digital twin environme",
+    "authors": "Alaaeddine Chaarani, Narcis Palomeras, Pere Ridao",
+    "url": "https://arxiv.org/abs/2603.12020v1",
+    "published": "2026-03-12T15:01:25Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.12011v1",
+    "title": "Can RL Improve Generalization of LLM Agents? An Empirical Study",
+    "description": "Reinforcement fine-tuning (RFT) has shown promise for training LLM agents to perform multi-turn decision-making based on environment feedback. However, most existing evaluations remain largely in-domain: training and testing are conducted in the same environment or even on the same tasks. In real-world deployment, agents may operate in unseen environments with different background knowledge, observation spaces, and action interfaces. To characterize the generalization profile of RFT under such s",
+    "authors": "Zhiheng Xi, Xin Guo, Jiaqi Liu",
+    "url": "https://arxiv.org/abs/2603.12011v1",
+    "published": "2026-03-12T14:54:59Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11987v1",
+    "title": "LABSHIELD: A Multimodal Benchmark for Safety-Critical Reasoning and Planning in Scientific Laboratories",
+    "description": "Artificial intelligence is increasingly catalyzing scientific automation, with multimodal large language model (MLLM) agents evolving from lab assistants into self-driving lab operators. This transition imposes stringent safety requirements on laboratory environments, where fragile glassware, hazardous substances, and high-precision laboratory equipment render planning errors or misinterpreted risks potentially irreversible. However, the safety awareness and decision-making reliability of embodi",
+    "authors": "Qianpu Sun, Xiaowei Chi, Yuhan Rui",
+    "url": "https://arxiv.org/abs/2603.11987v1",
+    "published": "2026-03-12T14:38:13Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11975v1",
+    "title": "HomeSafe-Bench: Evaluating Vision-Language Models on Unsafe Action Detection for Embodied Agents in Household Scenarios",
+    "description": "The rapid evolution of embodied agents has accelerated the deployment of household robots in real-world environments. However, unlike structured industrial settings, household spaces introduce unpredictable safety risks, where system limitations such as perception latency and lack of common sense knowledge can lead to dangerous errors. Current safety evaluations, often restricted to static images, text, or general hazards, fail to adequately benchmark dynamic unsafe action detection in these spe",
+    "authors": "Jiayue Pu, Zhongxiang Sun, Zilu Zhang",
+    "url": "https://arxiv.org/abs/2603.11975v1",
+    "published": "2026-03-12T14:25:44Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11974v1",
+    "title": "Normative Common Ground Replication (NormCoRe): Replication-by-Translation for Studying Norms in Multi-agent AI",
+    "description": "In the late 2010s, the fashion trend NormCore framed sameness as a signal of belonging, illustrating how norms emerge through collective coordination. Today, similar forms of normative coordination can be observed in systems based on Multi-agent Artificial Intelligence (MAAI), as AI-based agents deliberate, negotiate, and converge on shared decisions in fairness-sensitive domains. Yet, existing empirical approaches often treat norms as targets for alignment or replication, implicitly assuming eq",
+    "authors": "Luca Deck, Simeon Allmendinger, Lucas M\u00fcller",
+    "url": "https://arxiv.org/abs/2603.11974v1",
+    "published": "2026-03-12T14:24:29Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11935v1",
+    "title": "MobileKernelBench: Can LLMs Write Efficient Kernels for Mobile Devices?",
+    "description": "Large language models (LLMs) have demonstrated remarkable capabilities in code generation, yet their potential for generating kernels specifically for mobile de- vices remains largely unexplored. In this work, we extend the scope of automated kernel generation to the mobile domain to investigate the central question: Can LLMs write efficient kernels for mobile devices? To enable systematic investigation, we introduce MobileKernelBench, a comprehensive evaluation framework comprising a benchmark ",
+    "authors": "Xingze Zou, Jing Wang, Yuhua Zheng",
+    "url": "https://arxiv.org/abs/2603.11935v1",
+    "published": "2026-03-12T13:48:11Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11914v1",
+    "title": "Understanding LLM Behavior When Encountering User-Supplied Harmful Content in Harmless Tasks",
+    "description": "Large Language Models (LLMs) are increasingly trained to align with human values, primarily focusing on task level, i.e., refusing to execute directly harmful tasks. However, a subtle yet crucial content-level ethical question is often overlooked: when performing a seemingly benign task, will LLMs -- like morally conscious human beings -- refuse to proceed when encountering harmful content in user-provided material? In this study, we aim to understand this content-level ethical question and syst",
+    "authors": "Junjie Chu, Yiting Qu, Ye Leng",
+    "url": "https://arxiv.org/abs/2603.11914v1",
+    "published": "2026-03-12T13:29:38Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  },
+  {
+    "threat_id": "ARX-2603.11872v1",
+    "title": "ELISA: An Interpretable Hybrid Generative AI Agent for Expression-Grounded Discovery in Single-Cell Genomics",
+    "description": "Translating single-cell RNA sequencing (scRNA-seq) data into mechanistic biological hypotheses remains a critical bottleneck, as agentic AI systems lack direct access to transcriptomic representations while expression foundation models remain opaque to natural language. Here we introduce ELISA (Embedding-Linked Interactive Single-cell Agent), an interpretable framework that unifies scGPT expression embeddings with BioBERT-based semantic retrieval and LLM-mediated interpretation for interactive s",
+    "authors": "Omar Coser",
+    "url": "https://arxiv.org/abs/2603.11872v1",
+    "published": "2026-03-12T12:46:22Z",
+    "source": "ArXiv",
+    "collected_at": "2026-03-15T10:15:35.269324"
+  }
+]

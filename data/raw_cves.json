@@ -1,0 +1,74 @@
+[
+  {
+    "threat_id": "CVE-2024-1001",
+    "title": "Prompt injection vulnerability in Claude API",
+    "description": "A prompt injection vulnerability allows attackers to bypass system instructions",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1001",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1003",
+    "title": "Jailbreak technique for LLM agents",
+    "description": "Novel jailbreak technique bypasses safety guardrails",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1003",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1004",
+    "title": "Data leakage via prompt injection",
+    "description": "Sensitive data can be extracted through crafted prompts",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1004",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1005",
+    "title": "Model extraction attack on LLM agents",
+    "description": "Attackers can extract model behavior through queries",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1005",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1006",
+    "title": "Adversarial prompt attack",
+    "description": "Crafted inputs cause unexpected model behavior",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1006",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1007",
+    "title": "Prompt injection in multi-agent systems",
+    "description": "Injection attack between agents in pipeline",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1007",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1008",
+    "title": "Agent memory poisoning",
+    "description": "Malicious input corrupts agent memory/context",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1008",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1009",
+    "title": "Indirect prompt injection via documents",
+    "description": "User-controlled documents injected into system prompts",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1009",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  },
+  {
+    "threat_id": "CVE-2024-1010",
+    "title": "LLM agent privilege escalation",
+    "description": "Agent gains unintended access to restricted tools",
+    "source": "CVE",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1010",
+    "collected_at": "2026-03-15T10:15:26.985081"
+  }
+]
