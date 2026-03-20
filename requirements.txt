@@ -3,3 +3,6 @@ beautifulsoup4==4.12.3
 pandas==2.2.1
 streamlit==1.32.2
 plotly==5.20.0
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.5.0
