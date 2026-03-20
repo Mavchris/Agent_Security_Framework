@@ -1,0 +1,132 @@
+[
+  {
+    "threat_id": "SHODAN-001",
+    "title": "Exposed LLM API without authentication",
+    "description": "OpenAI-like API exposed publicly without API key requirement",
+    "test_payload": "Try to access API without authentication headers",
+    "detection_keywords": [
+      "exposed",
+      "unauthenticated",
+      "api",
+      "public"
+    ],
+    "severity": "critical",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Authentication",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-002",
+    "title": "LLM Agent with verbose error messages",
+    "description": "Agent reveals internal structure in error responses",
+    "test_payload": "Send malformed requests to trigger verbose errors",
+    "detection_keywords": [
+      "error disclosure",
+      "verbose",
+      "information leak"
+    ],
+    "severity": "high",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Information Disclosure",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-003",
+    "title": "Unencrypted agent communication",
+    "description": "Agent API exposed over HTTP instead of HTTPS",
+    "test_payload": "Monitor network traffic for unencrypted prompts",
+    "detection_keywords": [
+      "http",
+      "unencrypted",
+      "mitm",
+      "sniffing"
+    ],
+    "severity": "critical",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Encryption",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-004",
+    "title": "Agent with default credentials",
+    "description": "Agent accessible with default username/password",
+    "test_payload": "Attempt login with common default credentials",
+    "detection_keywords": [
+      "default credentials",
+      "weak password"
+    ],
+    "severity": "critical",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Weak Credentials",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-005",
+    "title": "Debug mode enabled in production",
+    "description": "Agent running with debug/verbose logging enabled",
+    "test_payload": "Check for debug endpoints and verbose logging",
+    "detection_keywords": [
+      "debug",
+      "verbose logging",
+      "dev mode"
+    ],
+    "severity": "high",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Configuration",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-006",
+    "title": "Missing rate limiting on agent",
+    "description": "Agent API has no rate limiting protection",
+    "test_payload": "Send rapid requests to agent API",
+    "detection_keywords": [
+      "rate limit",
+      "dos",
+      "brute force"
+    ],
+    "severity": "high",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "DoS",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-007",
+    "title": "Agent exposes internal IP addresses",
+    "description": "Agent responses reveal internal network IPs",
+    "test_payload": "Analyze responses for internal IP patterns",
+    "detection_keywords": [
+      "internal ip",
+      "172.16",
+      "192.168",
+      "10.0"
+    ],
+    "severity": "medium",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Information Disclosure",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  },
+  {
+    "threat_id": "SHODAN-008",
+    "title": "Outdated agent framework version",
+    "description": "Agent running known vulnerable version",
+    "test_payload": "Check version headers and fingerprint agent",
+    "detection_keywords": [
+      "outdated",
+      "vulnerable",
+      "version"
+    ],
+    "severity": "high",
+    "source": "Shodan",
+    "url": "https://www.shodan.io",
+    "exposure_type": "Patching",
+    "collected_at": "2026-03-20T15:31:12.488606"
+  }
+]
