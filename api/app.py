@@ -246,7 +246,171 @@ async def get_sources():
             "status": "error"
         }
 
+# ============================================
+# MONITORING ENDPOINTS
+# ============================================
 
+import sys
+import os
+
+# Add parent directory to path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from monitoring.agent_monitor import AgentMonitor
+
+# Global monitor instance (in production, one per agent)
+monitor_instance = None
+
+@app.post("/monitoring/log-request")
+async def log_request(
+    agent_name: str,
+    prompt: str,
+    response: str,
+    user_id: str = None,
+    session_id: str = None
+):
+    """
+    Log a request for monitoring
+    
+    POST /monitoring/log-request
+    {
+        "agent_name": "MyAgent",
+        "prompt": "user input",
+        "response": "agent response",
+        "user_id": "user123",
+        "session_id": "session456"
+    }
+    """
+    
+    try:
+        # Initialize monitor if needed
+        global monitor_instance
+        if not monitor_instance or monitor_instance.agent_name != agent_name:
+            monitor_instance = AgentMonitor(agent_name=agent_name)
+        
+        # Log the request
+        log_entry = monitor_instance.log_request(
+            prompt=prompt,
+            response=response,
+            user_id=user_id,
+            session_id=session_id
+        )
+        
+        return {
+            "status": "logged",
+            "agent_name": agent_name,
+            "alert_triggered": log_entry['alert_triggered'],
+            "risk_level": log_entry['risk_level'],
+            "detected_threats": len(log_entry['detected_threats'])
+        }
+    
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
+@app.get("/monitoring/stats/{agent_name}")
+async def get_monitoring_stats(agent_name: str):
+    """
+    Get monitoring statistics for an agent
+    
+    GET /monitoring/stats/MyAgent
+    """
+    
+    try:
+        global monitor_instance
+        if not monitor_instance or monitor_instance.agent_name != agent_name:
+            monitor_instance = AgentMonitor(agent_name=agent_name)
+        
+        stats = monitor_instance.get_statistics()
+        
+        return {
+            "agent_name": agent_name,
+            "statistics": stats,
+            "status": "success"
+        }
+    
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
+@app.get("/monitoring/alerts/{agent_name}")
+async def get_monitoring_alerts(
+    agent_name: str,
+    limit: int = Query(10, ge=1, le=100)
+):
+    """
+    Get recent alerts for an agent
+    
+    GET /monitoring/alerts/MyAgent?limit=5
+    """
+    
+    try:
+        global monitor_instance
+        if not monitor_instance or monitor_instance.agent_name != agent_name:
+            monitor_instance = AgentMonitor(agent_name=agent_name)
+        
+        alerts = monitor_instance.alerts[-limit:]
+        
+        return {
+            "agent_name": agent_name,
+            "total_alerts": len(monitor_instance.alerts),
+            "recent_alerts": alerts,
+            "status": "success"
+        }
+    
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
+@app.get("/monitoring/health/{agent_name}")
+async def get_agent_health(agent_name: str):
+    """
+    Get health status of monitored agent
+    
+    GET /monitoring/health/MyAgent
+    """
+    
+    try:
+        global monitor_instance
+        if not monitor_instance or monitor_instance.agent_name != agent_name:
+            monitor_instance = AgentMonitor(agent_name=agent_name)
+        
+        stats = monitor_instance.get_statistics()
+        
+        # Determine health status
+        alert_rate = stats['alert_rate']
+        if alert_rate > 50:
+            health_status = "🔴 CRITICAL"
+        elif alert_rate > 30:
+            health_status = "🟠 WARNING"
+        elif alert_rate > 10:
+            health_status = "🟡 CAUTION"
+        else:
+            health_status = "🟢 HEALTHY"
+        
+        return {
+            "agent_name": agent_name,
+            "health_status": health_status,
+            "alert_rate": f"{alert_rate:.1f}%",
+            "total_requests": stats['total_requests_logged'],
+            "total_alerts": stats['total_alerts'],
+            "status": "success"
+        }
+    
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
