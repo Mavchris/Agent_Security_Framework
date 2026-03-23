@@ -15,7 +15,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Unknown",
     "campaign": "LLM Jailbreaks",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-002",
@@ -32,7 +32,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "APT-LLM",
     "campaign": "Operation Agent Compromise",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-003",
@@ -49,7 +49,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "State Actors",
     "campaign": "APT Campaign 2024",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-004",
@@ -66,7 +66,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Cybercriminal Groups",
     "campaign": "Model Extraction",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-005",
@@ -83,7 +83,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Lazarus Group",
     "campaign": "LLM-powered Malware",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-006",
@@ -100,7 +100,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Phishing Groups",
     "campaign": "LLM Phishing 2024",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-007",
@@ -117,7 +117,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Ransomware Groups",
     "campaign": "LLM Ransomware",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-008",
@@ -134,7 +134,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Information Warfare",
     "campaign": "Deepfake Ops",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-009",
@@ -151,7 +151,7 @@
     "url": "https://www.opencti.io",
     "threat_actor": "Social Engineering Groups",
     "campaign": "Automated SE 2024",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   },
   {
     "threat_id": "OPENCTI-010",
@@ -168,6 +168,6 @@
     "url": "https://www.opencti.io",
     "threat_actor": "APT Groups",
     "campaign": "Operation Data Theft",
-    "collected_at": "2026-03-20T15:31:12.490422"
+    "collected_at": "2026-03-23T22:00:19.901066"
   }
 ]

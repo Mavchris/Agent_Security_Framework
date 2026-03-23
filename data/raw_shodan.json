@@ -1,132 +1,412 @@
 [
   {
-    "threat_id": "SHODAN-001",
-    "title": "Exposed LLM API without authentication",
-    "description": "OpenAI-like API exposed publicly without API key requirement",
-    "test_payload": "Try to access API without authentication headers",
+    "threat_id": "CENSYS-1",
+    "title": "ChatGPT API exposed - API endpoint exposed",
+    "description": "Internet exposure detected: ChatGPT API exposed. Type: API endpoint exposed",
+    "test_payload": "Probe ChatGPT API exposed for API endpoint exposed",
     "detection_keywords": [
-      "exposed",
-      "unauthenticated",
-      "api",
-      "public"
+      "ChatGPT",
+      "API",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "API endpoint exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-2",
+    "title": "ChatGPT API exposed - Configuration file leaked",
+    "description": "Internet exposure detected: ChatGPT API exposed. Type: Configuration file leaked",
+    "test_payload": "Probe ChatGPT API exposed for Configuration file leaked",
+    "detection_keywords": [
+      "ChatGPT",
+      "API",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Configuration file leaked",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-3",
+    "title": "ChatGPT API exposed - Credentials in git history",
+    "description": "Internet exposure detected: ChatGPT API exposed. Type: Credentials in git history",
+    "test_payload": "Probe ChatGPT API exposed for Credentials in git history",
+    "detection_keywords": [
+      "ChatGPT",
+      "API",
+      "exposed"
     ],
     "severity": "critical",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Authentication",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Credentials in git history",
+    "collected_at": "2026-03-23T22:00:19.894464"
   },
   {
-    "threat_id": "SHODAN-002",
-    "title": "LLM Agent with verbose error messages",
-    "description": "Agent reveals internal structure in error responses",
-    "test_payload": "Send malformed requests to trigger verbose errors",
+    "threat_id": "CENSYS-4",
+    "title": "ChatGPT API exposed - Database backup exposed",
+    "description": "Internet exposure detected: ChatGPT API exposed. Type: Database backup exposed",
+    "test_payload": "Probe ChatGPT API exposed for Database backup exposed",
     "detection_keywords": [
-      "error disclosure",
-      "verbose",
-      "information leak"
-    ],
-    "severity": "high",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Information Disclosure",
-    "collected_at": "2026-03-20T15:31:12.488606"
-  },
-  {
-    "threat_id": "SHODAN-003",
-    "title": "Unencrypted agent communication",
-    "description": "Agent API exposed over HTTP instead of HTTPS",
-    "test_payload": "Monitor network traffic for unencrypted prompts",
-    "detection_keywords": [
-      "http",
-      "unencrypted",
-      "mitm",
-      "sniffing"
+      "ChatGPT",
+      "API",
+      "exposed"
     ],
     "severity": "critical",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Encryption",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Database backup exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
   },
   {
-    "threat_id": "SHODAN-004",
-    "title": "Agent with default credentials",
-    "description": "Agent accessible with default username/password",
-    "test_payload": "Attempt login with common default credentials",
+    "threat_id": "CENSYS-5",
+    "title": "ChatGPT API exposed - Internal service exposed",
+    "description": "Internet exposure detected: ChatGPT API exposed. Type: Internal service exposed",
+    "test_payload": "Probe ChatGPT API exposed for Internal service exposed",
     "detection_keywords": [
-      "default credentials",
-      "weak password"
+      "ChatGPT",
+      "API",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Internal service exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-6",
+    "title": "LLM endpoint exposed - API endpoint exposed",
+    "description": "Internet exposure detected: LLM endpoint exposed. Type: API endpoint exposed",
+    "test_payload": "Probe LLM endpoint exposed for API endpoint exposed",
+    "detection_keywords": [
+      "LLM",
+      "endpoint",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "API endpoint exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-7",
+    "title": "LLM endpoint exposed - Configuration file leaked",
+    "description": "Internet exposure detected: LLM endpoint exposed. Type: Configuration file leaked",
+    "test_payload": "Probe LLM endpoint exposed for Configuration file leaked",
+    "detection_keywords": [
+      "LLM",
+      "endpoint",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Configuration file leaked",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-8",
+    "title": "LLM endpoint exposed - Credentials in git history",
+    "description": "Internet exposure detected: LLM endpoint exposed. Type: Credentials in git history",
+    "test_payload": "Probe LLM endpoint exposed for Credentials in git history",
+    "detection_keywords": [
+      "LLM",
+      "endpoint",
+      "exposed"
     ],
     "severity": "critical",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Weak Credentials",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Credentials in git history",
+    "collected_at": "2026-03-23T22:00:19.894464"
   },
   {
-    "threat_id": "SHODAN-005",
-    "title": "Debug mode enabled in production",
-    "description": "Agent running with debug/verbose logging enabled",
-    "test_payload": "Check for debug endpoints and verbose logging",
+    "threat_id": "CENSYS-9",
+    "title": "LLM endpoint exposed - Database backup exposed",
+    "description": "Internet exposure detected: LLM endpoint exposed. Type: Database backup exposed",
+    "test_payload": "Probe LLM endpoint exposed for Database backup exposed",
     "detection_keywords": [
-      "debug",
-      "verbose logging",
-      "dev mode"
+      "LLM",
+      "endpoint",
+      "exposed"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Database backup exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-10",
+    "title": "LLM endpoint exposed - Internal service exposed",
+    "description": "Internet exposure detected: LLM endpoint exposed. Type: Internal service exposed",
+    "test_payload": "Probe LLM endpoint exposed for Internal service exposed",
+    "detection_keywords": [
+      "LLM",
+      "endpoint",
+      "exposed"
     ],
     "severity": "high",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Configuration",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Internal service exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
   },
   {
-    "threat_id": "SHODAN-006",
-    "title": "Missing rate limiting on agent",
-    "description": "Agent API has no rate limiting protection",
-    "test_payload": "Send rapid requests to agent API",
+    "threat_id": "CENSYS-11",
+    "title": "AI model credentials - API endpoint exposed",
+    "description": "Internet exposure detected: AI model credentials. Type: API endpoint exposed",
+    "test_payload": "Probe AI model credentials for API endpoint exposed",
     "detection_keywords": [
-      "rate limit",
-      "dos",
-      "brute force"
+      "AI",
+      "model",
+      "credentials"
     ],
     "severity": "high",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "DoS",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "API endpoint exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
   },
   {
-    "threat_id": "SHODAN-007",
-    "title": "Agent exposes internal IP addresses",
-    "description": "Agent responses reveal internal network IPs",
-    "test_payload": "Analyze responses for internal IP patterns",
+    "threat_id": "CENSYS-12",
+    "title": "AI model credentials - Configuration file leaked",
+    "description": "Internet exposure detected: AI model credentials. Type: Configuration file leaked",
+    "test_payload": "Probe AI model credentials for Configuration file leaked",
     "detection_keywords": [
-      "internal ip",
-      "172.16",
-      "192.168",
-      "10.0"
-    ],
-    "severity": "medium",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Information Disclosure",
-    "collected_at": "2026-03-20T15:31:12.488606"
-  },
-  {
-    "threat_id": "SHODAN-008",
-    "title": "Outdated agent framework version",
-    "description": "Agent running known vulnerable version",
-    "test_payload": "Check version headers and fingerprint agent",
-    "detection_keywords": [
-      "outdated",
-      "vulnerable",
-      "version"
+      "AI",
+      "model",
+      "credentials"
     ],
     "severity": "high",
-    "source": "Shodan",
-    "url": "https://www.shodan.io",
-    "exposure_type": "Patching",
-    "collected_at": "2026-03-20T15:31:12.488606"
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Configuration file leaked",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-13",
+    "title": "AI model credentials - Credentials in git history",
+    "description": "Internet exposure detected: AI model credentials. Type: Credentials in git history",
+    "test_payload": "Probe AI model credentials for Credentials in git history",
+    "detection_keywords": [
+      "AI",
+      "model",
+      "credentials"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Credentials in git history",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-14",
+    "title": "AI model credentials - Database backup exposed",
+    "description": "Internet exposure detected: AI model credentials. Type: Database backup exposed",
+    "test_payload": "Probe AI model credentials for Database backup exposed",
+    "detection_keywords": [
+      "AI",
+      "model",
+      "credentials"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Database backup exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-15",
+    "title": "AI model credentials - Internal service exposed",
+    "description": "Internet exposure detected: AI model credentials. Type: Internal service exposed",
+    "test_payload": "Probe AI model credentials for Internal service exposed",
+    "detection_keywords": [
+      "AI",
+      "model",
+      "credentials"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Internal service exposed",
+    "collected_at": "2026-03-23T22:00:19.894464"
+  },
+  {
+    "threat_id": "CENSYS-16",
+    "title": "Agent API key exposed - API endpoint exposed",
+    "description": "Internet exposure detected: Agent API key exposed. Type: API endpoint exposed",
+    "test_payload": "Probe Agent API key exposed for API endpoint exposed",
+    "detection_keywords": [
+      "Agent",
+      "API",
+      "key",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "API endpoint exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-17",
+    "title": "Agent API key exposed - Configuration file leaked",
+    "description": "Internet exposure detected: Agent API key exposed. Type: Configuration file leaked",
+    "test_payload": "Probe Agent API key exposed for Configuration file leaked",
+    "detection_keywords": [
+      "Agent",
+      "API",
+      "key",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Configuration file leaked",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-18",
+    "title": "Agent API key exposed - Credentials in git history",
+    "description": "Internet exposure detected: Agent API key exposed. Type: Credentials in git history",
+    "test_payload": "Probe Agent API key exposed for Credentials in git history",
+    "detection_keywords": [
+      "Agent",
+      "API",
+      "key",
+      "exposed"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Credentials in git history",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-19",
+    "title": "Agent API key exposed - Database backup exposed",
+    "description": "Internet exposure detected: Agent API key exposed. Type: Database backup exposed",
+    "test_payload": "Probe Agent API key exposed for Database backup exposed",
+    "detection_keywords": [
+      "Agent",
+      "API",
+      "key",
+      "exposed"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Database backup exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-20",
+    "title": "Agent API key exposed - Internal service exposed",
+    "description": "Internet exposure detected: Agent API key exposed. Type: Internal service exposed",
+    "test_payload": "Probe Agent API key exposed for Internal service exposed",
+    "detection_keywords": [
+      "Agent",
+      "API",
+      "key",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Internal service exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-21",
+    "title": "Machine learning service exposed - API endpoint exposed",
+    "description": "Internet exposure detected: Machine learning service exposed. Type: API endpoint exposed",
+    "test_payload": "Probe Machine learning service exposed for API endpoint exposed",
+    "detection_keywords": [
+      "Machine",
+      "learning",
+      "service",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "API endpoint exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-22",
+    "title": "Machine learning service exposed - Configuration file leaked",
+    "description": "Internet exposure detected: Machine learning service exposed. Type: Configuration file leaked",
+    "test_payload": "Probe Machine learning service exposed for Configuration file leaked",
+    "detection_keywords": [
+      "Machine",
+      "learning",
+      "service",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Configuration file leaked",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-23",
+    "title": "Machine learning service exposed - Credentials in git history",
+    "description": "Internet exposure detected: Machine learning service exposed. Type: Credentials in git history",
+    "test_payload": "Probe Machine learning service exposed for Credentials in git history",
+    "detection_keywords": [
+      "Machine",
+      "learning",
+      "service",
+      "exposed"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Credentials in git history",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-24",
+    "title": "Machine learning service exposed - Database backup exposed",
+    "description": "Internet exposure detected: Machine learning service exposed. Type: Database backup exposed",
+    "test_payload": "Probe Machine learning service exposed for Database backup exposed",
+    "detection_keywords": [
+      "Machine",
+      "learning",
+      "service",
+      "exposed"
+    ],
+    "severity": "critical",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Database backup exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
+  },
+  {
+    "threat_id": "CENSYS-25",
+    "title": "Machine learning service exposed - Internal service exposed",
+    "description": "Internet exposure detected: Machine learning service exposed. Type: Internal service exposed",
+    "test_payload": "Probe Machine learning service exposed for Internal service exposed",
+    "detection_keywords": [
+      "Machine",
+      "learning",
+      "service",
+      "exposed"
+    ],
+    "severity": "high",
+    "source": "Censys",
+    "url": "https://censys.io",
+    "exposure_type": "Internal service exposed",
+    "collected_at": "2026-03-23T22:00:19.899970"
   }
 ]

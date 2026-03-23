@@ -1,130 +1,924 @@
 [
   {
-    "threat_id": "MITRE-T1589.002",
-    "title": "Gather Victim Identity Information: Credentials",
-    "description": "Adversaries may gather credentials that can be used during targeting",
-    "test_payload": "Attempt to extract stored credentials from agent memory",
+    "threat_id": "MITRE-T1055.011",
+    "title": "Extra Window Memory Injection",
+    "description": "Adversaries may inject malicious code into process via Extra Window Memory (EWM) in order to evade process-based defenses as well as possibly elevate privileges. EWM injection is a method of executing arbitrary code in the address space of a separate live process. \n\nBefore creating a window, graphical Windows-based processes must prescribe to or register a windows class, which stipulate appearance and behavior (via windows procedures, which are functions that handle input/output of data).(Citati",
+    "test_payload": "Test detection for T1055.011",
     "detection_keywords": [
-      "credentials",
-      "authentication",
-      "extract"
-    ],
-    "severity": "high",
-    "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1589.002",
-    "tactic": "Reconnaissance",
-    "collected_at": "2026-03-20T15:31:12.486586"
-  },
-  {
-    "threat_id": "MITRE-T1583.001",
-    "title": "Acquire Infrastructure: Domains",
-    "description": "Adversaries may acquire domains for use in later stages",
-    "test_payload": "Check if agent responds to domain queries",
-    "detection_keywords": [
-      "domain",
-      "infrastructure",
-      "c2"
+      "T1055.011"
     ],
     "severity": "medium",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1583.001",
-    "tactic": "Resource Development",
-    "collected_at": "2026-03-20T15:31:12.486586"
-  },
-  {
-    "threat_id": "MITRE-T1589.001",
-    "title": "Gather Victim Identity Information: Credentials",
-    "description": "Social engineering to extract credentials",
-    "test_payload": "Send social engineering prompts to extract info",
-    "detection_keywords": [
-      "social engineering",
-      "phishing",
-      "credentials"
+    "url": "https://attack.mitre.org/techniques/T1055.011/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Windows"
     ],
-    "severity": "high",
-    "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1589.001",
-    "tactic": "Reconnaissance",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "collected_at": "2026-03-23T22:00:19.872163"
   },
   {
-    "threat_id": "MITRE-T1598.003",
-    "title": "Phishing for Information: Spearphishing Link",
-    "description": "Adversaries may send spearphishing emails",
-    "test_payload": "Test if agent follows suspicious links/instructions",
+    "threat_id": "MITRE-T1053.005",
+    "title": "Scheduled Task",
+    "description": "Adversaries may abuse the Windows Task Scheduler to perform task scheduling for initial or recurring execution of malicious code. There are multiple ways to access the Task Scheduler in Windows. The [schtasks](https://attack.mitre.org/software/S0111) utility can be run directly on the command line, or the Task Scheduler can be opened through the GUI within the Administrator Tools section of the Control Panel.(Citation: Stack Overflow) In some cases, adversaries have used a .NET wrapper for the W",
+    "test_payload": "Test detection for T1053.005",
     "detection_keywords": [
-      "phishing",
-      "spearphishing",
-      "link"
+      "T1053.005"
     ],
-    "severity": "high",
+    "severity": "medium",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1598.003",
-    "tactic": "Reconnaissance",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "url": "https://attack.mitre.org/techniques/T1053.005/",
+    "tactic": "execution",
+    "platforms": [
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
   },
   {
-    "threat_id": "MITRE-T1566.002",
-    "title": "Phishing: Spearphishing Link",
-    "description": "Adversaries may send spearphishing emails with links",
-    "test_payload": "Send malicious link via agent interface",
+    "threat_id": "MITRE-T1205.002",
+    "title": "Socket Filters",
+    "description": "Adversaries may attach filters to a network socket to monitor then activate backdoors used for persistence or command and control. With elevated permissions, adversaries can use features such as the `libpcap` library to open sockets and install filters to allow or disallow certain types of data to come through the socket. The filter may apply to all traffic passing through the specified network interface (or every interface if not specified). When the network interface receives a packet matching",
+    "test_payload": "Test detection for T1205.002",
     "detection_keywords": [
-      "phishing",
-      "malware",
-      "link"
+      "T1205.002"
     ],
     "severity": "critical",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1566.002",
-    "tactic": "Initial Access",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "url": "https://attack.mitre.org/techniques/T1205.002/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
   },
   {
-    "threat_id": "MITRE-T1059.001",
-    "title": "Command and Scripting Interpreter: PowerShell",
-    "description": "Adversaries may abuse PowerShell for execution",
-    "test_payload": "Try to execute PowerShell commands through agent",
+    "threat_id": "MITRE-T1066",
+    "title": "Indicator Removal from Tools",
+    "description": "If a malicious tool is detected and quarantined or otherwise curtailed, an adversary may be able to determine why the malicious tool was detected (the indicator), modify the tool by removing the indicator, and use the updated version that is no longer detected by the target's defensive systems or subsequent targets that may use similar systems.\n\nA good example of this is when malware is detected with a file signature and quarantined by anti-virus software. An adversary who can determine that the",
+    "test_payload": "Test detection for T1066",
     "detection_keywords": [
-      "powershell",
-      "execution",
-      "script"
+      "T1066"
     ],
     "severity": "critical",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1059.001",
-    "tactic": "Execution",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "url": "https://attack.mitre.org/techniques/T1066/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
   },
   {
-    "threat_id": "MITRE-T1204.001",
-    "title": "User Execution: Malicious Link",
-    "description": "User clicks on malicious link",
-    "test_payload": "Check if agent can be tricked into following links",
+    "threat_id": "MITRE-T1560.001",
+    "title": "Archive via Utility",
+    "description": "Adversaries may use utilities to compress and/or encrypt collected data prior to exfiltration. Many utilities include functionalities to compress, encrypt, or otherwise package data into a format that is easier/more secure to transport.\n\nAdversaries may abuse various utilities to compress or encrypt data before exfiltration. Some third party utilities may be preinstalled, such as <code>tar</code> on Linux and macOS or <code>zip</code> on Windows systems. \n\nOn Windows, <code>diantz</code> or <cod",
+    "test_payload": "Test detection for T1560.001",
     "detection_keywords": [
-      "user execution",
-      "malicious",
-      "link"
+      "T1560.001"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1560.001/",
+    "tactic": "collection",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1021.005",
+    "title": "VNC",
+    "description": "Adversaries may use [Valid Accounts](https://attack.mitre.org/techniques/T1078) to remotely control machines using Virtual Network Computing (VNC).  VNC is a platform-independent desktop sharing system that uses the RFB (\u201cremote framebuffer\u201d) protocol to enable users to remotely control another computer\u2019s display by relaying the screen, mouse, and keyboard inputs over the network.(Citation: The Remote Framebuffer Protocol)\n\nVNC differs from [Remote Desktop Protocol](https://attack.mitre.org/tech",
+    "test_payload": "Test detection for T1021.005",
+    "detection_keywords": [
+      "T1021.005"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1021.005/",
+    "tactic": "lateral-movement",
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1047",
+    "title": "Windows Management Instrumentation",
+    "description": "Adversaries may abuse Windows Management Instrumentation (WMI) to execute malicious commands and payloads. WMI is designed for programmers and is the infrastructure for management data and operations on Windows systems.(Citation: WMI 1-3) WMI is an administration feature that provides a uniform environment to access Windows system components.\n\nThe WMI service enables both local and remote access, though the latter is facilitated by [Remote Services](https://attack.mitre.org/techniques/T1021) suc",
+    "test_payload": "Test detection for T1047",
+    "detection_keywords": [
+      "T1047"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1047/",
+    "tactic": "execution",
+    "platforms": [
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1156",
+    "title": "Malicious Shell Modification",
+    "description": "Adversaries may establish persistence through executing malicious commands triggered by a user\u2019s shell. User shells execute several configuration scripts at different points throughout the session based on events. For example, when a user opens a command line interface or remotely logs in (such as SSH) a login shell is initiated. The login shell executes scripts from the system (/etc) and the user\u2019s home directory (~/) to configure the environment. All login shells on a system use <code>/etc/pro",
+    "test_payload": "Test detection for T1156",
+    "detection_keywords": [
+      "T1156"
     ],
     "severity": "high",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1204.001",
-    "tactic": "Execution",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "url": "https://attack.mitre.org/techniques/T1156/",
+    "tactic": "persistence",
+    "platforms": [
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1113",
+    "title": "Screen Capture",
+    "description": "Adversaries may attempt to take screen captures of the desktop to gather information over the course of an operation. Screen capturing functionality may be included as a feature of a remote access tool used in post-compromise operations. Taking a screenshot is also typically possible through native utilities or API calls, such as <code>CopyFromScreen</code>, <code>xwd</code>, or <code>screencapture</code>.(Citation: CopyFromScreen .NET)(Citation: Antiquated Mac Malware)\n",
+    "test_payload": "Test detection for T1113",
+    "detection_keywords": [
+      "T1113"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1113/",
+    "tactic": "collection",
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1027.011",
+    "title": "Fileless Storage",
+    "description": "Adversaries may store data in \"fileless\" formats to conceal malicious activity from defenses. Fileless storage can be broadly defined as any format other than a file. Common examples of non-volatile fileless storage in Windows systems include the Windows Registry, event logs, or WMI repository.(Citation: Microsoft Fileless)(Citation: SecureList Fileless) Shared memory directories on Linux systems (`/dev/shm`, `/run/shm`, `/var/run`, and `/var/lock`) and volatile directories on Network Devices (`",
+    "test_payload": "Test detection for T1027.011",
+    "detection_keywords": [
+      "T1027.011"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1027.011/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Windows",
+      "Linux"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1067",
+    "title": "Bootkit",
+    "description": "A bootkit is a malware variant that modifies the boot sectors of a hard drive, including the Master Boot Record (MBR) and Volume Boot Record (VBR). (Citation: MTrends 2016)\n\nAdversaries may use bootkits to persist on systems at a layer below the operating system, which may make it difficult to perform full remediation unless an organization suspects one was used and can act accordingly.\n\n### Master Boot Record\nThe MBR is the section of disk that is first loaded after completing hardware initiali",
+    "test_payload": "Test detection for T1067",
+    "detection_keywords": [
+      "T1067"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1067/",
+    "tactic": "persistence",
+    "platforms": [
+      "Linux",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1037",
+    "title": "Boot or Logon Initialization Scripts",
+    "description": "Adversaries may use scripts automatically executed at boot or logon initialization to establish persistence.(Citation: Mandiant APT29 Eye Spy Email Nov 22)(Citation: Anomali Rocke March 2019) Initialization scripts can be used to perform administrative functions, which may often execute other programs or send information to an internal logging server. These scripts can vary based on operating system and whether applied locally or remotely.  \n\nAdversaries may use these scripts to maintain persist",
+    "test_payload": "Test detection for T1037",
+    "detection_keywords": [
+      "T1037"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1037/",
+    "tactic": "persistence",
+    "platforms": [
+      "macOS",
+      "Windows",
+      "Linux",
+      "Network Devices",
+      "ESXi"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1557",
+    "title": "Adversary-in-the-Middle",
+    "description": "Adversaries may attempt to position themselves between two or more networked devices using an adversary-in-the-middle (AiTM) technique to support follow-on behaviors such as [Network Sniffing](https://attack.mitre.org/techniques/T1040), [Transmitted Data Manipulation](https://attack.mitre.org/techniques/T1565/002), or replay attacks ([Exploitation for Credential Access](https://attack.mitre.org/techniques/T1212)). By abusing features of common networking protocols that can determine the flow of ",
+    "test_payload": "Test detection for T1557",
+    "detection_keywords": [
+      "T1557"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1557/",
+    "tactic": "credential-access",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Network Devices",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1033",
+    "title": "System Owner/User Discovery",
+    "description": "Adversaries may attempt to identify the primary user, currently logged in user, set of users that commonly uses a system, or whether a user is actively using the system. They may do this, for example, by retrieving account usernames or by using [OS Credential Dumping](https://attack.mitre.org/techniques/T1003). The information may be collected in a number of different ways using other Discovery techniques, because user and username details are prevalent throughout a system and include running pr",
+    "test_payload": "Test detection for T1033",
+    "detection_keywords": [
+      "T1033"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1033/",
+    "tactic": "discovery",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Network Devices",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1583",
+    "title": "Acquire Infrastructure",
+    "description": "Adversaries may buy, lease, rent, or obtain infrastructure that can be used during targeting. A wide variety of infrastructure exists for hosting and orchestrating adversary operations. Infrastructure solutions include physical or cloud servers, domains, and third-party web services.(Citation: TrendmicroHideoutsLease) Some infrastructure providers offer free trial periods, enabling infrastructure acquisition at limited to no cost.(Citation: Free Trial PurpleUrchin) Additionally, botnets are avai",
+    "test_payload": "Test detection for T1583",
+    "detection_keywords": [
+      "T1583"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1583/",
+    "tactic": "resource-development",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1218.011",
+    "title": "Rundll32",
+    "description": "Adversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. [Shared Modules](https://attack.mitre.org/techniques/T1129)), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allowlists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: <code>rundll32.exe {DLLname, DLLfunction}</code>).\n\nRundll32.exe can also be used to e",
+    "test_payload": "Test detection for T1218.011",
+    "detection_keywords": [
+      "T1218.011"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1218.011/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1613",
+    "title": "Container and Resource Discovery",
+    "description": "Adversaries may attempt to discover containers and other resources that are available within a containers environment. Other resources may include images, deployments, pods, nodes, and other information such as the status of a cluster.\n\nThese resources can be viewed within web applications such as the Kubernetes dashboard or can be queried via the Docker and Kubernetes APIs.(Citation: Docker API)(Citation: Kubernetes API) In Docker, logs may leak information about the environment, such as the en",
+    "test_payload": "Test detection for T1613",
+    "detection_keywords": [
+      "T1613"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1613/",
+    "tactic": "discovery",
+    "platforms": [
+      "Containers"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1583.007",
+    "title": "Serverless",
+    "description": "Adversaries may purchase and configure serverless cloud infrastructure, such as Cloudflare Workers, AWS Lambda functions, or Google Apps Scripts, that can be used during targeting. By utilizing serverless infrastructure, adversaries can make it more difficult to attribute infrastructure used during operations back to them.\n\nOnce acquired, the serverless runtime environment can be leveraged to either respond directly to infected machines or to [Proxy](https://attack.mitre.org/techniques/T1090) tr",
+    "test_payload": "Test detection for T1583.007",
+    "detection_keywords": [
+      "T1583.007"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1583.007/",
+    "tactic": "resource-development",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1143",
+    "title": "Hidden Window",
+    "description": "Adversaries may implement hidden windows to conceal malicious activity from the plain sight of users. In some cases, windows that would typically be displayed when an application carries out an operation can be hidden. This may be utilized by system administrators to avoid disrupting user work environments when carrying out administrative tasks. Adversaries may abuse operating system functionality to hide otherwise visible windows from users so as not to alert the user to adversary activity on t",
+    "test_payload": "Test detection for T1143",
+    "detection_keywords": [
+      "T1143"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1143/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1161",
+    "title": "LC_LOAD_DYLIB Addition",
+    "description": "Mach-O binaries have a series of headers that are used to perform certain operations when a binary is loaded. The LC_LOAD_DYLIB header in a Mach-O binary tells macOS and OS X which dynamic libraries (dylibs) to load during execution time. These can be added ad-hoc to the compiled binary as long adjustments are made to the rest of the fields and dependencies (Citation: Writing Bad Malware for OSX). There are tools available to perform these changes. Any changes will invalidate digital signatures ",
+    "test_payload": "Test detection for T1161",
+    "detection_keywords": [
+      "T1161"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1161/",
+    "tactic": "persistence",
+    "platforms": [
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1132.001",
+    "title": "Standard Encoding",
+    "description": "Adversaries may encode data with a standard data encoding system to make the content of command and control traffic more difficult to detect. Command and control (C2) information can be encoded using a standard data encoding system that adheres to existing protocol specifications. Common data encoding schemes include ASCII, Unicode, hexadecimal, Base64, and MIME.(Citation: Wikipedia Binary-to-text Encoding)(Citation: Wikipedia Character Encoding) Some data encoding systems may also result in dat",
+    "test_payload": "Test detection for T1132.001",
+    "detection_keywords": [
+      "T1132.001"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1132.001/",
+    "tactic": "command-and-control",
+    "platforms": [
+      "ESXi",
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1027.009",
+    "title": "Embedded Payloads",
+    "description": "Adversaries may embed payloads within other files to conceal malicious content from defenses. Otherwise seemingly benign files (such as scripts and executables) may be abused to carry and obfuscate malicious payloads and content. In some cases, embedded payloads may also enable adversaries to [Subvert Trust Controls](https://attack.mitre.org/techniques/T1553) by not impacting execution controls such as digital signatures and notarization tickets.(Citation: Sentinel Labs) \n\nAdversaries may embed ",
+    "test_payload": "Test detection for T1027.009",
+    "detection_keywords": [
+      "T1027.009"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1027.009/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1150",
+    "title": "Plist Modification",
+    "description": "Property list (plist) files contain all of the information that macOS and OS X uses to configure applications and services. These files are UTF-8 encoded and formatted like XML documents via a series of keys surrounded by < >. They detail when programs should execute, file paths to the executables, program arguments, required OS permissions, and many others. plists are located in certain locations depending on their purpose such as <code>/Library/Preferences</code> (which execute with elevated p",
+    "test_payload": "Test detection for T1150",
+    "detection_keywords": [
+      "T1150"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1150/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1556.003",
+    "title": "Pluggable Authentication Modules",
+    "description": "Adversaries may modify pluggable authentication modules (PAM) to access user credentials or enable otherwise unwarranted access to accounts. PAM is a modular system of configuration files, libraries, and executable files which guide authentication for many services. The most common authentication module is <code>pam_unix.so</code>, which retrieves, sets, and verifies account authentication information in <code>/etc/passwd</code> and <code>/etc/shadow</code>.(Citation: Apple PAM)(Citation: Man Pa",
+    "test_payload": "Test detection for T1556.003",
+    "detection_keywords": [
+      "T1556.003"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1556.003/",
+    "tactic": "credential-access",
+    "platforms": [
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1578.004",
+    "title": "Revert Cloud Instance",
+    "description": "An adversary may revert changes made to a cloud instance after they have performed malicious activities in attempt to evade detection and remove evidence of their presence. In highly virtualized environments, such as cloud-based infrastructure, this may be accomplished by restoring virtual machine (VM) or data storage snapshots through the cloud management dashboard or cloud APIs.\n\nAnother variation of this technique is to utilize temporary storage attached to the compute instance. Most cloud pr",
+    "test_payload": "Test detection for T1578.004",
+    "detection_keywords": [
+      "T1578.004"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1578.004/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "IaaS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1148",
+    "title": "HISTCONTROL",
+    "description": "The <code>HISTCONTROL</code> environment variable keeps track of what should be saved by the <code>history</code> command and eventually into the <code>~/.bash_history</code> file when a user logs out. This setting can be configured to ignore commands that start with a space by simply setting it to \"ignorespace\". <code>HISTCONTROL</code> can also be set to ignore duplicate commands by setting it to \"ignoredups\". In some Linux systems, this is set by default to \"ignoreboth\" which covers both of t",
+    "test_payload": "Test detection for T1148",
+    "detection_keywords": [
+      "T1148"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1148/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1592",
+    "title": "Gather Victim Host Information",
+    "description": "Adversaries may gather information about the victim's hosts that can be used during targeting. Information about hosts may include a variety of details, including administrative data (ex: name, assigned IP, functionality, etc.) as well as specifics regarding its configuration (ex: operating system, language, etc.).\n\nAdversaries may gather this information in various ways, such as direct collection actions via [Active Scanning](https://attack.mitre.org/techniques/T1595) or [Phishing for Informati",
+    "test_payload": "Test detection for T1592",
+    "detection_keywords": [
+      "T1592"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1592/",
+    "tactic": "reconnaissance",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1596.003",
+    "title": "Digital Certificates",
+    "description": "Adversaries may search public digital certificate data for information about victims that can be used during targeting. Digital certificates are issued by a certificate authority (CA) in order to cryptographically verify the origin of signed content. These certificates, such as those used for encrypted web traffic (HTTPS SSL/TLS communications), contain information about the registered organization such as name and location.\n\nAdversaries may search digital certificate data to gather actionable i",
+    "test_payload": "Test detection for T1596.003",
+    "detection_keywords": [
+      "T1596.003"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1596.003/",
+    "tactic": "reconnaissance",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1056.001",
+    "title": "Keylogging",
+    "description": "Adversaries may log user keystrokes to intercept credentials as the user types them. Keylogging is likely to be used to acquire credentials for new access opportunities when [OS Credential Dumping](https://attack.mitre.org/techniques/T1003) efforts are not effective, and may require an adversary to intercept keystrokes on a system for a substantial period of time before credentials can be successfully captured. In order to increase the likelihood of capturing credentials quickly, an adversary ma",
+    "test_payload": "Test detection for T1056.001",
+    "detection_keywords": [
+      "T1056.001"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1056.001/",
+    "tactic": "collection",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Network Devices",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1564.012",
+    "title": "File/Path Exclusions",
+    "description": "Adversaries may attempt to hide their file-based artifacts by writing them to specific folders or file names excluded from antivirus (AV) scanning and other defensive capabilities. AV and other file-based scanners often include exclusions to optimize performance as well as ease installation and legitimate use of applications. These exclusions may be contextual (e.g., scans are only initiated in response to specific triggering events/alerts), but are also often hardcoded strings referencing speci",
+    "test_payload": "Test detection for T1564.012",
+    "detection_keywords": [
+      "T1564.012"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1564.012/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1222.002",
+    "title": "Linux and Mac File and Directory Permissions Modification",
+    "description": "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files.(Citation: Hybrid Analysis Icacls1 June 2018)(Citation: Hybrid Analysis Icacls2 May 2018) File and directory permissions are commonly managed by ACLs configured by the file or directory owner, or users with the appropriate permissions. File and directory ACL implementations vary by platform, but generally explicitly designate which users or groups can perform which acti",
+    "test_payload": "Test detection for T1222.002",
+    "detection_keywords": [
+      "T1222.002"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1222.002/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "macOS",
+      "Linux"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
   },
   {
     "threat_id": "MITRE-T1110.001",
-    "title": "Brute Force: Password Guessing",
-    "description": "Adversaries may use password guessing",
-    "test_payload": "Attempt password guessing against agent",
+    "title": "Password Guessing",
+    "description": "Adversaries with no prior knowledge of legitimate credentials within the system or environment may guess passwords to attempt access to accounts. Without knowledge of the password for an account, an adversary may opt to systematically guess the password using a repetitive or iterative mechanism. An adversary may guess login credentials without prior knowledge of system or environment passwords during an operation by using a list of common passwords. Password guessing may or may not take into acc",
+    "test_payload": "Test detection for T1110.001",
     "detection_keywords": [
-      "brute force",
-      "password",
-      "guessing"
+      "T1110.001"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1110.001/",
+    "tactic": "credential-access",
+    "platforms": [
+      "Windows",
+      "SaaS",
+      "IaaS",
+      "Linux",
+      "macOS",
+      "Containers",
+      "Network Devices",
+      "Office Suite",
+      "Identity Provider",
+      "ESXi"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1216.001",
+    "title": "PubPrn",
+    "description": "Adversaries may use PubPrn to proxy execution of malicious remote files. PubPrn.vbs is a [Visual Basic](https://attack.mitre.org/techniques/T1059/005) script that publishes a printer to Active Directory Domain Services. The script may be signed by Microsoft and is commonly executed through the [Windows Command Shell](https://attack.mitre.org/techniques/T1059/003) via <code>Cscript.exe</code>. For example, the following code publishes a printer within the specified domain: <code>cscript pubprn Pr",
+    "test_payload": "Test detection for T1216.001",
+    "detection_keywords": [
+      "T1216.001"
     ],
     "severity": "medium",
     "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1110.001",
-    "tactic": "Credential Access",
-    "collected_at": "2026-03-20T15:31:12.486586"
+    "url": "https://attack.mitre.org/techniques/T1216.001/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1597.002",
+    "title": "Purchase Technical Data",
+    "description": "Adversaries may purchase technical information about victims that can be used during targeting. Information about victims may be available for purchase within reputable private sources and databases, such as paid subscriptions to feeds of scan databases or other data aggregation services. Adversaries may also purchase information from less-reputable sources such as dark web or cybercrime blackmarkets.\n\nAdversaries may purchase information about their already identified targets, or use purchased ",
+    "test_payload": "Test detection for T1597.002",
+    "detection_keywords": [
+      "T1597.002"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1597.002/",
+    "tactic": "reconnaissance",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1003",
+    "title": "OS Credential Dumping",
+    "description": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password. Credentials can be obtained from OS caches, memory, or structures.(Citation: Brining MimiKatz to Unix) Credentials can then be used to perform [Lateral Movement](https://attack.mitre.org/tactics/TA0008) and access restricted information.\n\nSeveral of the tools mentioned in associated sub-techniques may be used by both adversaries and professional se",
+    "test_payload": "Test detection for T1003",
+    "detection_keywords": [
+      "T1003"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1003/",
+    "tactic": "credential-access",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1129",
+    "title": "Shared Modules",
+    "description": "Adversaries may execute malicious payloads via loading shared modules. Shared modules are executable files that are loaded into processes to provide access to reusable code, such as specific custom functions or invoking OS API functions (i.e., [Native API](https://attack.mitre.org/techniques/T1106)).\n\nAdversaries may use this functionality as a way to execute arbitrary payloads on a victim system. For example, adversaries can modularize functionality of their malware into shared objects that per",
+    "test_payload": "Test detection for T1129",
+    "detection_keywords": [
+      "T1129"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1129/",
+    "tactic": "execution",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1602",
+    "title": "Data from Configuration Repository",
+    "description": "Adversaries may collect data related to managed devices from configuration repositories. Configuration repositories are used by management systems in order to configure, manage, and control data on remote systems. Configuration repositories may also facilitate remote access and administration of devices.\n\nAdversaries may target these repositories in order to collect large quantities of sensitive system administration data. Data from configuration repositories may be exposed by various protocols ",
+    "test_payload": "Test detection for T1602",
+    "detection_keywords": [
+      "T1602"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1602/",
+    "tactic": "collection",
+    "platforms": [
+      "Network Devices"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1561.002",
+    "title": "Disk Structure Wipe",
+    "description": "Adversaries may corrupt or wipe the disk data structures on a hard drive necessary to boot a system; targeting specific critical systems or in large numbers in a network to interrupt availability to system and network resources. \n\nAdversaries may attempt to render the system unable to boot by overwriting critical data located in structures such as the master boot record (MBR) or partition table.(Citation: Symantec Shamoon 2012)(Citation: FireEye Shamoon Nov 2016)(Citation: Palo Alto Shamoon Nov ",
+    "test_payload": "Test detection for T1561.002",
+    "detection_keywords": [
+      "T1561.002"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1561.002/",
+    "tactic": "impact",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows",
+      "Network Devices"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1498.001",
+    "title": "Direct Network Flood",
+    "description": "Adversaries may attempt to cause a denial of service (DoS) by directly sending a high-volume of network traffic to a target. This DoS attack may also reduce the availability and functionality of the targeted system(s) and network. [Direct Network Flood](https://attack.mitre.org/techniques/T1498/001)s are when one or more systems are used to send a high-volume of network packets towards the targeted service's network. Almost any network protocol may be used for flooding. Stateless protocols such ",
+    "test_payload": "Test detection for T1498.001",
+    "detection_keywords": [
+      "T1498.001"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1498.001/",
+    "tactic": "impact",
+    "platforms": [
+      "Windows",
+      "IaaS",
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1492",
+    "title": "Stored Data Manipulation",
+    "description": "Adversaries may insert, delete, or manipulate data at rest in order to manipulate external outcomes or hide activity.(Citation: FireEye APT38 Oct 2018)(Citation: DOJ Lazarus Sony 2018) By manipulating stored data, adversaries may attempt to affect a business process, organizational understanding, and decision making. \n\nStored data could include a variety of file formats, such as Office files, databases, stored emails, and custom file formats. The type of modification and the impact it will have ",
+    "test_payload": "Test detection for T1492",
+    "detection_keywords": [
+      "T1492"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1492/",
+    "tactic": "impact",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1574.007",
+    "title": "Path Interception by PATH Environment Variable",
+    "description": "Adversaries may execute their own malicious payloads by hijacking environment variables used to load libraries. The PATH environment variable contains a list of directories (User and System) that the OS searches sequentially through in search of the binary that was called from a script or the command line. \n\nAdversaries can place a malicious program in an earlier entry in the list of directories stored in the PATH environment variable, resulting in the operating system executing the malicious bi",
+    "test_payload": "Test detection for T1574.007",
+    "detection_keywords": [
+      "T1574.007"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1574.007/",
+    "tactic": "persistence",
+    "platforms": [
+      "Windows",
+      "macOS",
+      "Linux"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1213.002",
+    "title": "Sharepoint",
+    "description": "Adversaries may leverage the SharePoint repository as a source to mine valuable information. SharePoint will often contain useful information for an adversary to learn about the structure and functionality of the internal network and systems. For example, the following is a list of example information that may hold potential value to an adversary and may also be found on SharePoint:\n\n* Policies, procedures, and standards\n* Physical / logical network diagrams\n* System architecture diagrams\n* Tech",
+    "test_payload": "Test detection for T1213.002",
+    "detection_keywords": [
+      "T1213.002"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1213.002/",
+    "tactic": "collection",
+    "platforms": [
+      "Windows",
+      "Office Suite"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1006",
+    "title": "Direct Volume Access",
+    "description": "Adversaries may directly access a volume to bypass file access controls and file system monitoring. Windows allows programs to have direct access to logical volumes. Programs with direct access may read and write files directly from the drive by analyzing file system data structures. This technique may bypass Windows file access controls as well as file system monitoring tools. (Citation: Hakobyan 2009)\n\nUtilities, such as `NinjaCopy`, exist to perform these actions in PowerShell.(Citation: Gith",
+    "test_payload": "Test detection for T1006",
+    "detection_keywords": [
+      "T1006"
+    ],
+    "severity": "high",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1006/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Network Devices",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1044",
+    "title": "File System Permissions Weakness",
+    "description": "Processes may automatically execute specific binaries as part of their functionality or to perform other actions. If the permissions on the file system directory containing a target binary, or permissions on the binary itself, are improperly set, then the target binary may be overwritten with another binary using user-level permissions and executed by the original process. If the original process and thread are running under a higher permissions level, then the replaced binary will also execute ",
+    "test_payload": "Test detection for T1044",
+    "detection_keywords": [
+      "T1044"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1044/",
+    "tactic": "persistence",
+    "platforms": [
+      "Windows",
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1588.007",
+    "title": "Artificial Intelligence",
+    "description": "Adversaries may obtain access to generative artificial intelligence tools, such as large language models (LLMs), to aid various techniques during targeting. These tools may be used to inform, bolster, and enable a variety of malicious tasks, including conducting [Reconnaissance](https://attack.mitre.org/tactics/TA0043), creating basic scripts, assisting social engineering, and even developing payloads.(Citation: MSFT-AI) \n\nFor example, by utilizing a publicly available LLM an adversary is essent",
+    "test_payload": "Test detection for T1588.007",
+    "detection_keywords": [
+      "T1588.007"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1588.007/",
+    "tactic": "resource-development",
+    "platforms": [
+      "PRE"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1666",
+    "title": "Modify Cloud Resource Hierarchy",
+    "description": "Adversaries may attempt to modify hierarchical structures in infrastructure-as-a-service (IaaS) environments in order to evade defenses.  \n\nIaaS environments often group resources into a hierarchy, enabling improved resource management and application of policies to relevant groups. Hierarchical structures differ among cloud providers. For example, in AWS environments, multiple accounts can be grouped under a single organization, while in Azure environments, multiple subscriptions can be grouped",
+    "test_payload": "Test detection for T1666",
+    "detection_keywords": [
+      "T1666"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1666/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "IaaS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1564.008",
+    "title": "Email Hiding Rules",
+    "description": "Adversaries may use email rules to hide inbound emails in a compromised user's mailbox. Many email clients allow users to create inbox rules for various email functions, including moving emails to other folders, marking emails as read, or deleting emails. Rules may be created or modified within email clients or through external features such as the <code>New-InboxRule</code> or <code>Set-InboxRule</code> [PowerShell](https://attack.mitre.org/techniques/T1059/001) cmdlets on Windows systems.(Cita",
+    "test_payload": "Test detection for T1564.008",
+    "detection_keywords": [
+      "T1564.008"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1564.008/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Windows",
+      "Linux",
+      "macOS",
+      "Office Suite"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1491.002",
+    "title": "External Defacement",
+    "description": "An adversary may deface systems external to an organization in an attempt to deliver messaging, intimidate, or otherwise mislead an organization or users. [External Defacement](https://attack.mitre.org/techniques/T1491/002) may ultimately cause users to distrust the systems and to question/discredit the system\u2019s integrity. Externally-facing websites are a common victim of defacement; often targeted by adversary and hacktivist groups in order to push a political message or spread propaganda.(Cita",
+    "test_payload": "Test detection for T1491.002",
+    "detection_keywords": [
+      "T1491.002"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1491.002/",
+    "tactic": "impact",
+    "platforms": [
+      "Windows",
+      "IaaS",
+      "Linux",
+      "macOS"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1027.013",
+    "title": "Encrypted/Encoded File",
+    "description": "Adversaries may encrypt or encode files to obfuscate strings, bytes, and other specific patterns to impede detection. Encrypting and/or encoding file content aims to conceal malicious artifacts within a file used in an intrusion. Many other techniques, such as [Software Packing](https://attack.mitre.org/techniques/T1027/002), [Steganography](https://attack.mitre.org/techniques/T1027/003), and [Embedded Payloads](https://attack.mitre.org/techniques/T1027/009), share this same broad objective. Enc",
+    "test_payload": "Test detection for T1027.013",
+    "detection_keywords": [
+      "T1027.013"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1027.013/",
+    "tactic": "defense-evasion",
+    "platforms": [
+      "Linux",
+      "macOS",
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
+  },
+  {
+    "threat_id": "MITRE-T1171",
+    "title": "LLMNR/NBT-NS Poisoning and Relay",
+    "description": "Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) are Microsoft Windows components that serve as alternate methods of host identification. LLMNR is based upon the Domain Name System (DNS) format and allows hosts on the same local link to perform name resolution for other hosts. NBT-NS identifies systems on a local network by their NetBIOS name. (Citation: Wikipedia LLMNR) (Citation: TechNet NetBIOS)\n\nAdversaries can spoof an authoritative source for name resolution o",
+    "test_payload": "Test detection for T1171",
+    "detection_keywords": [
+      "T1171"
+    ],
+    "severity": "medium",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1171/",
+    "tactic": "credential-access",
+    "platforms": [
+      "Windows"
+    ],
+    "collected_at": "2026-03-23T22:00:19.872163"
   }
 ]

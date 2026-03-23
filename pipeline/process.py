@@ -16,7 +16,7 @@ from scrapers.cve_scraper import CVEScraper
 from scrapers.github_scraper import GitHubScraper
 from scrapers.arxiv_scraper import ArxivScraper
 from scrapers.mitre_scraper import MitreAttackScraper
-from scrapers.shodan_scraper import ShodanScraper
+from scrapers.censys_scraper import CensysScraper
 from scrapers.opencti_scraper import OpenCTIScraper
 from core.threat_classifier import ThreatClassifier
 
@@ -124,18 +124,18 @@ def run_pipeline():
         print(f"   ❌ Error: {e}")
         source_counts['MITRE ATT&CK'] = 0
     
-    # Shodan Scraper
-    print("\n🔍 Shodan Scraper...")
+    # Censys Scraper
+    print("\n🔍 Censys Scraper...")
     try:
-        shodan_scraper = ShodanScraper()
-        shodan_threats = shodan_scraper.fetch_exposures(max_results=50)
-        shodan_scraper.save_to_json()
-        all_threats.extend(shodan_threats)
-        source_counts['Shodan'] = len(shodan_threats)
-        print(f"   ✅ Collected {len(shodan_threats)} Shodan exposures")
+        censys_scraper = CensysScraper()
+        censys_threats = censys_scraper.fetch_exposures(max_per_query=10)
+        censys_scraper.save_to_json()
+        all_threats.extend(censys_threats)
+        source_counts['Censys'] = len(censys_threats)
+        print(f"   ✅ Collected {len(censys_threats)} Censys exposures")
     except Exception as e:
         print(f"   ❌ Error: {e}")
-        source_counts['Shodan'] = 0
+        source_counts['Censys'] = 0
     
     # OpenCTI Scraper
     print("\n🌐 OpenCTI Scraper...")
