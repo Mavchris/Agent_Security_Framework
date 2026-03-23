@@ -1,0 +1,254 @@
+[
+  {
+    "threat_id": "AVID-AVID-2024-001",
+    "title": "Prompt Injection Vulnerability",
+    "description": "Attacker can override system prompts through user input",
+    "test_payload": "Test for Prompt Injection Vulnerability",
+    "detection_keywords": [
+      "prompt",
+      "injection"
+    ],
+    "severity": "critical",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "prompt_injection",
+    "impact": "Complete model compromise",
+    "mitigation": "Input validation, prompt engineering, sandboxing",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-002",
+    "title": "Training Data Poisoning",
+    "description": "Malicious data in training set corrupts model behavior",
+    "test_payload": "Test for Training Data Poisoning",
+    "detection_keywords": [
+      "data",
+      "poisoning"
+    ],
+    "severity": "critical",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "data_poisoning",
+    "impact": "Permanent model degradation",
+    "mitigation": "Data validation, anomaly detection, defensive training",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-003",
+    "title": "Model Extraction Attack",
+    "description": "Attacker recreates proprietary model through queries",
+    "test_payload": "Test for Model Extraction Attack",
+    "detection_keywords": [
+      "model",
+      "extraction"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "model_extraction",
+    "impact": "IP theft, competitive disadvantage",
+    "mitigation": "Rate limiting, query monitoring, output obfuscation",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-004",
+    "title": "Adversarial Examples",
+    "description": "Specially crafted inputs cause model misclassification",
+    "test_payload": "Test for Adversarial Examples",
+    "detection_keywords": [
+      "adversarial",
+      "attack"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "adversarial_attack",
+    "impact": "Model reliability compromise",
+    "mitigation": "Adversarial training, input perturbation detection",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-005",
+    "title": "Membership Inference Attack",
+    "description": "Attacker infers if specific data was in training set",
+    "test_payload": "Test for Membership Inference Attack",
+    "detection_keywords": [
+      "privacy",
+      "leak"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "privacy_leak",
+    "impact": "Privacy violation",
+    "mitigation": "Differential privacy, output noise, regularization",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-006",
+    "title": "Model Inversion Attack",
+    "description": "Attacker reconstructs training data from model outputs",
+    "test_payload": "Test for Model Inversion Attack",
+    "detection_keywords": [
+      "data",
+      "leakage"
+    ],
+    "severity": "critical",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "data_leakage",
+    "impact": "Sensitive data exposure",
+    "mitigation": "Differential privacy, output constraints",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-007",
+    "title": "Jailbreak Attacks",
+    "description": "Techniques to bypass safety guardrails",
+    "test_payload": "Test for Jailbreak Attacks",
+    "detection_keywords": [
+      "jailbreak"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "jailbreak",
+    "impact": "Unsafe model behavior",
+    "mitigation": "Robust training, multiple guardrails, monitoring",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-008",
+    "title": "Distribution Shift Vulnerability",
+    "description": "Model fails on data distribution different from training",
+    "test_payload": "Test for Distribution Shift Vulnerability",
+    "detection_keywords": [
+      "distribution",
+      "shift"
+    ],
+    "severity": "medium",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "distribution_shift",
+    "impact": "Unpredictable behavior in production",
+    "mitigation": "Monitoring, retraining, uncertainty estimation",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-009",
+    "title": "Hallucination in LLMs",
+    "description": "Model generates false information confidently",
+    "test_payload": "Test for Hallucination in LLMs",
+    "detection_keywords": [
+      "hallucination"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "hallucination",
+    "impact": "Misinformation, trust loss",
+    "mitigation": "Fact-checking, retrieval augmentation, confidence scoring",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-010",
+    "title": "Supply Chain Attack on ML",
+    "description": "Compromised dependencies in ML pipeline",
+    "test_payload": "Test for Supply Chain Attack on ML",
+    "detection_keywords": [
+      "supply",
+      "chain"
+    ],
+    "severity": "critical",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "supply_chain",
+    "impact": "Complete system compromise",
+    "mitigation": "Dependency verification, sandboxing, monitoring",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-011",
+    "title": "Model Poisoning via Fine-tuning",
+    "description": "Malicious fine-tuning data corrupts pre-trained model",
+    "test_payload": "Test for Model Poisoning via Fine-tuning",
+    "detection_keywords": [
+      "model",
+      "poisoning"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "model_poisoning",
+    "impact": "Behavior change after update",
+    "mitigation": "Data validation, monitoring, rollback capability",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-012",
+    "title": "Backdoor in Pre-trained Models",
+    "description": "Hidden triggers in downloaded pre-trained models",
+    "test_payload": "Test for Backdoor in Pre-trained Models",
+    "detection_keywords": [
+      "backdoor"
+    ],
+    "severity": "critical",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "backdoor",
+    "impact": "Hidden malicious behavior",
+    "mitigation": "Model verification, anomaly detection, source verification",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-013",
+    "title": "Agent Reward Manipulation",
+    "description": "Attacker modifies reward signals for RL agents",
+    "test_payload": "Test for Agent Reward Manipulation",
+    "detection_keywords": [
+      "reward",
+      "manipulation"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "reward_manipulation",
+    "impact": "Agent behavior corruption",
+    "mitigation": "Reward monitoring, anomaly detection, constraints",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-014",
+    "title": "Tool Use Abuse by Agents",
+    "description": "Agent misuses available tools for harmful actions",
+    "test_payload": "Test for Tool Use Abuse by Agents",
+    "detection_keywords": [
+      "tool",
+      "abuse"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "tool_abuse",
+    "impact": "Unintended harmful actions",
+    "mitigation": "Tool constraints, monitoring, capability restrictions",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  },
+  {
+    "threat_id": "AVID-AVID-2024-015",
+    "title": "Context Window Injection",
+    "description": "Attacker injects malicious context in long sequences",
+    "test_payload": "Test for Context Window Injection",
+    "detection_keywords": [
+      "context",
+      "injection"
+    ],
+    "severity": "high",
+    "source": "AVID",
+    "url": "https://github.com/AVID-project/avid",
+    "category": "context_injection",
+    "impact": "Context manipulation",
+    "mitigation": "Input filtering, context monitoring, validation",
+    "collected_at": "2026-03-23T22:17:14.277510"
+  }
+]
