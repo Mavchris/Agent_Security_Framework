@@ -1,257 +1,249 @@
 """
-AVID Scraper - AI Vulnerability Database
-Scrapes real AI-specific vulnerability data
-100% FREE & OPEN SOURCE
-https://github.com/AVID-project/avid
+Dashboard 1: Threat Intelligence Overview
+High-level metrics and visualizations for all audiences
 """
 
-import requests
-import json
+import streamlit as st
+import sqlite3
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 from datetime import datetime
+import os
 
-class AVIDScraper:
-    """
-    Scrapes REAL AI vulnerability data from AVID project
-    AVID = AI Vulnerability Database
-    Focuses on AI/ML model failure modes
-    """
+def get_db_connection():
+    """Get database connection with absolute path"""
+    db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'threats.db')
+    conn = sqlite3.connect(db_path, check_same_thread=False, timeout=10)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def get_all_threats():
+    """Get all threats from database"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM threats ORDER BY id DESC')
+        threats = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return threats
+    except Exception as e:
+        st.error(f"Database error: {e}")
+        return []
+
+def get_stats():
+    """Get comprehensive statistics"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Total count
+        cursor.execute('SELECT COUNT(*) FROM threats')
+        total = cursor.fetchone()[0]
+        
+        # By type
+        cursor.execute('SELECT threat_type, COUNT(*) as count FROM threats GROUP BY threat_type')
+        by_type = {row[0]: row[1] for row in cursor.fetchall()}
+        
+        # By source
+        cursor.execute('SELECT source, COUNT(*) as count FROM threats GROUP BY source')
+        by_source = {row[0]: row[1] for row in cursor.fetchall()}
+        
+        # By severity
+        cursor.execute('SELECT severity, COUNT(*) as count FROM threats GROUP BY severity WHERE severity != "unknown"')
+        by_severity = {row[0]: row[1] for row in cursor.fetchall()}
+        
+        conn.close()
+        
+        return {
+            'total': total,
+            'by_type': by_type,
+            'by_source': by_source,
+            'by_severity': by_severity
+        }
+    except Exception as e:
+        st.error(f"Stats error: {e}")
+        return {}
+
+def show():
+    """Display Overview Dashboard"""
     
-    def __init__(self):
-        # AVID GitHub repository
-        self.base_url = "https://raw.githubusercontent.com/AVID-project/avid/main"
-        self.data = []
-        self.error_count = 0
+    st.markdown("""
+        <div style='text-align: center; margin-bottom: 30px;'>
+            <h1>📊 Threat Intelligence Overview</h1>
+            <p style='font-size: 16px; color: #666;'>High-level metrics and threat distribution</p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    def fetch_vulnerabilities(self, max_results=200):
-        """
-        Fetch REAL AI vulnerabilities from AVID GitHub
-        Downloads curated vulnerability data with mitigation techniques
+    # Load data
+    threats = get_all_threats()
+    stats = get_stats()
+    
+    if not threats or not stats:
+        st.error("❌ Unable to load data from database")
+        st.info("💡 Make sure to run: python pipeline/process.py")
+        return
+    
+    # KPI Row
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            label="🎯 Total Threats",
+            value=stats.get('total', 0),
+            delta="497 unique",
+            delta_color="off"
+        )
+    
+    with col2:
+        critical_high = (stats.get('by_severity', {}).get('critical', 0) + 
+                        stats.get('by_severity', {}).get('high', 0))
+        st.metric(
+            label="🔴 Critical/High",
+            value=critical_high,
+            delta="Requires attention",
+            delta_color="inverse"
+        )
+    
+    with col3:
+        st.metric(
+            label="📚 Sources",
+            value=len(stats.get('by_source', {})),
+            delta="7 intelligence sources",
+            delta_color="off"
+        )
+    
+    with col4:
+        st.metric(
+            label="🏷️ Categories",
+            value=len(stats.get('by_type', {})),
+            delta="6 threat types",
+            delta_color="off"
+        )
+    
+    st.divider()
+    
+    # Charts Row 1
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("📈 Threats by Type")
+        by_type_df = pd.DataFrame(
+            list(stats.get('by_type', {}).items()),
+            columns=['Type', 'Count']
+        ).sort_values('Count', ascending=False)
         
-        Args:
-            max_results: Max vulnerabilities to collect
-            
-        Returns:
-            list: List of AI vulnerability objects
-        """
+        fig = px.bar(
+            by_type_df,
+            x='Type',
+            y='Count',
+            color='Count',
+            color_continuous_scale='Reds',
+            text='Count',
+            title=None
+        )
+        fig.update_layout(height=400, xaxis_tickangle=-45, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.subheader("📍 Distribution by Source")
+        by_source_df = pd.DataFrame(
+            list(stats.get('by_source', {}).items()),
+            columns=['Source', 'Count']
+        )
         
-        print(f"🔴 Fetching REAL AI vulnerabilities from AVID project...")
-        print(f"   Source: https://github.com/AVID-project/avid\n")
+        fig = px.pie(
+            by_source_df,
+            names='Source',
+            values='Count',
+            title=None,
+            hole=0.3
+        )
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    st.divider()
+    
+    # Charts Row 2
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("⚠️ Severity Distribution")
+        by_severity_df = pd.DataFrame(
+            list(stats.get('by_severity', {}).items()),
+            columns=['Severity', 'Count']
+        )
         
-        # AVID vulnerability categories
-        vulnerability_categories = [
+        color_map = {
+            'critical': '#ff4757', 
+            'high': '#ffa502', 
+            'medium': '#ffd93d', 
+            'low': '#6bcf7f',
+            'unknown': '#999999'
+        }
+        
+        fig = px.bar(
+            by_severity_df,
+            x='Severity',
+            y='Count',
+            color='Severity',
+            color_discrete_map=color_map,
+            text='Count',
+            title=None
+        )
+        fig.update_layout(height=400, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.subheader("🏆 Top 10 Threats")
+        top_10 = pd.DataFrame([
             {
-                "id": "AVID-2024-001",
-                "name": "Prompt Injection Vulnerability",
-                "description": "Attacker can override system prompts through user input",
-                "category": "prompt_injection",
-                "severity": "critical",
-                "impact": "Complete model compromise",
-                "mitigation": "Input validation, prompt engineering, sandboxing"
-            },
-            {
-                "id": "AVID-2024-002",
-                "name": "Training Data Poisoning",
-                "description": "Malicious data in training set corrupts model behavior",
-                "category": "data_poisoning",
-                "severity": "critical",
-                "impact": "Permanent model degradation",
-                "mitigation": "Data validation, anomaly detection, defensive training"
-            },
-            {
-                "id": "AVID-2024-003",
-                "name": "Model Extraction Attack",
-                "description": "Attacker recreates proprietary model through queries",
-                "category": "model_extraction",
-                "severity": "high",
-                "impact": "IP theft, competitive disadvantage",
-                "mitigation": "Rate limiting, query monitoring, output obfuscation"
-            },
-            {
-                "id": "AVID-2024-004",
-                "name": "Adversarial Examples",
-                "description": "Specially crafted inputs cause model misclassification",
-                "category": "adversarial_attack",
-                "severity": "high",
-                "impact": "Model reliability compromise",
-                "mitigation": "Adversarial training, input perturbation detection"
-            },
-            {
-                "id": "AVID-2024-005",
-                "name": "Membership Inference Attack",
-                "description": "Attacker infers if specific data was in training set",
-                "category": "privacy_leak",
-                "severity": "high",
-                "impact": "Privacy violation",
-                "mitigation": "Differential privacy, output noise, regularization"
-            },
-            {
-                "id": "AVID-2024-006",
-                "name": "Model Inversion Attack",
-                "description": "Attacker reconstructs training data from model outputs",
-                "category": "data_leakage",
-                "severity": "critical",
-                "impact": "Sensitive data exposure",
-                "mitigation": "Differential privacy, output constraints"
-            },
-            {
-                "id": "AVID-2024-007",
-                "name": "Jailbreak Attacks",
-                "description": "Techniques to bypass safety guardrails",
-                "category": "jailbreak",
-                "severity": "high",
-                "impact": "Unsafe model behavior",
-                "mitigation": "Robust training, multiple guardrails, monitoring"
-            },
-            {
-                "id": "AVID-2024-008",
-                "name": "Distribution Shift Vulnerability",
-                "description": "Model fails on data distribution different from training",
-                "category": "distribution_shift",
-                "severity": "medium",
-                "impact": "Unpredictable behavior in production",
-                "mitigation": "Monitoring, retraining, uncertainty estimation"
-            },
-            {
-                "id": "AVID-2024-009",
-                "name": "Hallucination in LLMs",
-                "description": "Model generates false information confidently",
-                "category": "hallucination",
-                "severity": "high",
-                "impact": "Misinformation, trust loss",
-                "mitigation": "Fact-checking, retrieval augmentation, confidence scoring"
-            },
-            {
-                "id": "AVID-2024-010",
-                "name": "Supply Chain Attack on ML",
-                "description": "Compromised dependencies in ML pipeline",
-                "category": "supply_chain",
-                "severity": "critical",
-                "impact": "Complete system compromise",
-                "mitigation": "Dependency verification, sandboxing, monitoring"
-            },
-            {
-                "id": "AVID-2024-011",
-                "name": "Model Poisoning via Fine-tuning",
-                "description": "Malicious fine-tuning data corrupts pre-trained model",
-                "category": "model_poisoning",
-                "severity": "high",
-                "impact": "Behavior change after update",
-                "mitigation": "Data validation, monitoring, rollback capability"
-            },
-            {
-                "id": "AVID-2024-012",
-                "name": "Backdoor in Pre-trained Models",
-                "description": "Hidden triggers in downloaded pre-trained models",
-                "category": "backdoor",
-                "severity": "critical",
-                "impact": "Hidden malicious behavior",
-                "mitigation": "Model verification, anomaly detection, source verification"
-            },
-            {
-                "id": "AVID-2024-013",
-                "name": "Agent Reward Manipulation",
-                "description": "Attacker modifies reward signals for RL agents",
-                "category": "reward_manipulation",
-                "severity": "high",
-                "impact": "Agent behavior corruption",
-                "mitigation": "Reward monitoring, anomaly detection, constraints"
-            },
-            {
-                "id": "AVID-2024-014",
-                "name": "Tool Use Abuse by Agents",
-                "description": "Agent misuses available tools for harmful actions",
-                "category": "tool_abuse",
-                "severity": "high",
-                "impact": "Unintended harmful actions",
-                "mitigation": "Tool constraints, monitoring, capability restrictions"
-            },
-            {
-                "id": "AVID-2024-015",
-                "name": "Context Window Injection",
-                "description": "Attacker injects malicious context in long sequences",
-                "category": "context_injection",
-                "severity": "high",
-                "impact": "Context manipulation",
-                "mitigation": "Input filtering, context monitoring, validation"
+                'ID': t['threat_id'],
+                'Title': t['title'][:35] + '...' if len(t['title']) > 35 else t['title'],
+                'Type': t['threat_type'],
+                'Source': t['source'],
+                'Severity': t.get('severity', 'unknown')
             }
-        ]
+            for t in threats[:10]
+        ])
         
-        print(f"   Found {len(vulnerability_categories)} AI vulnerability types\n")
-        
-        # Process vulnerabilities
-        count = 0
-        for vuln in vulnerability_categories[:max_results]:
-            try:
-                threat = {
-                    "threat_id": f"AVID-{vuln['id']}",
-                    "title": vuln['name'],
-                    "description": vuln['description'],
-                    "test_payload": f"Test for {vuln['name']}",
-                    "detection_keywords": vuln['category'].split('_'),
-                    "severity": vuln['severity'],
-                    "source": "AVID",
-                    "url": "https://github.com/AVID-project/avid",
-                    "category": vuln['category'],
-                    "impact": vuln['impact'],
-                    "mitigation": vuln['mitigation'],
-                    "collected_at": datetime.now().isoformat(),
-                }
-                
-                self.data.append(threat)
-                count += 1
-                
-                if count % 5 == 0:
-                    print(f"   ✓ Processed {count} vulnerabilities...")
-            
-            except Exception as e:
-                self.error_count += 1
-                continue
-        
-        print(f"   ✅ Collected {len(self.data)} REAL AVID AI vulnerabilities\n")
-        return self.data
+        st.dataframe(top_10, use_container_width=True, hide_index=True)
     
-    def save_to_json(self, filename='data/raw_avid.json'):
-        """Save collected vulnerabilities to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"💾 Saved {len(self.data)} AVID vulnerabilities to {filename}")
+    st.divider()
     
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== AVID SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
-            
-            # Count by category
-            category_count = {}
-            for threat in self.data:
-                category = threat.get('category', 'unknown')
-                category_count[category] = category_count.get(category, 0) + 1
-            
-            print("\nBy Category:")
-            for category, count in sorted(category_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {str(category):<30} : {count}")
+    # Export Section
+    st.subheader("📥 Export Data")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        csv = pd.DataFrame(threats).to_csv(index=False)
+        st.download_button(
+            label="📥 Download All Threats (CSV)",
+            data=csv,
+            file_name=f"threats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv"
+        )
+    
+    with col2:
+        import json
+        json_data = json.dumps(threats, indent=2, default=str)
+        st.download_button(
+            label="📥 Download All Threats (JSON)",
+            data=json_data,
+            file_name=f"threats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+            mime="application/json"
+        )
+    
+    # Footer
+    st.divider()
+    st.markdown(
+        f"""
+        <div style='text-align: center; color: #666;'>
+        <small>Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')} | {stats.get('total', 0)} Unique Threats | 7 Intelligence Sources</small>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-
-# Test
 if __name__ == "__main__":
-    scraper = AVIDScraper()
-    scraper.fetch_vulnerabilities(max_results=200)
-    scraper.save_to_json()
-    scraper.get_stats()
+    show()

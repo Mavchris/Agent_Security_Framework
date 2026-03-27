@@ -18,7 +18,7 @@ from scrapers.arxiv_scraper import ArxivScraper
 from scrapers.mitre_scraper import MitreAttackScraper
 from scrapers.censys_scraper import CensysScraper
 from scrapers.opencti_scraper import OpenCTIScraper
-from core.threat_classifier import ThreatClassifier
+from core.classifier import ImprovedThreatClassifier
 
 
 def create_database():
@@ -160,7 +160,7 @@ def run_pipeline():
     print("\n[STEP 2/3] CLASSIFYING THREATS...")
     print("-" * 70)
     
-    classifier = ThreatClassifier()
+    classifier = ImprovedThreatClassifier()
     
     classified_threats = []
     for threat in all_threats:
