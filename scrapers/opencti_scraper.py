@@ -8,7 +8,7 @@ import requests
 import json
 from datetime import datetime
 
-class OpenCTIRealScraper:
+class OpenCTIScraper:
     """
     Scrapes REAL threat intelligence from OpenCTI
     OpenCTI is open-source threat intelligence platform

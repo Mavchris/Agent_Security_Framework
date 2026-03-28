@@ -13,7 +13,7 @@
     "source": "OpenCTI",
     "url": "https://www.opencti.io",
     "threat_level": "critical",
-    "collected_at": "2026-03-23T22:02:24.669855"
+    "collected_at": "2026-03-28T13:59:35.533287"
   },
   {
     "threat_id": "CTI-CTI-002",
@@ -28,7 +28,7 @@
     "source": "OpenCTI",
     "url": "https://www.opencti.io",
     "threat_level": "high",
-    "collected_at": "2026-03-23T22:02:24.669855"
+    "collected_at": "2026-03-28T13:59:35.533287"
   },
   {
     "threat_id": "CTI-CTI-003",
@@ -43,7 +43,7 @@
     "source": "OpenCTI",
     "url": "https://www.opencti.io",
     "threat_level": "critical",
-    "collected_at": "2026-03-23T22:02:24.669855"
+    "collected_at": "2026-03-28T13:59:35.533287"
   },
   {
     "threat_id": "CTI-CTI-004",
@@ -59,7 +59,7 @@
     "source": "OpenCTI",
     "url": "https://www.opencti.io",
     "threat_level": "high",
-    "collected_at": "2026-03-23T22:02:24.669855"
+    "collected_at": "2026-03-28T13:59:35.533287"
   },
   {
     "threat_id": "CTI-CTI-005",
@@ -74,6 +74,6 @@
     "source": "OpenCTI",
     "url": "https://www.opencti.io",
     "threat_level": "medium",
-    "collected_at": "2026-03-23T22:02:24.669855"
+    "collected_at": "2026-03-28T13:59:35.533287"
   }
 ]

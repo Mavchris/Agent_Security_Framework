@@ -12,7 +12,7 @@
     "severity": "critical",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1001",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1003",
@@ -27,7 +27,7 @@
     "severity": "high",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1003",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1004",
@@ -42,7 +42,7 @@
     "severity": "high",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1004",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1005",
@@ -57,7 +57,7 @@
     "severity": "high",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1005",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1006",
@@ -72,7 +72,7 @@
     "severity": "medium",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1006",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1007",
@@ -87,7 +87,7 @@
     "severity": "high",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1007",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1008",
@@ -102,7 +102,7 @@
     "severity": "high",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1008",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1009",
@@ -117,7 +117,7 @@
     "severity": "medium",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1009",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   },
   {
     "threat_id": "CVE-2024-1010",
@@ -132,6 +132,6 @@
     "severity": "critical",
     "source": "CVE",
     "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1010",
-    "collected_at": "2026-03-23T22:00:13.310715"
+    "collected_at": "2026-03-28T13:59:28.616974"
   }
 ]

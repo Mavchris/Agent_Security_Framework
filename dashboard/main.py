@@ -57,7 +57,7 @@ with col1:
         <p><strong>Threat Intelligence at a Glance</strong></p>
         <p>High-level metrics, threat distribution, and statistics</p>
         <ul style='font-size: 12px;'>
-            <li>219 Total Threats</li>
+            <li> Total Threats</li>
             <li>KPI Cards</li>
             <li>Distribution Charts</li>
             <li>Top 10 Threats Table</li>
@@ -67,7 +67,7 @@ with col1:
     """, unsafe_allow_html=True)
     
     if st.button("📊 Open Dashboard 1", use_container_width=True, key="dash1"):
-        st.switch_page("pages/overview.py")
+        st.switch_page("pages/intelligence.py")
 
 with col2:
     st.markdown("""
@@ -76,7 +76,7 @@ with col2:
         <p><strong>Detailed Threat Browse & Search</strong></p>
         <p>Complete threat catalog with filters and details</p>
         <ul style='font-size: 12px;'>
-            <li>All 219 Threats</li>
+            <li>All Threats</li>
             <li>Multi-filter (Type/Source/Severity)</li>
             <li>Full-text Search</li>
             <li>Expandable Details</li>

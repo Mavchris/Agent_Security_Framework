@@ -12,9 +12,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/trailofbits/anamorpher",
-    "stars": 1043,
+    "stars": 1045,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-707020503",
@@ -29,9 +29,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/liu00222/Open-Prompt-Injection",
-    "stars": 414,
+    "stars": 417,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-641364608",
@@ -46,9 +46,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/yunwei37/prompt-hacker-collections",
-    "stars": 297,
+    "stars": 298,
     "language": null,
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1151614865",
@@ -63,9 +63,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/praetorian-inc/augustus",
-    "stars": 152,
+    "stars": 165,
     "language": "Go",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1171508227",
@@ -80,9 +80,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/AgentSeal/agentseal",
-    "stars": 146,
+    "stars": 151,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-997553040",
@@ -99,7 +99,7 @@
     "url": "https://github.com/makalin/SecureMCP",
     "stars": 139,
     "language": "Go",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-738936550",
@@ -116,7 +116,7 @@
     "url": "https://github.com/microsoft/BIPIA",
     "stars": 115,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1174500793",
@@ -133,7 +133,7 @@
     "url": "https://github.com/numbergroup/AgentGuard",
     "stars": 99,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.461142"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1059254972",
@@ -150,7 +150,7 @@
     "url": "https://github.com/socprime/AIDR-Bastion",
     "stars": 98,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1136196834",
@@ -165,9 +165,9 @@
     "severity": "low",
     "source": "GitHub",
     "url": "https://github.com/Nova-Hunting/nova-tracer",
-    "stars": 87,
+    "stars": 89,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-768835432",
@@ -184,7 +184,7 @@
     "url": "https://github.com/SheltonLiu-N/Universal-Prompt-Injection",
     "stars": 70,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1010859389",
@@ -199,9 +199,26 @@
     "severity": "low",
     "source": "GitHub",
     "url": "https://github.com/facebookresearch/Meta_SecAlign",
-    "stars": 55,
+    "stars": 56,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
+  },
+  {
+    "threat_id": "GH-1071862048",
+    "title": "LLMSecurityGuide",
+    "description": "A comprehensive reference for securing Large Language Models (LLMs). Covers OWASP GenAI Top-10 risks, prompt injection, adversarial attacks, real-world incidents, and practical defenses. Includes catalogs of red-teaming tools, guardrails, and mitigation strategies to help developers, researchers, and security teams deploy AI responsibly.",
+    "test_payload": "Analyze LLMSecurityGuide security implementation",
+    "detection_keywords": [
+      "prompt",
+      "injection",
+      "attack"
+    ],
+    "severity": "low",
+    "source": "GitHub",
+    "url": "https://github.com/requie/LLMSecurityGuide",
+    "stars": 56,
+    "language": null,
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1017149296",
@@ -218,7 +235,7 @@
     "url": "https://github.com/General-Analysis/mcp-guard",
     "stars": 53,
     "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1046651854",
@@ -235,24 +252,7 @@
     "url": "https://github.com/BlueprintLabIO/prompt-injector",
     "stars": 52,
     "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:14.462148"
-  },
-  {
-    "threat_id": "GH-1071862048",
-    "title": "LLMSecurityGuide",
-    "description": "A comprehensive reference for securing Large Language Models (LLMs). Covers OWASP GenAI Top-10 risks, prompt injection, adversarial attacks, real-world incidents, and practical defenses. Includes catalogs of red-teaming tools, guardrails, and mitigation strategies to help developers, researchers, and security teams deploy AI responsibly.",
-    "test_payload": "Analyze LLMSecurityGuide security implementation",
-    "detection_keywords": [
-      "prompt",
-      "injection",
-      "attack"
-    ],
-    "severity": "low",
-    "source": "GitHub",
-    "url": "https://github.com/requie/LLMSecurityGuide",
-    "stars": 51,
-    "language": null,
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1107898025",
@@ -267,9 +267,9 @@
     "severity": "low",
     "source": "GitHub",
     "url": "https://github.com/facebookresearch/prompt-siren",
-    "stars": 44,
+    "stars": 46,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1067340020",
@@ -286,7 +286,24 @@
     "url": "https://github.com/facebookresearch/rl-injector",
     "stars": 42,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
+  },
+  {
+    "threat_id": "GH-1150569470",
+    "title": "openclaw-skills-security",
+    "description": "Curated, security-first OpenClaw skills (Markdown-based). Security audit skills - detect prompt injection, supply chain attacks, credential leaks. Works with Codex CLI, Claude Code, any LLM.",
+    "test_payload": "Analyze openclaw-skills-security security implementation",
+    "detection_keywords": [
+      "prompt",
+      "injection",
+      "attack"
+    ],
+    "severity": "low",
+    "source": "GitHub",
+    "url": "https://github.com/UseAI-pro/openclaw-skills-security",
+    "stars": 42,
+    "language": "Python",
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-883452021",
@@ -303,7 +320,7 @@
     "url": "https://github.com/ShiJiawenwen/JudgeDeceiver",
     "stars": 40,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-812130792",
@@ -320,13 +337,13 @@
     "url": "https://github.com/grepstrength/WideOpenAI",
     "stars": 39,
     "language": null,
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
-    "threat_id": "GH-1150569470",
-    "title": "openclaw-skills-security",
-    "description": "Curated, security-first OpenClaw skills (Markdown-based). Security audit skills - detect prompt injection, supply chain attacks, credential leaks. Works with Codex CLI, Claude Code, any LLM.",
-    "test_payload": "Analyze openclaw-skills-security security implementation",
+    "threat_id": "GH-1157166470",
+    "title": "defender",
+    "description": "Open source prompt injection protection for Agents calling tools (via MCP, CLI or direct function calling). Detect and defend against prompt injection attacks. 22MB, CPU-only, < 10ms latency.",
+    "test_payload": "Analyze defender security implementation",
     "detection_keywords": [
       "prompt",
       "injection",
@@ -334,10 +351,10 @@
     ],
     "severity": "low",
     "source": "GitHub",
-    "url": "https://github.com/UseAI-pro/openclaw-skills-security",
+    "url": "https://github.com/StackOneHQ/defender",
     "stars": 36,
-    "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "language": "TypeScript",
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-663480434",
@@ -354,24 +371,7 @@
     "url": "https://github.com/ScottLogic/prompt-injection",
     "stars": 34,
     "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:14.462148"
-  },
-  {
-    "threat_id": "GH-1157166470",
-    "title": "defender",
-    "description": "Open source prompt injection protection for Agents calling tools (via MCP, CLI or direct function calling). Detect and defend against prompt injection attacks. 22MB, CPU-only, < 10ms latency.",
-    "test_payload": "Analyze defender security implementation",
-    "detection_keywords": [
-      "prompt",
-      "injection",
-      "attack"
-    ],
-    "severity": "low",
-    "source": "GitHub",
-    "url": "https://github.com/StackOneHQ/defender",
-    "stars": 34,
-    "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-1144804097",
@@ -386,9 +386,26 @@
     "severity": "low",
     "source": "GitHub",
     "url": "https://github.com/SaFo-Lab/AgentDyn",
-    "stars": 31,
+    "stars": 34,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
+  },
+  {
+    "threat_id": "GH-1156307159",
+    "title": "PDF-Prompt-Injection-Toolkit",
+    "description": "A red team / blue team toolkit for testing and detecting prompt injection attacks hidden inside PDF documents. \u4e00\u4e2a\u7528\u4e8e\u6d4b\u8bd5\u548c\u68c0\u6d4b PDF \u6587\u6863\u4e2d\u9690\u85cf\u7684\u63d0\u793a\u8bcd\u6ce8\u5165\u653b\u51fb\u7684\u7ea2\u84dd\u5bf9\u6297\u5de5\u5177\u5305\u3002",
+    "test_payload": "Analyze PDF-Prompt-Injection-Toolkit security implementation",
+    "detection_keywords": [
+      "prompt",
+      "injection",
+      "attack"
+    ],
+    "severity": "low",
+    "source": "GitHub",
+    "url": "https://github.com/zhihuiyuze/PDF-Prompt-Injection-Toolkit",
+    "stars": 32,
+    "language": "Python",
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-696480278",
@@ -405,24 +422,7 @@
     "url": "https://github.com/c-goosen/ai-prompt-ctf",
     "stars": 30,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:14.462148"
-  },
-  {
-    "threat_id": "GH-741096062",
-    "title": "PromptInjectionBench",
-    "description": "Prompt Injection Attacks against GPT-4, Gemini, Azure, Azure with Jailbreak",
-    "test_payload": "Analyze PromptInjectionBench security implementation",
-    "detection_keywords": [
-      "prompt",
-      "injection",
-      "attack"
-    ],
-    "severity": "low",
-    "source": "GitHub",
-    "url": "https://github.com/BenderScript/PromptInjectionBench",
-    "stars": 29,
-    "language": "Python",
-    "collected_at": "2026-03-23T22:00:14.462148"
+    "collected_at": "2026-03-28T13:59:29.793811"
   },
   {
     "threat_id": "GH-783829247",
@@ -436,9 +436,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/elder-plinius/L1B3RT4S",
-    "stars": 17979,
+    "stars": 18031,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-772626560",
@@ -452,9 +452,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/CyberAlbSecOP/Awesome_GPT_Super_Prompting",
-    "stars": 3779,
+    "stars": 3789,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-673534316",
@@ -468,9 +468,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/verazuo/jailbreak_llms",
-    "stars": 3613,
+    "stars": 3620,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-908108028",
@@ -484,9 +484,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/Tencent/AI-Infra-Guard",
-    "stars": 3299,
+    "stars": 3347,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-740789348",
@@ -500,9 +500,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/CryptoAILab/Awesome-LM-SSP",
-    "stars": 1904,
+    "stars": 1912,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-897865415",
@@ -516,9 +516,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/cyberark/FuzzyAI",
-    "stars": 1271,
+    "stars": 1281,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-820898375",
@@ -532,9 +532,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/yueliu1999/Awesome-Jailbreak-on-LLMs",
-    "stars": 1269,
+    "stars": 1277,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-1176827426",
@@ -550,7 +550,7 @@
     "url": "https://github.com/lucija8320nhung4/HacxGPT",
     "stars": 908,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-1117138770",
@@ -564,9 +564,25 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/Goochbeater/Spiritual-Spell-Red-Teaming",
-    "stars": 650,
+    "stars": 682,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
+  },
+  {
+    "threat_id": "GH-1170037043",
+    "title": "ISC-Bench",
+    "description": "Internal Safety Collapse: Turning LLMs into a \"Jailbroken State\" Without \"a Jailbreak Attack\".",
+    "test_payload": "Analyze ISC-Bench security implementation",
+    "detection_keywords": [
+      "llm",
+      "jailbreak"
+    ],
+    "severity": "high",
+    "source": "GitHub",
+    "url": "https://github.com/wuyoscar/ISC-Bench",
+    "stars": 675,
+    "language": "Python",
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-676834494",
@@ -582,7 +598,7 @@
     "url": "https://github.com/RobustNLP/CipherChat",
     "stars": 627,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-789602161",
@@ -596,9 +612,9 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/langgptai/LLM-Jailbreaks",
-    "stars": 573,
+    "stars": 577,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-687122549",
@@ -612,9 +628,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/deadbits/vigil-llm",
-    "stars": 467,
+    "stars": 468,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-781412750",
@@ -628,9 +644,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/langgptai/awesome-gemini-prompts",
-    "stars": 431,
+    "stars": 435,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-634542525",
@@ -646,7 +662,7 @@
     "url": "https://github.com/jconorgrogan/JamesGPT",
     "stars": 395,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-780332601",
@@ -662,7 +678,7 @@
     "url": "https://github.com/tml-epfl/llm-adaptive-attacks",
     "stars": 380,
     "language": "Shell",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-718921351",
@@ -676,9 +692,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/CHATS-lab/persuasive_jailbreaker",
-    "stars": 354,
+    "stars": 356,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-763230384",
@@ -692,9 +708,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/SaFo-Lab/AutoDAN-Turbo",
-    "stars": 353,
+    "stars": 354,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-701430060",
@@ -710,7 +726,7 @@
     "url": "https://github.com/LLM-Tuning-Safety/LLMs-Finetuning-Safety",
     "stars": 345,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-841263635",
@@ -724,9 +740,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/TrustAI-laboratory/Learn-Prompt-Hacking",
-    "stars": 276,
+    "stars": 277,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-1030237214",
@@ -740,9 +756,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/SlowLow999/UltraBr3aks",
-    "stars": 257,
+    "stars": 263,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-608999918",
@@ -756,9 +772,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/alexisvalentino/Chatgpt-DAN",
-    "stars": 226,
+    "stars": 227,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-726258642",
@@ -772,9 +788,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/RICommunity/TAP",
-    "stars": 225,
+    "stars": 226,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-771534192",
@@ -788,25 +804,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/CyberAlbSecOP/BLACKHATGOD_Master_Hacker_GPT",
-    "stars": 208,
+    "stars": 209,
     "language": null,
-    "collected_at": "2026-03-23T22:00:15.396904"
-  },
-  {
-    "threat_id": "GH-852792241",
-    "title": "llamator",
-    "description": "Red Teaming python-framework for testing chatbots and GenAI systems.",
-    "test_payload": "Analyze llamator security implementation",
-    "detection_keywords": [
-      "llm",
-      "jailbreak"
-    ],
-    "severity": "medium",
-    "source": "GitHub",
-    "url": "https://github.com/LLAMATOR-Core/llamator",
-    "stars": 204,
-    "language": "Python",
-    "collected_at": "2026-03-23T22:00:15.396904"
+    "collected_at": "2026-03-28T13:59:30.924620"
   },
   {
     "threat_id": "GH-722125767",
@@ -820,9 +820,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/friuns2/BlackFriday-GPTs-Prompts",
-    "stars": 9268,
+    "stars": 9274,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-604527559",
@@ -836,9 +836,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/Cranot/chatbot-injections-exploits",
-    "stars": 397,
+    "stars": 400,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-614006323",
@@ -854,7 +854,7 @@
     "url": "https://github.com/eryk-mazus/xoxo",
     "stars": 32,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-649136825",
@@ -870,7 +870,7 @@
     "url": "https://github.com/Najmul190/Avarice-Selfbot",
     "stars": 26,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-634607900",
@@ -886,7 +886,7 @@
     "url": "https://github.com/edoardottt/nuclei-cve-gpt",
     "stars": 20,
     "language": "Go",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-1162232977",
@@ -902,7 +902,7 @@
     "url": "https://github.com/SnailSploit/The-LLM-Red-Teamer-s-Playbook",
     "stars": 19,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-628268733",
@@ -918,7 +918,7 @@
     "url": "https://github.com/Esonhugh/ChatGPT-Web-Setting-Funny-Abuse",
     "stars": 9,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-756297475",
@@ -934,7 +934,7 @@
     "url": "https://github.com/SpazioDati/llm-elasticsearch-cache",
     "stars": 9,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-883211036",
@@ -950,7 +950,7 @@
     "url": "https://github.com/AINTRUST-AI/aixploit",
     "stars": 8,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-717067609",
@@ -966,7 +966,7 @@
     "url": "https://github.com/xianminx/Reverse-Engineering-ChatGPT",
     "stars": 5,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-648434881",
@@ -982,7 +982,7 @@
     "url": "https://github.com/Selvenity/PhoneDialGPT",
     "stars": 5,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-737493662",
@@ -998,7 +998,7 @@
     "url": "https://github.com/pwno-io/AutoGDB",
     "stars": 5,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-631322214",
@@ -1014,7 +1014,7 @@
     "url": "https://github.com/Danucosukosuko/RFSRCexploit",
     "stars": 3,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-868185657",
@@ -1030,7 +1030,7 @@
     "url": "https://github.com/nomoremrniceguy123/Un5hAx0rl3d",
     "stars": 3,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-1155493628",
@@ -1046,7 +1046,7 @@
     "url": "https://github.com/valITino/blhackbox",
     "stars": 2,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-797429500",
@@ -1062,7 +1062,7 @@
     "url": "https://github.com/BitcoinChatGPT/DeserializeSignature-Vulnerability-Algorithm",
     "stars": 2,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-703777332",
@@ -1078,7 +1078,7 @@
     "url": "https://github.com/DitterLogging/chatgpt-jailbreak",
     "stars": 1,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-632581016",
@@ -1094,7 +1094,7 @@
     "url": "https://github.com/manzke/sharegpt-dict",
     "stars": 1,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-937262375",
@@ -1110,7 +1110,7 @@
     "url": "https://github.com/ansh-info/chatgpt-package-hallucination",
     "stars": 1,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-876136344",
@@ -1126,7 +1126,7 @@
     "url": "https://github.com/knithin/chatgptexploit",
     "stars": 1,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-572609805",
@@ -1142,7 +1142,7 @@
     "url": "https://github.com/lambda-science/NLMyo",
     "stars": 1,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-1092929809",
@@ -1158,7 +1158,7 @@
     "url": "https://github.com/MaximeGuinard/Script-copier-coller-mots-cles-YourTextGuru",
     "stars": 1,
     "language": null,
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-821854120",
@@ -1174,7 +1174,7 @@
     "url": "https://github.com/1amthebest1/FuelCMS-exploit",
     "stars": 0,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:16.549984"
+    "collected_at": "2026-03-28T13:59:32.153969"
   },
   {
     "threat_id": "GH-94801380",
@@ -1189,9 +1189,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/The-Art-of-Hacking/h4cker",
-    "stars": 25615,
+    "stars": 25680,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1017550802",
@@ -1206,9 +1206,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/0x4m4/hexstrike-ai",
-    "stars": 7634,
+    "stars": 7724,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1031979438",
@@ -1223,9 +1223,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/anthropics/claude-code-security-review",
-    "stars": 3958,
+    "stars": 4035,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-873217205",
@@ -1240,9 +1240,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/protectai/vulnhuntr",
-    "stars": 2590,
+    "stars": 2594,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-625308923",
@@ -1257,9 +1257,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/aress31/burpgpt",
-    "stars": 2285,
+    "stars": 2287,
     "language": "Java",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-785334631",
@@ -1274,9 +1274,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/msoedov/agentic_security",
-    "stars": 1821,
+    "stars": 1829,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-343221881",
@@ -1291,43 +1291,9 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/reconmap/reconmap",
-    "stars": 915,
+    "stars": 916,
     "language": "JavaScript",
-    "collected_at": "2026-03-23T22:00:17.480419"
-  },
-  {
-    "threat_id": "GH-571631107",
-    "title": "reaper",
-    "description": "Live validation proxy tool for testing web app vulnerabilities",
-    "test_payload": "Analyze reaper security implementation",
-    "detection_keywords": [
-      "ai",
-      "security",
-      "vulnerability"
-    ],
-    "severity": "high",
-    "source": "GitHub",
-    "url": "https://github.com/ghostsecurity/reaper",
-    "stars": 832,
-    "language": "Go",
-    "collected_at": "2026-03-23T22:00:17.480419"
-  },
-  {
-    "threat_id": "GH-1057126987",
-    "title": "fuzzforge_ai",
-    "description": "AI-powered workflow automation and AI Agents platform for AppSec, Fuzzing & Offensive Security. Automate vulnerability discovery with intelligent fuzzing, AI-driven analysis, and a marketplace of security tools.",
-    "test_payload": "Analyze fuzzforge_ai security implementation",
-    "detection_keywords": [
-      "ai",
-      "security",
-      "vulnerability"
-    ],
-    "severity": "high",
-    "source": "GitHub",
-    "url": "https://github.com/FuzzingLabs/fuzzforge_ai",
-    "stars": 772,
-    "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1076691744",
@@ -1342,9 +1308,43 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/zakirkun/deep-eye",
-    "stars": 667,
+    "stars": 848,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
+  },
+  {
+    "threat_id": "GH-571631107",
+    "title": "reaper",
+    "description": "Live validation proxy tool for testing web app vulnerabilities",
+    "test_payload": "Analyze reaper security implementation",
+    "detection_keywords": [
+      "ai",
+      "security",
+      "vulnerability"
+    ],
+    "severity": "high",
+    "source": "GitHub",
+    "url": "https://github.com/ghostsecurity/reaper",
+    "stars": 833,
+    "language": "Go",
+    "collected_at": "2026-03-28T13:59:33.179819"
+  },
+  {
+    "threat_id": "GH-1057126987",
+    "title": "fuzzforge_ai",
+    "description": "AI-powered workflow automation and AI Agents platform for AppSec, Fuzzing & Offensive Security. Automate vulnerability discovery with intelligent fuzzing, AI-driven analysis, and a marketplace of security tools.",
+    "test_payload": "Analyze fuzzforge_ai security implementation",
+    "detection_keywords": [
+      "ai",
+      "security",
+      "vulnerability"
+    ],
+    "severity": "high",
+    "source": "GitHub",
+    "url": "https://github.com/FuzzingLabs/fuzzforge_ai",
+    "stars": 776,
+    "language": "Python",
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-930540687",
@@ -1359,9 +1359,9 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/Commando-X/vuln-bank",
-    "stars": 646,
+    "stars": 654,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-86936869",
@@ -1378,7 +1378,7 @@
     "url": "https://github.com/kac89/vulnrepo",
     "stars": 549,
     "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1138455995",
@@ -1393,9 +1393,9 @@
     "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/ZeroLeaks/zeroleaks",
-    "stars": 533,
+    "stars": 535,
     "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1167798933",
@@ -1410,9 +1410,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/knostic/OpenAnt",
-    "stars": 426,
+    "stars": 432,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-869080192",
@@ -1427,9 +1427,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/In3tinct/Androidmeda",
-    "stars": 331,
+    "stars": 338,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-666807737",
@@ -1444,9 +1444,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/dhammon/ai-goat",
-    "stars": 325,
+    "stars": 326,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1182204200",
@@ -1461,9 +1461,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/raroque/vibe-security-skill",
-    "stars": 276,
+    "stars": 322,
     "language": null,
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-832575943",
@@ -1478,9 +1478,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/orcasecurity-research/AIGoat",
-    "stars": 269,
+    "stars": 270,
     "language": "CSS",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1145350046",
@@ -1495,9 +1495,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/SHAdd0WTAka/Zen-Ai-Pentest",
-    "stars": 263,
+    "stars": 267,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-1149011847",
@@ -1512,9 +1512,26 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/silentchainai/SILENTCHAIN",
-    "stars": 220,
+    "stars": 250,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
+  },
+  {
+    "threat_id": "GH-1155123554",
+    "title": "agentshield",
+    "description": "AI agent security scanner. Detect vulnerabilities in agent configurations, MCP servers, and tool permissions. Available as CLI, GitHub Action, ECC plugin, and GitHub App integration. \ud83d\udee1\ufe0f",
+    "test_payload": "Analyze agentshield security implementation",
+    "detection_keywords": [
+      "ai",
+      "security",
+      "vulnerability"
+    ],
+    "severity": "medium",
+    "source": "GitHub",
+    "url": "https://github.com/affaan-m/agentshield",
+    "stars": 242,
+    "language": "TypeScript",
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-694725955",
@@ -1531,24 +1548,7 @@
     "url": "https://github.com/bosch-aisecurity-aishield/watchtower",
     "stars": 202,
     "language": "PureBasic",
-    "collected_at": "2026-03-23T22:00:17.480419"
-  },
-  {
-    "threat_id": "GH-1155123554",
-    "title": "agentshield",
-    "description": "AI agent security scanner. Detect vulnerabilities in agent configurations, MCP servers, and tool permissions. Available as CLI, GitHub Action, ECC plugin, and GitHub App integration. \ud83d\udee1\ufe0f",
-    "test_payload": "Analyze agentshield security implementation",
-    "detection_keywords": [
-      "ai",
-      "security",
-      "vulnerability"
-    ],
-    "severity": "medium",
-    "source": "GitHub",
-    "url": "https://github.com/affaan-m/agentshield",
-    "stars": 199,
-    "language": "TypeScript",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-863748145",
@@ -1563,26 +1563,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/NVIDIA-AI-Blueprints/vulnerability-analysis",
-    "stars": 195,
+    "stars": 198,
     "language": "Jupyter Notebook",
-    "collected_at": "2026-03-23T22:00:17.480419"
-  },
-  {
-    "threat_id": "GH-1178712649",
-    "title": "alipay-deeplink-research",
-    "description": "Alipay DeepLink + JSBridge Security Research - 17 Verified Vulnerabilities | \u652f\u4ed8\u5b9dDeepLink\u5b89\u5168\u7814\u7a76 | Full Report: innora.ai/zfb",
-    "test_payload": "Analyze alipay-deeplink-research security implementation",
-    "detection_keywords": [
-      "ai",
-      "security",
-      "vulnerability"
-    ],
-    "severity": "medium",
-    "source": "GitHub",
-    "url": "https://github.com/sgInnora/alipay-deeplink-research",
-    "stars": 195,
-    "language": "HTML",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-975457832",
@@ -1597,9 +1580,26 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/Nayjest/Gito",
-    "stars": 193,
+    "stars": 198,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:17.480419"
+    "collected_at": "2026-03-28T13:59:33.179819"
+  },
+  {
+    "threat_id": "GH-1178712649",
+    "title": "alipay-deeplink-research",
+    "description": "Alipay DeepLink + JSBridge Security Research - 17 Verified Vulnerabilities | \u652f\u4ed8\u5b9dDeepLink\u5b89\u5168\u7814\u7a76 | Full Report: innora.ai/zfb",
+    "test_payload": "Analyze alipay-deeplink-research security implementation",
+    "detection_keywords": [
+      "ai",
+      "security",
+      "vulnerability"
+    ],
+    "severity": "medium",
+    "source": "GitHub",
+    "url": "https://github.com/sgInnora/alipay-deeplink-research",
+    "stars": 197,
+    "language": "HTML",
+    "collected_at": "2026-03-28T13:59:33.179819"
   },
   {
     "threat_id": "GH-33331247",
@@ -1613,9 +1613,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/cirosantilli/china-dictatorship",
-    "stars": 2895,
+    "stars": 2896,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-297003752",
@@ -1629,9 +1629,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/gege-circle/.github",
-    "stars": 1811,
+    "stars": 1817,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-1078171437",
@@ -1645,9 +1645,9 @@
     "severity": "critical",
     "source": "GitHub",
     "url": "https://github.com/gadievron/raptor",
-    "stars": 1507,
+    "stars": 1522,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-191637806",
@@ -1663,7 +1663,7 @@
     "url": "https://github.com/zux0x3a/0xsp-Mongoose",
     "stars": 535,
     "language": "Pascal",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-765133369",
@@ -1674,12 +1674,12 @@
       "agent",
       "attack"
     ],
-    "severity": "medium",
+    "severity": "high",
     "source": "GitHub",
     "url": "https://github.com/ethz-spylab/agentdojo",
-    "stars": 496,
+    "stars": 502,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-1116512285",
@@ -1693,9 +1693,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/ARCANGEL0/EVA",
-    "stars": 392,
+    "stars": 394,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-768345949",
@@ -1711,7 +1711,7 @@
     "url": "https://github.com/vectra-ai-research/Halberd",
     "stars": 335,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-397523094",
@@ -1725,9 +1725,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/cirosantilli/china-dictatroship-7",
-    "stars": 321,
+    "stars": 322,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-274472671",
@@ -1743,12 +1743,12 @@
     "url": "https://github.com/zszszszsz/.config",
     "stars": 318,
     "language": "Shell",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-1147803825",
     "title": "ship-safe",
-    "description": "AI-powered security scanner for developers \u2014 17 agents, 80+ attack classes, one command",
+    "description": "AI-powered security scanner for developers \u2014 18 agents, 80+ attack classes, one command",
     "test_payload": "Analyze ship-safe security implementation",
     "detection_keywords": [
       "agent",
@@ -1757,9 +1757,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/asamassekou10/ship-safe",
-    "stars": 239,
+    "stars": 292,
     "language": "JavaScript",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-777597786",
@@ -1773,9 +1773,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/Armur-Ai/Pentest-Swarm-AI",
-    "stars": 213,
+    "stars": 214,
     "language": "Go",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-139798214",
@@ -1791,7 +1791,7 @@
     "url": "https://github.com/Jjschwartz/NetworkAttackSimulator",
     "stars": 206,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-852792241",
@@ -1807,7 +1807,7 @@
     "url": "https://github.com/LLAMATOR-Core/llamator",
     "stars": 204,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.677549"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-456507653",
@@ -1823,7 +1823,7 @@
     "url": "https://github.com/mRFWq7LwNPZjaVv5v6eo/cihna-dictattorshrip-8",
     "stars": 193,
     "language": "HTML",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-45832127",
@@ -1839,7 +1839,7 @@
     "url": "https://github.com/kantega/notsoserial",
     "stars": 191,
     "language": "Java",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-135705277",
@@ -1855,7 +1855,7 @@
     "url": "https://github.com/USTCPCS/CVPR2018_attention",
     "stars": 179,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-500990573",
@@ -1871,7 +1871,7 @@
     "url": "https://github.com/danderfer/Comp_Sci_Sem_2",
     "stars": 178,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-531115591",
@@ -1887,7 +1887,7 @@
     "url": "https://github.com/panbinibn/OpenPacketFix_",
     "stars": 176,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-1171508227",
@@ -1901,9 +1901,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/AgentSeal/agentseal",
-    "stars": 146,
+    "stars": 151,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-855102872",
@@ -1917,9 +1917,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/mbrg/genai-attacks",
-    "stars": 139,
+    "stars": 142,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-218151890",
@@ -1933,9 +1933,9 @@
     "severity": "medium",
     "source": "GitHub",
     "url": "https://github.com/jettbrains/-L-",
-    "stars": 139,
+    "stars": 140,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-817079842",
@@ -1951,7 +1951,7 @@
     "url": "https://github.com/ChenWu98/agent-attack",
     "stars": 135,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-453749225",
@@ -1967,7 +1967,7 @@
     "url": "https://github.com/Don-No7/Hack-SQL",
     "stars": 128,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-758763581",
@@ -1983,7 +1983,7 @@
     "url": "https://github.com/lancopku/agent-backdoor-attacks",
     "stars": 112,
     "language": "Python",
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   },
   {
     "threat_id": "GH-527445421",
@@ -1999,6 +1999,6 @@
     "url": "https://github.com/zpc1314521/PCL2",
     "stars": 104,
     "language": null,
-    "collected_at": "2026-03-23T22:00:18.678559"
+    "collected_at": "2026-03-28T13:59:34.452111"
   }
 ]

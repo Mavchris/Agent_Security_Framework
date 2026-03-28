@@ -14,7 +14,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1053.005",
@@ -31,7 +31,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1205.002",
@@ -50,7 +50,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1066",
@@ -69,7 +69,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1560.001",
@@ -88,7 +88,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1021.005",
@@ -107,7 +107,7 @@
       "Windows",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1047",
@@ -124,7 +124,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1156",
@@ -142,7 +142,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1113",
@@ -161,7 +161,7 @@
       "Windows",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1027.011",
@@ -179,7 +179,7 @@
       "Windows",
       "Linux"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1067",
@@ -197,7 +197,7 @@
       "Linux",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1037",
@@ -218,7 +218,7 @@
       "Network Devices",
       "ESXi"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1557",
@@ -238,7 +238,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1033",
@@ -258,7 +258,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1583",
@@ -275,7 +275,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1218.011",
@@ -292,7 +292,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1613",
@@ -309,7 +309,7 @@
     "platforms": [
       "Containers"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1583.007",
@@ -326,7 +326,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1143",
@@ -344,7 +344,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1161",
@@ -361,7 +361,7 @@
     "platforms": [
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1132.001",
@@ -381,7 +381,7 @@
       "Windows",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1027.009",
@@ -400,7 +400,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1150",
@@ -417,7 +417,7 @@
     "platforms": [
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1556.003",
@@ -435,7 +435,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1578.004",
@@ -452,7 +452,7 @@
     "platforms": [
       "IaaS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1148",
@@ -470,7 +470,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1592",
@@ -487,7 +487,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1596.003",
@@ -504,7 +504,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1056.001",
@@ -524,7 +524,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1564.012",
@@ -543,7 +543,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1222.002",
@@ -561,7 +561,7 @@
       "macOS",
       "Linux"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1110.001",
@@ -587,7 +587,7 @@
       "Identity Provider",
       "ESXi"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1216.001",
@@ -604,7 +604,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1597.002",
@@ -621,7 +621,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1003",
@@ -640,7 +640,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1129",
@@ -659,7 +659,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1602",
@@ -676,7 +676,7 @@
     "platforms": [
       "Network Devices"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1561.002",
@@ -696,7 +696,7 @@
       "Windows",
       "Network Devices"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1498.001",
@@ -716,7 +716,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1492",
@@ -735,7 +735,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1574.007",
@@ -754,7 +754,7 @@
       "macOS",
       "Linux"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1213.002",
@@ -772,7 +772,7 @@
       "Windows",
       "Office Suite"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1006",
@@ -790,7 +790,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1044",
@@ -809,7 +809,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1588.007",
@@ -826,7 +826,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1666",
@@ -843,7 +843,7 @@
     "platforms": [
       "IaaS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1564.008",
@@ -863,7 +863,7 @@
       "macOS",
       "Office Suite"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1491.002",
@@ -883,7 +883,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1027.013",
@@ -902,7 +902,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   },
   {
     "threat_id": "MITRE-T1171",
@@ -919,6 +919,6 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-23T22:00:19.872163"
+    "collected_at": "2026-03-28T13:59:35.502143"
   }
 ]
