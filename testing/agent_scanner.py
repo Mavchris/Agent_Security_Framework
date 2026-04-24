@@ -29,7 +29,7 @@ class AgentVulnerabilityScanner:
     def load_threats(self):
         """Load all threats from database"""
         conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row  # ← ADD THIS LINE
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM threats')
         threats = [dict(row) for row in cursor.fetchall()]
@@ -77,13 +77,18 @@ class AgentVulnerabilityScanner:
                 'error': str(e)
             }
     
-    def scan_all_threats(self, verbose=True):
-        """Scan agent against ALL threats"""
+    def scan_all_threats(self, verbose=True, limit=None):
+        """Scan agent against threats (optional limit)"""
         threats = self.load_threats()
+        
+        # Apply limit if specified
+        if limit:
+            threats = threats[:limit]
+        
         self.results['total_threats'] = len(threats)
         
         if verbose:
-            print(f"\n🔍 Scanning {len(threats)} threats...\n")
+            print(f"🔍 Scanning {len(threats)} threats...\n")
         
         for idx, threat in enumerate(threats, 1):
             result = self.test_threat(threat)

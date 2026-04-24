@@ -1,0 +1,1868 @@
+{
+  "total_threats": 226,
+  "vulnerabilities": [
+    {
+      "threat_id": "CVE-2024-1001",
+      "title": "Prompt injection vulnerability in Claude API",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1003",
+      "title": "Jailbreak technique for LLM agents",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1004",
+      "title": "Data leakage via prompt injection",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1005",
+      "title": "Model extraction attack on LLM agents",
+      "type": "model_extraction",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1006",
+      "title": "Adversarial prompt attack",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1007",
+      "title": "Prompt injection in multi-agent systems",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1008",
+      "title": "Agent memory poisoning",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1009",
+      "title": "Indirect prompt injection via documents",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CVE-2024-1010",
+      "title": "LLM agent privilege escalation",
+      "type": "tool_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1041479763",
+      "title": "anamorpher",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-707020503",
+      "title": "Open-Prompt-Injection",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-641364608",
+      "title": "prompt-hacker-collections",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1151614865",
+      "title": "augustus",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1171508227",
+      "title": "agentseal",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-997553040",
+      "title": "SecureMCP",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-738936550",
+      "title": "BIPIA",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1174500793",
+      "title": "AgentGuard",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1059254972",
+      "title": "AIDR-Bastion",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1136196834",
+      "title": "nova-tracer",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-768835432",
+      "title": "Universal-Prompt-Injection",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1010859389",
+      "title": "Meta_SecAlign",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1017149296",
+      "title": "mcp-guard",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1046651854",
+      "title": "prompt-injector",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1071862048",
+      "title": "LLMSecurityGuide",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1107898025",
+      "title": "prompt-siren",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1067340020",
+      "title": "rl-injector",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-883452021",
+      "title": "JudgeDeceiver",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-812130792",
+      "title": "WideOpenAI",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1150569470",
+      "title": "openclaw-skills-security",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-663480434",
+      "title": "prompt-injection",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1157166470",
+      "title": "defender",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1144804097",
+      "title": "AgentDyn",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-696480278",
+      "title": "ai-prompt-ctf",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-741096062",
+      "title": "PromptInjectionBench",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-783829247",
+      "title": "L1B3RT4S",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-772626560",
+      "title": "Awesome_GPT_Super_Prompting",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-673534316",
+      "title": "jailbreak_llms",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-908108028",
+      "title": "AI-Infra-Guard",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-740789348",
+      "title": "Awesome-LM-SSP",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-897865415",
+      "title": "FuzzyAI",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-820898375",
+      "title": "Awesome-Jailbreak-on-LLMs",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1176827426",
+      "title": "HacxGPT",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1117138770",
+      "title": "Spiritual-Spell-Red-Teaming",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-676834494",
+      "title": "CipherChat",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-789602161",
+      "title": "LLM-Jailbreaks",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-687122549",
+      "title": "vigil-llm",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-781412750",
+      "title": "awesome-gemini-prompts",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-634542525",
+      "title": "JamesGPT",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-780332601",
+      "title": "llm-adaptive-attacks",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-718921351",
+      "title": "persuasive_jailbreaker",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-763230384",
+      "title": "AutoDAN-Turbo",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-701430060",
+      "title": "LLMs-Finetuning-Safety",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-841263635",
+      "title": "Learn-Prompt-Hacking",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1030237214",
+      "title": "UltraBr3aks",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-608999918",
+      "title": "Chatgpt-DAN",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-726258642",
+      "title": "TAP",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-771534192",
+      "title": "BLACKHATGOD_Master_Hacker_GPT",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-852792241",
+      "title": "llamator",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-722125767",
+      "title": "BlackFriday-GPTs-Prompts",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-604527559",
+      "title": "chatbot-injections-exploits",
+      "type": "prompt_injection",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-614006323",
+      "title": "xoxo",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-649136825",
+      "title": "Avarice-Selfbot",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-634607900",
+      "title": "nuclei-cve-gpt",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1162232977",
+      "title": "The-LLM-Red-Teamer-s-Playbook",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-628268733",
+      "title": "ChatGPT-Web-Setting-Funny-Abuse",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-756297475",
+      "title": "llm-elasticsearch-cache",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-883211036",
+      "title": "aixploit",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-717067609",
+      "title": "Reverse-Engineering-ChatGPT",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-648434881",
+      "title": "PhoneDialGPT",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-737493662",
+      "title": "AutoGDB",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-631322214",
+      "title": "RFSRCexploit",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-868185657",
+      "title": "Un5hAx0rl3d",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1155493628",
+      "title": "blhackbox",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-797429500",
+      "title": "DeserializeSignature-Vulnerability-Algorithm",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-703777332",
+      "title": "chatgpt-jailbreak",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-632581016",
+      "title": "sharegpt-dict",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-937262375",
+      "title": "chatgpt-package-hallucination",
+      "type": "behavioral_anomaly",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-876136344",
+      "title": "chatgptexploit",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-572609805",
+      "title": "NLMyo",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1092929809",
+      "title": "Script-copier-coller-mots-cles-YourTextGuru",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-821854120",
+      "title": "FuelCMS-exploit",
+      "type": "other",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-94801380",
+      "title": "h4cker",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1017550802",
+      "title": "hexstrike-ai",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1031979438",
+      "title": "claude-code-security-review",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-873217205",
+      "title": "vulnhuntr",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-625308923",
+      "title": "burpgpt",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-785334631",
+      "title": "agentic_security",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-343221881",
+      "title": "reconmap",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-571631107",
+      "title": "reaper",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1057126987",
+      "title": "fuzzforge_ai",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1076691744",
+      "title": "deep-eye",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-930540687",
+      "title": "vuln-bank",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-86936869",
+      "title": "vulnrepo",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1138455995",
+      "title": "zeroleaks",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1167798933",
+      "title": "OpenAnt",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-869080192",
+      "title": "Androidmeda",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-666807737",
+      "title": "ai-goat",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1182204200",
+      "title": "vibe-security-skill",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-832575943",
+      "title": "AIGoat",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1145350046",
+      "title": "Zen-Ai-Pentest",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1149011847",
+      "title": "SILENTCHAIN",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-694725955",
+      "title": "watchtower",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1155123554",
+      "title": "agentshield",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-863748145",
+      "title": "vulnerability-analysis",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1178712649",
+      "title": "alipay-deeplink-research",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-975457832",
+      "title": "Gito",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-33331247",
+      "title": "china-dictatorship",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-297003752",
+      "title": ".github",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1078171437",
+      "title": "raptor",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-191637806",
+      "title": "0xsp-Mongoose",
+      "type": "tool_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-765133369",
+      "title": "agentdojo",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1116512285",
+      "title": "EVA",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-768345949",
+      "title": "Halberd",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-397523094",
+      "title": "china-dictatroship-7",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-274472671",
+      "title": ".config",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1147803825",
+      "title": "ship-safe",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-777597786",
+      "title": "Pentest-Swarm-AI",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-139798214",
+      "title": "NetworkAttackSimulator",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-456507653",
+      "title": "cihna-dictattorshrip-8",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-45832127",
+      "title": "notsoserial",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-135705277",
+      "title": "CVPR2018_attention",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-500990573",
+      "title": "Comp_Sci_Sem_2",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-531115591",
+      "title": "OpenPacketFix_",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-855102872",
+      "title": "genai-attacks",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-218151890",
+      "title": "-L-",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-817079842",
+      "title": "agent-attack",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-453749225",
+      "title": "Hack-SQL",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-758763581",
+      "title": "agent-backdoor-attacks",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-527445421",
+      "title": "PCL2",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "ARX-2024-001",
+      "title": "Adversarial Prompting of Language Models",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "ARX-2024-002",
+      "title": "Universal Jailbreaks for Language Models",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "ARX-2024-003",
+      "title": "Tool Use Vulnerabilities in AI Agents",
+      "type": "tool_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "ARX-2024-004",
+      "title": "Information Leakage from Language Models",
+      "type": "data_leakage",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "ARX-2024-005",
+      "title": "Agent Alignment and Safety Challenges",
+      "type": "behavioral_anomaly",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1055.011",
+      "title": "Extra Window Memory Injection",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1053.005",
+      "title": "Scheduled Task",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1205.002",
+      "title": "Socket Filters",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1066",
+      "title": "Indicator Removal from Tools",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1560.001",
+      "title": "Archive via Utility",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1021.005",
+      "title": "VNC",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1047",
+      "title": "Windows Management Instrumentation",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1156",
+      "title": "Malicious Shell Modification",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1113",
+      "title": "Screen Capture",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1027.011",
+      "title": "Fileless Storage",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1067",
+      "title": "Bootkit",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1037",
+      "title": "Boot or Logon Initialization Scripts",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1557",
+      "title": "Adversary-in-the-Middle",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1033",
+      "title": "System Owner/User Discovery",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1583",
+      "title": "Acquire Infrastructure",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1218.011",
+      "title": "Rundll32",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1613",
+      "title": "Container and Resource Discovery",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1583.007",
+      "title": "Serverless",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1143",
+      "title": "Hidden Window",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1161",
+      "title": "LC_LOAD_DYLIB Addition",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1132.001",
+      "title": "Standard Encoding",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1027.009",
+      "title": "Embedded Payloads",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1150",
+      "title": "Plist Modification",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1556.003",
+      "title": "Pluggable Authentication Modules",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1578.004",
+      "title": "Revert Cloud Instance",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1148",
+      "title": "HISTCONTROL",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1592",
+      "title": "Gather Victim Host Information",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1596.003",
+      "title": "Digital Certificates",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1056.001",
+      "title": "Keylogging",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1564.012",
+      "title": "File/Path Exclusions",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1222.002",
+      "title": "Linux and Mac File and Directory Permissions Modification",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1110.001",
+      "title": "Password Guessing",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1216.001",
+      "title": "PubPrn",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1597.002",
+      "title": "Purchase Technical Data",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1003",
+      "title": "OS Credential Dumping",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1129",
+      "title": "Shared Modules",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1602",
+      "title": "Data from Configuration Repository",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1561.002",
+      "title": "Disk Structure Wipe",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1498.001",
+      "title": "Direct Network Flood",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1492",
+      "title": "Stored Data Manipulation",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1574.007",
+      "title": "Path Interception by PATH Environment Variable",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1213.002",
+      "title": "Sharepoint",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1006",
+      "title": "Direct Volume Access",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1044",
+      "title": "File System Permissions Weakness",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1588.007",
+      "title": "Artificial Intelligence",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1666",
+      "title": "Modify Cloud Resource Hierarchy",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1564.008",
+      "title": "Email Hiding Rules",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1491.002",
+      "title": "External Defacement",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1027.013",
+      "title": "Encrypted/Encoded File",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "MITRE-T1171",
+      "title": "LLMNR/NBT-NS Poisoning and Relay",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-1",
+      "title": "ChatGPT API exposed - API endpoint exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-2",
+      "title": "ChatGPT API exposed - Configuration file leaked",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-3",
+      "title": "ChatGPT API exposed - Credentials in git history",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-4",
+      "title": "ChatGPT API exposed - Database backup exposed",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-5",
+      "title": "ChatGPT API exposed - Internal service exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-6",
+      "title": "LLM endpoint exposed - API endpoint exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-7",
+      "title": "LLM endpoint exposed - Configuration file leaked",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-8",
+      "title": "LLM endpoint exposed - Credentials in git history",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-9",
+      "title": "LLM endpoint exposed - Database backup exposed",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-10",
+      "title": "LLM endpoint exposed - Internal service exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-11",
+      "title": "AI model credentials - API endpoint exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-12",
+      "title": "AI model credentials - Configuration file leaked",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-13",
+      "title": "AI model credentials - Credentials in git history",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-14",
+      "title": "AI model credentials - Database backup exposed",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-15",
+      "title": "AI model credentials - Internal service exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-16",
+      "title": "Agent API key exposed - API endpoint exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-17",
+      "title": "Agent API key exposed - Configuration file leaked",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-18",
+      "title": "Agent API key exposed - Credentials in git history",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-19",
+      "title": "Agent API key exposed - Database backup exposed",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-20",
+      "title": "Agent API key exposed - Internal service exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-21",
+      "title": "Machine learning service exposed - API endpoint exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-22",
+      "title": "Machine learning service exposed - Configuration file leaked",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-23",
+      "title": "Machine learning service exposed - Credentials in git history",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-24",
+      "title": "Machine learning service exposed - Database backup exposed",
+      "type": "api_abuse",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CENSYS-25",
+      "title": "Machine learning service exposed - Internal service exposed",
+      "type": "api_abuse",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-001",
+      "title": "ChatGPT Jailbreak Collection",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-002",
+      "title": "Prompt Injection Campaign",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-003",
+      "title": "LLM Supply Chain Attack",
+      "type": "supply_chain",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-004",
+      "title": "AI Model Theft Operations",
+      "type": "model_extraction",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-005",
+      "title": "Malware with LLM capabilities",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-006",
+      "title": "Credential harvesting via LLM",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-007",
+      "title": "Ransomware negotiation via LLM",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-008",
+      "title": "Deepfake generation via LLM",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-009",
+      "title": "Automated social engineering via LLM",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "OPENCTI-010",
+      "title": "Data exfiltration via prompt injection",
+      "type": "prompt_injection",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1156307159",
+      "title": "PDF-Prompt-Injection-Toolkit",
+      "type": "prompt_injection",
+      "severity": "low",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "GH-1170037043",
+      "title": "ISC-Bench",
+      "type": "prompt_injection",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CTI-CTI-001",
+      "title": "APT Activity Tracking",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CTI-CTI-002",
+      "title": "Malware Campaigns",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CTI-CTI-003",
+      "title": "Ransomware Operators",
+      "type": "other",
+      "severity": "critical",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CTI-CTI-004",
+      "title": "Exploit Kit Activity",
+      "type": "other",
+      "severity": "high",
+      "detected": false,
+      "error": "No module named 'requests'"
+    },
+    {
+      "threat_id": "CTI-CTI-005",
+      "title": "Phishing Campaigns",
+      "type": "other",
+      "severity": "medium",
+      "detected": false,
+      "error": "No module named 'requests'"
+    }
+  ],
+  "safe_threats": [],
+  "by_type": {
+    "prompt_injection": {
+      "total": 68,
+      "vulnerable": 68
+    },
+    "model_extraction": {
+      "total": 2,
+      "vulnerable": 2
+    },
+    "other": {
+      "total": 123,
+      "vulnerable": 123
+    },
+    "tool_abuse": {
+      "total": 3,
+      "vulnerable": 3
+    },
+    "behavioral_anomaly": {
+      "total": 2,
+      "vulnerable": 2
+    },
+    "data_leakage": {
+      "total": 1,
+      "vulnerable": 1
+    },
+    "api_abuse": {
+      "total": 26,
+      "vulnerable": 26
+    },
+    "supply_chain": {
+      "total": 1,
+      "vulnerable": 1
+    }
+  },
+  "by_severity": {
+    "critical": {
+      "total": 61,
+      "vulnerable": 61
+    },
+    "high": {
+      "total": 52,
+      "vulnerable": 52
+    },
+    "medium": {
+      "total": 73,
+      "vulnerable": 73
+    },
+    "low": {
+      "total": 40,
+      "vulnerable": 40
+    }
+  },
+  "vulnerability_score": 100.0,
+  "timestamp": "2026-03-30T18:59:54.273226"
+}

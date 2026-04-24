@@ -118,13 +118,13 @@ st.markdown("### 📈 Platform Statistics")
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("Total Threats", "219", "From 7 CTI sources")
+    st.metric("Total Threats", "226", "From 7 CTI sources")
 
 with col2:
-    st.metric("Threat Types", "9", "Categories")
+    st.metric("Threat Types", "8", "Categories")
 
 with col3:
-    st.metric("Intelligence Sources", "6", "Active feeds")
+    st.metric("Intelligence Sources", "7", "Active feeds")
 
 with col4:
     st.metric("Classification", "46%", "High-quality")
