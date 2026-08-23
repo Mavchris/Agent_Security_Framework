@@ -1,21 +1,21 @@
 # Agent Security Intelligence Framework
 
 [![GitHub](https://img.shields.io/badge/GitHub-Mavchris/Agent_Security_Framework-blue?logo=github)](https://github.com/Mavchris/Agent_Security_Framework)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python)](https://www.python.org)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
 
 > **Automated threat intelligence & vulnerability assessment framework for AI agents**
 
-A comprehensive security framework for testing, monitoring, and validating AI agents against real-world threats. Continuously collects threat intelligence from 7 sources, classifies threats into 9 categories, and provides automated vulnerability scanning with production-grade dashboards.
+A comprehensive security framework for testing, monitoring, and validating AI agents against real-world threats. Collects threat intelligence from 7 CTI sources, classifies threats into 9 categories, and provides automated vulnerability scanning with production-grade dashboards. See [Known Limitations](#known-limitations) for an honest read on what's proven vs. designed-but-not-yet-exercised.
 
 ## 🎯 Features
 
 ### 🔍 Threat Intelligence
-- **7 CTI Sources**: NVD, MITRE ATT&CK, GitHub Security, ArXiv, Censys, MISP, OpenCTI
-- **236+ Threats Collected**: Real-world vulnerabilities and attack vectors
-- **9-Category Classification**: Prompt injection, API abuse, model extraction, tool abuse, data leakage, behavioral anomaly, supply chain, data poisoning, resource exhaustion
-- **Automated Collection**: Daily pipeline (02:00 UTC) + weekly maintenance (Monday 10:00 UTC)
+- **7 CTI Sources**: CVE, NVD, MITRE ATT&CK, GitHub Security, ArXiv, Censys, OpenCTI
+- **240 Threats Collected** (live count — see `/stats` or the Catalog dashboard): real-world vulnerabilities and attack vectors
+- **9-Category Classification**: Prompt injection, API abuse, model extraction, tool abuse, data leakage, behavioral anomaly, supply chain, data poisoning, resource exhaustion (+ an `other` fallback when no category matches)
+- **Scheduled Collection**: designed to run daily (02:00 UTC) + weekly maintenance (Monday 10:00 UTC) via the `schedule` library — see [Known Limitations](#known-limitations) for actual run history
 
 ### 🧪 Agent Testing
 - **Multi-Agent Support**: Mock, Claude, GPT-4, Llama, Mistral, HuggingFace, Custom
@@ -26,18 +26,18 @@ A comprehensive security framework for testing, monitoring, and validating AI ag
 ### 📊 Dashboards
 - **Operations Dashboard**: Real-time agent testing & production monitoring
 - **Intelligence Veille Dashboard**: Threat overview, menaces récentes, orchestrator status, logs
-- **Catalog Dashboard**: Advanced search & filtering with 219+ threat database
+- **Catalog Dashboard**: Advanced search & filtering across the 240-threat database
 
 ### ⚙️ Automation
-- **APScheduler Integration**: Reliable, time-based task scheduling
-- **Orchestrator System**: Complete pipeline automation with error handling & retry logic
+- **Task Scheduling**: the `schedule` library (daily/weekly/hourly jobs) — see [Known Limitations](#known-limitations)
+- **Orchestrator System**: pipeline automation with per-source error handling (logged and skipped; no automatic retry yet)
 - **Monitoring & Logging**: Full audit trail, metrics, and health checks
-- **100% Success Rate**: Battle-tested automation (Session 2 complete)
+- **2/2 Recorded Runs Succeeded** (2026-03-28) — not yet operated continuously, see [Known Limitations](#known-limitations)
 
 ### 🔐 Security
-- **Open-Source**: Fully transparent, reproducible research
+- **Open-Source**: Fully transparent, reproducible research (AGPL-3.0)
 - **Local Processing**: Control over all data (no cloud dependencies)
-- **SQLite Database**: 236+ threats with rich metadata
+- **SQLite Database**: 240 threats with rich metadata
 - **Extensible Architecture**: Modular design for custom integrations
 
 ---
@@ -69,7 +69,7 @@ source .venv/Scripts/activate
 pip install -r requirements.txt
 
 # 4. Configure API keys (optional, for some sources)
-cp config/.env.local.example config/.env.local
+cp .env.example config/.env.local
 # Edit config/.env.local with your Censys API credentials
 ```
 
@@ -82,7 +82,7 @@ streamlit run dashboard/main.py
 # Then select from:
 # - Operations: Test agents & monitor production
 # - Intelligence: Threat overview & veille automation
-# - Catalog: Search 236+ threats
+# - Catalog: Search 240 threats
 
 # Opens at: http://localhost:8501
 ```
@@ -119,15 +119,21 @@ python orchestrator.py --status
 
 ## 📚 Documentation
 
+All documentation files live at the repository root, alongside this README (there is no `docs/` folder).
+
 | Document | Purpose |
 |----------|---------|
-| [INSTALLATION.md](docs/INSTALLATION.md) | Detailed setup guide |
-| [USAGE_GUIDE.md](docs/USAGE_GUIDE.md) | How to use dashboards & CLI |
-| [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md) | REST API reference |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design & UML diagrams |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Production deployment guide |
-| [DATA_SOURCES.md](docs/DATA_SOURCES.md) | CTI sources documentation |
-| [SECURITY.md](docs/SECURITY.md) | Security practices & roadmap |
+| [INSTALLATION.md](INSTALLATION.md) | Detailed setup guide |
+| [USAGE_GUIDE.md](USAGE_GUIDE.md) | How to use dashboards & CLI |
+| [API_DOCUMENTATION.md](API_DOCUMENTATION.md) | REST API reference |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
+| [SCRAPERS_DOCUMENTATION.md](SCRAPERS_DOCUMENTATION.md) | CTI scrapers documentation |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Production deployment guide |
+| [DATA_SOURCES.md](DATA_SOURCES.md) | CTI sources documentation |
+| [SECURITY.md](SECURITY.md) | Security practices & roadmap |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [ROADMAP.md](ROADMAP.md) | Near-term priorities |
+| [ACADEMIC.md](ACADEMIC.md) | Academic/thesis context |
 
 ---
 
@@ -140,7 +146,7 @@ python orchestrator.py --status
 │                  DASHBOARDS (Streamlit)             │
 │  ├─ Operations (Test Agents + Monitor Production)  │
 │  ├─ Intelligence Veille (Overview + Logs)          │
-│  └─ Catalog (Search 236+ Threats)                  │
+│  └─ Catalog (Search 240 Threats)                   │
 └─────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────┐
@@ -156,20 +162,20 @@ python orchestrator.py --status
 │  ├─ Scanner: Threat testing engine                  │
 │  ├─ Classifier: 9-category threat classifier       │
 │  ├─ Wrappers: 7 agent engines support              │
-│  ├─ Orchestrator: Automated pipeline (APScheduler) │
+│  ├─ Orchestrator: Automated pipeline (`schedule`)  │
 │  └─ Monitor: Real-time threat detection            │
 └─────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────┐
 │              DATA PIPELINE (ETL)                    │
-│  ├─ Extract: 7 CTI sources (NVD, GitHub, etc.)     │
-│  ├─ Transform: Normalize, deduplicate, validate    │
-│  └─ Load: SQLite database (236+ threats)           │
+│  ├─ Extract: 7 CTI sources (CVE, GitHub, etc.)     │
+│  ├─ Transform: classify, dedup on insert (UNIQUE)  │
+│  └─ Load: SQLite database (240 threats)            │
 └─────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────┐
 │              DATABASE & STORAGE                     │
-│  ├─ data/threats.db (SQLite, 236+ threats)         │
+│  ├─ data/threats.db (SQLite, 240 threats)          │
 │  ├─ logs/orchestrator.log (audit trail)            │
 │  ├─ logs/orchestrator_metrics.json (metrics)       │
 │  └─ data/*.json (raw CTI feeds)                    │
@@ -182,7 +188,7 @@ python orchestrator.py --status
 |-----------|---------|--------|
 | **Scanner** | Nessus-like vulnerability testing | ✅ Complete |
 | **Classifier** | 9-category threat classification | ✅ Complete (11/11 tests) |
-| **Orchestrator** | Automated pipeline scheduling | ✅ Complete (100% success rate) |
+| **Orchestrator** | Automated pipeline scheduling | ⚠️ Implemented; 2 recorded runs (2026-03-28) |
 | **Dashboards** | Real-time visualization | ✅ 3 production dashboards |
 | **API** | REST interface | ✅ 10+ endpoints |
 | **Multi-Agent** | 7 LLM engine support | ✅ Complete |
@@ -195,38 +201,39 @@ python orchestrator.py --status
 
 ### Data Collection
 ```
-Total Threats Collected:    236+
-Sources (CTI):              7
-├─ NVD (NIST):              80+
-├─ GitHub Security:         122+
-├─ MITRE ATT&CK:            50+
-├─ ArXiv (Research):        25+
-├─ Censys:                  25+
-├─ MISP:                    10+
-└─ OpenCTI:                 15+
+Total Threats Collected:    240 (live count, 2026-08-23 — check /stats for current)
+Sources (CTI):              7 active
+├─ GitHub Security:         135
+├─ MITRE ATT&CK:            51
+├─ Censys:                  25
+├─ OpenCTI:                 15
+├─ CVE:                     9
+├─ ArXiv (Research):        5
+└─ NVD (NIST):              0 (wired into the pipeline, not yet run)
 
-Data Quality:               Validated ✅
-Last Update:                Daily (02:00 UTC)
+Data Quality:               Dedup on insert (SQLite UNIQUE constraint on threat_id)
+Last Update:                Scheduled daily (02:00 UTC) — see Known Limitations for real run history
 ```
 
 ### Classification Results
 ```
-Total Classified:           236 threats
-Categories:                 9
+Total Classified:           240 threats
+Categories:                 9 (+ "other" fallback when no keyword matches)
 
 Distribution:
-├─ prompt_injection:        72 (30.5%)
-├─ api_abuse:               26 (11.9%)
-├─ tool_abuse:              3 (1.4%)
-├─ model_extraction:        2 (0.9%)
-├─ behavioral_anomaly:      2 (0.9%)
-├─ supply_chain:            1 (0.5%)
-├─ data_leakage:            1 (0.5%)
+├─ other:                   134 (55.8%)
+├─ prompt_injection:        71 (29.6%)
+├─ api_abuse:               26 (10.8%)
+├─ tool_abuse:              3 (1.3%)
+├─ model_extraction:        2 (0.8%)
+├─ behavioral_anomaly:      2 (0.8%)
+├─ supply_chain:            1 (0.4%)
+├─ data_leakage:            1 (0.4%)
 ├─ data_poisoning:          0 (0%)
 └─ resource_exhaustion:     0 (0%)
 
-Classification Tests:       11/11 passing ✅
-Confidence Scores:          Calculated for all threats
+Classification Tests:       11/11 passing ✅ (tests/test_classifier.py)
+Confidence Scores:          Not currently computed/stored per threat
 ```
 
 ### Scanner Performance
@@ -249,12 +256,13 @@ Framework validates scanner works with real agents ✅
 
 ### Orchestration Reliability
 ```
-Pipeline Executions:        1+ (continuous)
-Success Rate:               100% ✅
-Average Execution Time:     ~8 seconds
-Error Handling:             Retry logic + fallback
-Monitoring:                 Metrics + logs
-Health Checks:              Hourly
+Pipeline Executions:        2 recorded (both 2026-03-28); none since
+Success Rate:               2/2 (small, non-continuous sample — not "battle-tested")
+Average Execution Time:     ~7 seconds (both runs collected 0 new threats)
+Error Handling:             Try/except per source — errors are logged and
+                             skipped, no automatic retry yet
+Monitoring:                 logs/orchestrator_metrics.json + logs/orchestrator.log
+Health Checks:              Hourly (while the scheduler process is running)
 ```
 
 ---
@@ -265,7 +273,7 @@ Health Checks:              Hourly
 |-------|-----------|
 | **Dashboard** | Streamlit, Plotly |
 | **API** | FastAPI, Uvicorn |
-| **Automation** | APScheduler |
+| **Automation** | `schedule` (Python task scheduling library) |
 | **Database** | SQLite3 |
 | **Language** | Python 3.11 |
 | **Agent Support** | Anthropic, OpenAI, Ollama, HuggingFace |
@@ -278,7 +286,7 @@ See [requirements.txt](requirements.txt) for complete list.
 Key packages:
 - `streamlit` - Dashboard UI
 - `fastapi` - REST API
-- `apscheduler` - Task scheduling
+- `schedule` - Task scheduling (not currently pinned in requirements.txt — install separately: `pip install schedule`)
 - `requests` - HTTP requests
 - `beautifulsoup4` - Web scraping
 - `pandas` - Data processing
@@ -297,10 +305,11 @@ Agent_security_framework/
 │
 ├─ dashboard/                   (Streamlit dashboards)
 │  ├─ main.py                   (navigation hub)
+│  ├─ utils/style.py            (shared theming: icons, KPI cards, Plotly theme)
 │  └─ pages/
-│     ├─ 1_operations.py        (test agents + monitor)
-│     ├─ 2_intelligence.py      (overview + veille)
-│     └─ 3_catalog.py           (threat database)
+│     ├─ operations.py          (test agents + monitor)
+│     ├─ intelligence.py        (overview + veille)
+│     └─ catalog.py             (threat database)
 │
 ├─ testing/                     (agent testing)
 │  ├─ agent_scanner.py          (vulnerability scanner)
@@ -309,27 +318,27 @@ Agent_security_framework/
 │  └─ cli.py                    (command-line interface)
 │
 ├─ core/                        (core services)
-│  ├─ classifier.py             (threat classifier - 9 categories)
-│  └─ threat_definitions.py     (threat metadata)
+│  └─ classifier.py             (threat classifier - 9 categories; keyword
+│                                 lists live in the `self.keywords` dict)
 │
 ├─ pipeline/                    (ETL pipeline)
 │  └─ process.py                (extract, transform, load)
 │
 ├─ scrapers/                    (CTI data collection)
+│  ├─ cve_scraper.py
 │  ├─ nvd_scraper.py
 │  ├─ github_scraper.py
 │  ├─ arxiv_scraper.py
 │  ├─ mitre_scraper.py
 │  ├─ censys_scraper.py
-│  ├─ misp_scraper.py
 │  ├─ opencti_scraper.py
-│  └─ cve_scraper.py
+│  └─ misp_scraper.py           (exists, not called by pipeline/process.py yet)
 │
 ├─ api/                         (REST API)
 │  └─ app.py                    (FastAPI routes)
 │
 ├─ data/                        (databases & storage)
-│  ├─ threats.db                (SQLite - 236+ threats)
+│  ├─ threats.db                (SQLite - 240 threats)
 │  └─ raw_*.json                (scraped data)
 │
 ├─ logs/                        (logs & metrics)
@@ -338,35 +347,47 @@ Agent_security_framework/
 │  └─ weekly_report_*.json      (weekly reports)
 │
 ├─ config/                      (configuration)
-│  ├─ .env.local                (API keys - git ignored)
-│  └─ .env.example              (template)
+│  └─ .env.local                (API keys - git ignored)
+│
+├─ .env.example                 (API key template, at repo root — copy to
+│                                 config/.env.local)
 │
 ├─ tests/                       (unit tests)
 │  ├─ test_classifier.py        (11/11 passing ✅)
 │  └─ test_*.py
 │
-└─ docs/                        (documentation - WIP)
-   ├─ INSTALLATION.md
-   ├─ USAGE_GUIDE.md
-   ├─ API_DOCUMENTATION.md
-   └─ ARCHITECTURE.md
+└─ *.md                         (all documentation, at repo root next to
+                                  README.md — no separate docs/ folder)
 ```
 
 ---
 
+<a name="status-roadmap"></a>
 ## 🚦 Status & Roadmap
 
 ### Current Status: v2.0 - Production Ready (65/100)
 
 ✅ **Completed (Session 2)**
-- Automated orchestrator (APScheduler)
-- Daily/weekly scheduling with health checks
+- Orchestrator with daily/weekly/hourly scheduling (via the `schedule` library)
 - Intelligence Veille dashboard (merged overview + monitoring)
-- 100% orchestrator success rate
+- 2/2 recorded orchestrator runs succeeded (2026-03-28)
 - Complete multi-agent support (7 engines)
-- 236+ threats from 7 CTI sources
-- 9-category threat classifier (11/11 tests passing)
+- 240 threats from 7 active CTI sources
+- 9-category threat classifier + `other` fallback (11/11 tests passing)
 - 3 production dashboards
+
+<a name="known-limitations"></a>
+### ⚠️ Known Limitations (as of 2026-08-23)
+
+Documentation-vs-code audit findings, listed plainly rather than left implicit:
+
+- **CTI sources**: 7 scrapers are wired into `pipeline/process.py` (CVE, GitHub, ArXiv, MITRE ATT&CK, Censys, NVD, OpenCTI). `scrapers/misp_scraper.py` exists but isn't called by the pipeline yet.
+- **Deduplication**: not SHA-256-based. The real mechanism is a SQLite `UNIQUE` constraint on `threat_id`, enforced at insert time, plus a periodic cleanup query (`DELETE ... WHERE id NOT IN (SELECT MAX(id) ... GROUP BY threat_id)`) in the orchestrator's weekly maintenance job.
+- **Retry logic**: each scraper call is wrapped in a try/except that logs the error and skips that source — there's no automatic retry or exponential backoff yet.
+- **SQLite mode**: default journal mode; WAL is not enabled.
+- **Task scheduling**: implemented with the `schedule` library, not APScheduler.
+- **Automation track record**: the orchestrator has been run twice (2026-03-28), both successful, 0 new threats collected either time (both fetched data that was already in the database). It has not yet been operated continuously/unattended over an extended period.
+- **Classification**: keyword-based by design (see roadmap below, this isn't hidden) — 134/240 threats (55.8%) currently land in the `other` fallback because no keyword matched.
 
 ⚠️ **In Progress**
 - Documentation (README, guides, API docs)
@@ -386,7 +407,7 @@ Agent_security_framework/
 - Commercial SaaS launch
 - Docker/Kubernetes support
 
-See [ROADMAP.md](docs/ROADMAP.md) for detailed timeline.
+See [ROADMAP.md](ROADMAP.md) for detailed timeline.
 
 ---
 
@@ -428,9 +449,9 @@ curl http://localhost:8000/monitoring/health/my_agent
 streamlit run dashboard/main.py
 
 # Or launch specific dashboard
-streamlit run dashboard/pages/1_operations.py
-streamlit run dashboard/pages/2_intelligence.py
-streamlit run dashboard/pages/3_catalog.py
+streamlit run dashboard/pages/operations.py
+streamlit run dashboard/pages/intelligence.py
+streamlit run dashboard/pages/catalog.py
 ```
 
 ### Example 4: Export Threat Dataset
@@ -446,7 +467,7 @@ python testing/cli.py --scan-agent mock --output threats.json
 curl http://localhost:8000/threats?format=json > threats.json
 ```
 
-See [USAGE_GUIDE.md](docs/USAGE_GUIDE.md) for more examples.
+See [USAGE_GUIDE.md](USAGE_GUIDE.md) for more examples.
 
 ---
 
@@ -470,13 +491,13 @@ See [USAGE_GUIDE.md](docs/USAGE_GUIDE.md) for more examples.
 - **Open Source**: Fully transparent code
 - **Data Retention**: You control database
 
-For security best practices, see [SECURITY.md](docs/SECURITY.md).
+For security best practices, see [SECURITY.md](SECURITY.md).
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for:
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - How to report bugs
 - How to suggest features
 - How to submit pull requests
@@ -519,6 +540,7 @@ See the [LICENSE](LICENSE) file for the full legal text, or
 
 ---
 
+<a name="academic-work"></a>
 ## 📖 Academic Work
 
 This project is also a Master's thesis at a French university.
@@ -530,7 +552,7 @@ This project is also a Master's thesis at a French university.
 
 **Status:** In progress (framework complete, thesis writing in progress)
 
-See [ACADEMIC.md](docs/ACADEMIC.md) for research context.
+See [ACADEMIC.md](ACADEMIC.md) for research context.
 
 ---
 
@@ -574,13 +596,13 @@ A: Optional. Some CTI sources (Censys) require free API keys, but framework work
 A: Daily at 02:00 UTC automatically, plus weekly maintenance Monday 10:00 UTC.
 
 **Q: Can I run this in production?**
-A: Yes, but you'll need Docker, authentication, and hardening. See [DEPLOYMENT.md](docs/DEPLOYMENT.md).
+A: Yes, but you'll need Docker, authentication, and hardening. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 **Q: Is this open source?**
-A: Yes, MIT license. Code is on GitHub and fully transparent.
+A: Yes, AGPL-3.0 license. Code is on GitHub and fully transparent.
 
 **Q: Can I contribute?**
-A: Absolutely! See [CONTRIBUTING.md](docs/CONTRIBUTING.md).
+A: Absolutely! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -590,7 +612,7 @@ A: Absolutely! See [CONTRIBUTING.md](docs/CONTRIBUTING.md).
 |-----------|-----------------|
 | Bugs | [GitHub Issues](https://github.com/Mavchris/Agent_Security_Framework/issues) |
 | Questions | [GitHub Discussions](https://github.com/Mavchris/Agent_Security_Framework/discussions) |
-| Security | [SECURITY.md](docs/SECURITY.md) (responsible disclosure) |
+| Security | [SECURITY.md](SECURITY.md) (responsible disclosure) |
 | Feature Requests | [GitHub Issues](https://github.com/Mavchris/Agent_Security_Framework/issues) |
 
 ---
@@ -615,7 +637,7 @@ Documentation:       In progress
 Dashboards:          3 (production-ready)
 API Endpoints:       10+
 CTI Sources:         7
-Threats Database:    236+
+Threats Database:    240
 Agents Supported:    7 LLM engines
 GitHub Stars:        ⭐ Help us out! 😊
 ```
@@ -627,10 +649,10 @@ GitHub Stars:        ⭐ Help us out! 😊
 **New to this framework?**
 
 1. Read this README (you are here! 👋)
-2. [Install](docs/INSTALLATION.md) (5 minutes)
+2. [Install](INSTALLATION.md) (5 minutes)
 3. [Run Quick Start](#quick-start) (2 minutes)
 4. [Explore Dashboards](#run-dashboard-2-minutes) (10 minutes)
-5. [Read Usage Guide](docs/USAGE_GUIDE.md) (30 minutes)
+5. [Read Usage Guide](USAGE_GUIDE.md) (30 minutes)
 
 **Questions?** Create a [GitHub Discussion](https://github.com/Mavchris/Agent_Security_Framework/discussions)
 
@@ -640,15 +662,15 @@ GitHub Stars:        ⭐ Help us out! 😊
 
 ## 📚 More Documentation
 
-- [Installation Guide](docs/INSTALLATION.md) - Detailed setup
-- [Usage Guide](docs/USAGE_GUIDE.md) - How to use everything
-- [API Documentation](docs/API_DOCUMENTATION.md) - REST API reference
-- [Architecture](docs/ARCHITECTURE.md) - System design & UML
-- [Deployment](docs/DEPLOYMENT.md) - Production deployment
-- [Data Sources](docs/DATA_SOURCES.md) - CTI feeds info
-- [Security](docs/SECURITY.md) - Security practices
-- [Contributing](docs/CONTRIBUTING.md) - How to contribute
-- [Roadmap](docs/ROADMAP.md) - Future plans
+- [Installation Guide](INSTALLATION.md) - Detailed setup
+- [Usage Guide](USAGE_GUIDE.md) - How to use everything
+- [API Documentation](API_DOCUMENTATION.md) - REST API reference
+- [Architecture](ARCHITECTURE.md) - System design & UML
+- [Deployment](DEPLOYMENT.md) - Production deployment
+- [Data Sources](DATA_SOURCES.md) - CTI feeds info
+- [Security](SECURITY.md) - Security practices
+- [Contributing](CONTRIBUTING.md) - How to contribute
+- [Roadmap](ROADMAP.md) - Future plans
 
 ---
 
@@ -656,10 +678,10 @@ GitHub Stars:        ⭐ Help us out! 😊
 
 **Made with ❤️ for AI security research**
 
-[⭐ Star on GitHub](https://github.com/Mavchris/Agent_Security_Framework) | [🐛 Report Bug](https://github.com/Mavchris/Agent_Security_Framework/issues) | [💡 Suggest Feature](https://github.com/Mavchris/Agent_Security_Framework/issues) | [📖 Read Docs](docs/)
+[⭐ Star on GitHub](https://github.com/Mavchris/Agent_Security_Framework) | [🐛 Report Bug](https://github.com/Mavchris/Agent_Security_Framework/issues) | [💡 Suggest Feature](https://github.com/Mavchris/Agent_Security_Framework/issues) | [📖 Read Docs](#-documentation)
 
 </div>
 
 ---
 
-**Last Updated:** March 28, 2026 | **Version:** 2.0 | **Status:** Production Ready (65/100)
+**Last Updated:** August 23, 2026 (documentation accuracy pass) | **Version:** 2.0 | **Status:** Production Ready (65/100)

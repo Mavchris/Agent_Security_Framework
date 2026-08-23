@@ -35,7 +35,7 @@ curl http://localhost:8000/health
 # 3. Make your first request
 curl http://localhost:8000/threats
 
-# 4. Get result with 236+ threats in JSON format
+# 4. Get result with 240 threats in JSON format (check /stats for the live count)
 ```
 
 ### What You Need
@@ -193,7 +193,7 @@ Get all threats from the database with optional filtering and pagination.
   "pagination": {
     "offset": 0,
     "limit": 100,
-    "total": 236,
+    "total": 240,
     "returned": 100
   }
 }
@@ -340,7 +340,7 @@ Get aggregated statistics about all threats.
 ```json
 {
   "data": {
-    "total_threats": 236,
+    "total_threats": 240,
     "by_severity": {
       "critical": 58,
       "high": 145,
@@ -364,7 +364,7 @@ Get aggregated statistics about all threats.
       "mitre_attack": 50,
       "arxiv": 25,
       "censys": 25,
-      "misp": 10,
+      "cve": 10,
       "opencti": 15
     },
     "last_update": "2026-03-28T02:00:00Z"
@@ -482,7 +482,7 @@ Get list of all available Threat Intelligence sources.
       "mitre_attack",
       "arxiv",
       "censys",
-      "misp",
+      "cve",
       "opencti"
     ]
   },
@@ -490,6 +490,8 @@ Get list of all available Threat Intelligence sources.
   "timestamp": "2026-03-28T14:30:00Z"
 }
 ```
+
+Note: `scrapers/misp_scraper.py` exists in the repo but is not currently wired into the pipeline (`pipeline/process.py` never calls it), so `misp` does not appear in the active source list above.
 
 **Examples:**
 
@@ -524,22 +526,15 @@ POST /monitoring/log-request
 **Description:**
 Log a request for monitoring and audit purposes (for production agents).
 
-**Request Body:**
+**Query Parameters:**
 
-```json
-{
-  "agent_name": "my_agent",
-  "request_type": "vulnerability_scan",
-  "status": "completed",
-  "duration_ms": 1250,
-  "threats_tested": 219,
-  "vulnerabilities_found": 45,
-  "metadata": {
-    "ip_address": "192.168.1.100",
-    "user_agent": "MyAgent/1.0"
-  }
-}
-```
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `agent_name` | string | Yes | - | Name of the agent making the request |
+| `prompt` | string | Yes | - | The prompt sent to the agent |
+| `response` | string | Yes | - | The agent's response |
+| `user_id` | string | No | None | Optional user identifier |
+| `session_id` | string | No | None | Optional session identifier |
 
 **Response (200 OK):**
 
@@ -557,17 +552,10 @@ Log a request for monitoring and audit purposes (for production agents).
 **Examples:**
 
 ```bash
-curl -X POST http://localhost:8000/monitoring/log-request \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agent_name": "my_agent",
-    "request_type": "vulnerability_scan",
-    "status": "completed",
-    "duration_ms": 1250,
-    "threats_tested": 219,
-    "vulnerabilities_found": 45
-  }'
+curl -X POST "http://localhost:8000/monitoring/log-request?agent_name=MyAgent&prompt=Hello&response=Hi%20there"
 ```
+
+Note: this endpoint currently accepts these as query parameters rather than a JSON request body; switching to a Pydantic request model is planned.
 
 **Python Example:**
 
@@ -576,16 +564,13 @@ import requests
 
 log_data = {
     "agent_name": "my_agent",
-    "request_type": "vulnerability_scan",
-    "status": "completed",
-    "duration_ms": 1250,
-    "threats_tested": 219,
-    "vulnerabilities_found": 45
+    "prompt": "Hello",
+    "response": "Hi there"
 }
 
 response = requests.post(
     'http://localhost:8000/monitoring/log-request',
-    json=log_data
+    params=log_data
 )
 
 print(f"Logged: {response.json()['data']['logged']}")
@@ -1003,10 +988,8 @@ curl http://localhost:8000/stats | python -m json.tool
 # With headers
 curl -H "Accept: application/json" http://localhost:8000/threats
 
-# POST request
-curl -X POST http://localhost:8000/monitoring/log-request \
-  -H "Content-Type: application/json" \
-  -d '{"agent_name":"test","status":"ok"}'
+# POST request (query parameters, not a JSON body - see Monitoring Endpoints)
+curl -X POST "http://localhost:8000/monitoring/log-request?agent_name=test&prompt=Hello&response=OK"
 ```
 
 ### Python Complete Example
@@ -1051,18 +1034,20 @@ class ThreatIntelligenceClient:
         response = requests.get(f'{self.base_url}/sources')
         return response.json()['data']['sources']
     
-    def log_scan(self, agent_name: str, status: str, duration_ms: int,
-                 threats_tested: int, vulnerabilities_found: int):
-        """Log a vulnerability scan"""
+    def log_request(self, agent_name: str, prompt: str, response_text: str,
+                     user_id: str = None, session_id: str = None):
+        """Log an agent request for monitoring (sent as query parameters,
+        matching the current api/app.py handler signature - no JSON body)"""
         data = {
             'agent_name': agent_name,
-            'request_type': 'vulnerability_scan',
-            'status': status,
-            'duration_ms': duration_ms,
-            'threats_tested': threats_tested,
-            'vulnerabilities_found': vulnerabilities_found
+            'prompt': prompt,
+            'response': response_text
         }
-        response = requests.post(f'{self.base_url}/monitoring/log-request', json=data)
+        if user_id:
+            data['user_id'] = user_id
+        if session_id:
+            data['session_id'] = session_id
+        response = requests.post(f'{self.base_url}/monitoring/log-request', params=data)
         return response.json()['data']['logged']
     
     def get_agent_stats(self, agent_name: str) -> Dict:
@@ -1089,13 +1074,11 @@ threats = client.get_all_threats(
 )
 print(f"Critical prompt injection: {len(threats)}")
 
-# Log a scan
-client.log_scan(
+# Log a request
+client.log_request(
     agent_name='my_agent',
-    status='completed',
-    duration_ms=1250,
-    threats_tested=219,
-    vulnerabilities_found=45
+    prompt='Test prompt',
+    response_text='Test response'
 )
 
 # Check agent health

@@ -167,7 +167,7 @@ run_pipeline()
 
 ### Output
 - JSON files: `data/raw_cves.json`, `data/raw_github.json`, `data/raw_arxiv.json`
-- Database: `data/threats.db` with 175+ unique threats
+- Database: `data/threats.db` with 240 threats (live count; check the `/stats` API endpoint for the current value)
 
 ---
 

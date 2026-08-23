@@ -180,7 +180,7 @@ pip install -r requirements.txt
 # - pandas, numpy (data processing)
 # - streamlit, plotly (dashboards)
 # - fastapi, uvicorn (REST API)
-# - apscheduler (task scheduling)
+# - schedule (task scheduling)
 # - pydantic (data validation)
 # - python-dotenv (environment variables)
 # - anthropic, openai, ollama (LLM libraries)
@@ -198,13 +198,10 @@ Expected time: 2-5 minutes depending on internet speed.
 #### Create .env.local for API Keys
 
 ```bash
-# Navigate to config directory
-cd config
-
-# Copy example file
-cp .env.local.example .env.local
+# From the project root, copy the example env file into config/
+cp .env.example config/.env.local
 # Or on Windows:
-copy .env.local.example .env.local
+copy .env.example config\.env.local
 
 # Edit with your text editor
 # Open: config/.env.local
@@ -250,11 +247,6 @@ SCHEDULER_TIMEZONE=UTC
 
 **Important:** Don't commit .env.local to Git! It's already in .gitignore.
 
-```bash
-# Return to project root
-cd ..
-```
-
 ### Step 6: Initialize Database
 
 ```bash
@@ -285,7 +277,7 @@ for d in dirs:
 
 # Check Python packages
 python -c "
-packages = ['streamlit', 'fastapi', 'pandas', 'apscheduler', 'requests', 'pydantic']
+packages = ['streamlit', 'fastapi', 'pandas', 'schedule', 'requests', 'pydantic']
 for pkg in packages:
     try:
         __import__(pkg)
@@ -391,7 +383,7 @@ python --version
 which python  # Should show path with .venv
 
 # Verify packages installed
-pip list | grep -E "streamlit|fastapi|apscheduler"
+pip list | grep -E "streamlit|fastapi|schedule"
 
 # Verify directories exist
 ls -la | grep -E "dashboard|testing|data|logs"
@@ -751,7 +743,7 @@ streamlit run dashboard/main.py
 
 # 4. Explore:
 # - Operations tab: See framework info
-# - Intelligence tab: View 236+ threats
+# - Intelligence tab: View 240+ threats
 # - Catalog tab: Search threats
 
 # 5. Stop: Ctrl+C in terminal
@@ -797,7 +789,7 @@ cat mock_audit.json
 python testing/cli.py --scan-agent mistral --verbose --output mistral_audit.json
 
 # 2. Wait 10-15 minutes for completion
-# (219 threats × ~3-4 sec per threat)
+# (240 threats × ~3-4 sec per threat)
 
 # 3. View results
 cat mistral_audit.json
@@ -849,10 +841,10 @@ After successful installation:
 cat README.md
 
 # Usage guide (30 min)
-cat docs/USAGE_GUIDE.md
+cat USAGE_GUIDE.md
 
 # API reference (20 min)
-cat docs/API_DOCUMENTATION.md
+cat API_DOCUMENTATION.md
 ```
 
 ### 2. Explore Features
@@ -896,8 +888,8 @@ nano config/.env.local  # or edit in text editor
 # Update: pipeline/process.py to include it
 
 # Modify threat categories
-# Edit: core/threat_definitions.py
-# Add your custom threat types
+# Edit: the self.keywords dictionary in core/classifier.py
+# (ImprovedThreatClassifier.__init__ holds the keyword lists for all 9 categories)
 ```
 
 ### 5. Run Tests
@@ -913,7 +905,7 @@ python -m pytest tests/test_classifier.py -v
 
 ```bash
 # For production deployment, see:
-cat docs/DEPLOYMENT.md
+cat DEPLOYMENT.md
 
 # Includes:
 # - Docker containerization
@@ -955,7 +947,7 @@ Complete installation in order:
 - [ ] Activate virtual environment: `source .venv/bin/activate`
 - [ ] Upgrade pip: `python -m pip install --upgrade pip`
 - [ ] Install dependencies: `pip install -r requirements.txt`
-- [ ] Copy .env template: `cp config/.env.local.example config/.env.local`
+- [ ] Copy .env template: `cp .env.example config/.env.local`
 - [ ] Configure API keys (optional): `nano config/.env.local`
 - [ ] Create data/logs directories: `mkdir -p data logs`
 - [ ] Run verification: `python testing/cli.py --help`
@@ -997,6 +989,6 @@ rmdir /s Agent_security_framework
 
 **Questions?** Ask on [GitHub Discussions](https://github.com/Mavchris/Agent_Security_Framework/discussions)
 
-**Ready to deploy?** See [DEPLOYMENT.md](docs/DEPLOYMENT.md)
+**Ready to deploy?** See [DEPLOYMENT.md](DEPLOYMENT.md)
 
-**Want to contribute?** See [CONTRIBUTING.md](docs/CONTRIBUTING.md)
+**Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md)

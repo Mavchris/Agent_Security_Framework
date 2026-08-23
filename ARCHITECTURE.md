@@ -40,7 +40,7 @@ The Agent Security Intelligence Framework is designed to:
 │ ✓ Extensibility                  │
 │ ✓ Scalability                    │
 │ ✓ Maintainability                │
-│ ✓ Reliability (100% success)     │
+│ ✓ Reliability (2/2 runs OK)      │
 │ ✓ Transparency (open-source)     │
 │ ✓ Automation (24/7 operation)    │
 │ ✓ User Experience (3 dashboards) │
@@ -55,12 +55,12 @@ The Agent Security Intelligence Framework is designed to:
 ├──────────────────────────────────┤
 │ Total Code:      4000+ lines     │
 │ Test Coverage:   11/11 passing   │
-│ Threats DB:      236+ threats    │
-│ CTI Sources:     7 integrated    │
+│ Threats DB:      240 threats     │
+│ CTI Sources:     7 active        │
 │ Threat Types:    9 categories    │
 │ Dashboards:      3 production    │
 │ API Endpoints:   10 functional   │
-│ Uptime:          100% (tested)   │
+│ Automation:      2/2 runs OK     │
 │ Production Ready: 65/100         │
 └──────────────────────────────────┘
 ```
@@ -154,7 +154,7 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │         │                 │                        │
 │  ┌──────┴─────────────────┴──────┐                │
 │  │   Orchestrator (Scheduler)    │                │
-│  │   (APScheduler integration)   │                │
+│  │   (schedule library)          │                │
 │  └──────┬──────────────────────┘                │
 │         │                                        │
 │  ┌──────┴──────────────────────────────┐        │
@@ -171,7 +171,7 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │                                                      │
 │  ┌──────────────────────────────────────┐          │
 │  │   SQLite Database (threats.db)       │          │
-│  │  ├─ threats table (236+ rows)        │          │
+│  │  ├─ threats table (240 rows)         │          │
 │  │  ├─ classifications                 │          │
 │  │  └─ metadata                        │          │
 │  └──────────────────────────────────────┘          │
@@ -195,8 +195,8 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │  └──────────┘  └──────────┘  └──────────┘          │
 │                                                      │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
-│  │  ArXiv   │  │  Censys  │  │   MISP   │          │
-│  │(Research)│  │(Internet)│  │(Campaigns)          │
+│  │  ArXiv   │  │  Censys  │  │   CVE    │          │
+│  │(Research)│  │(Internet)│  │(Vulnerabilities)    │
 │  └──────────┘  └──────────┘  └──────────┘          │
 │                                                      │
 │  ┌──────────────────────────┐                       │
@@ -235,14 +235,18 @@ PURPOSE: Extract threat data from CTI feeds
 
 Location: scrapers/
 
-Components:
-├─ nvd_scraper.py           (CVE vulnerabilities)
+Components (active, 7):
+├─ cve_scraper.py           (CVE vulnerabilities)
 ├─ github_scraper.py        (Security advisories)
 ├─ arxiv_scraper.py         (Research papers)
 ├─ mitre_scraper.py         (Attack techniques)
 ├─ censys_scraper.py        (Internet exposures)
-├─ misp_scraper.py          (Threat campaigns)
+├─ nvd_scraper.py           (CVE vulnerabilities, wired in but no rows yet)
 └─ opencti_scraper.py       (Structured intel)
+
+Note: scrapers/misp_scraper.py also exists but is not
+currently wired into the pipeline (pipeline/process.py
+never imports or calls it).
 
 Interface:
 class Scraper(ABC):
@@ -267,14 +271,15 @@ PURPOSE: Categorize threats into security types
 
 Location: core/classifier.py
 
-Categories:
-├─ prompt_injection         (30.5%)
-├─ api_abuse               (11.9%)
-├─ tool_abuse              (1.4%)
-├─ model_extraction        (0.9%)
-├─ behavioral_anomaly      (0.9%)
-├─ supply_chain            (0.5%)
-├─ data_leakage            (0.5%)
+Categories (240 threats):
+├─ other                   (55.8%)
+├─ prompt_injection        (29.6%)
+├─ api_abuse               (10.8%)
+├─ tool_abuse              (1.3%)
+├─ model_extraction        (0.8%)
+├─ behavioral_anomaly      (0.8%)
+├─ supply_chain            (0.4%)
+├─ data_leakage            (0.4%)
 ├─ data_poisoning          (0%)
 └─ resource_exhaustion     (0%)
 
@@ -287,16 +292,16 @@ Algorithm:
 
 Metrics:
 - Unit tests:  11/11 passing ✓
-- Coverage:    All 236 threats
+- Coverage:    All 240 threats
 - Accuracy:    Keyword-based (no ML)
 - Speed:       <100ms per threat
 
 Extensibility:
 Add new category:
-1. Add to enum (core/threat_definitions.py)
-2. Add keywords (THREAT_DEFINITIONS dict)
-3. Add unit test (tests/test_classifier.py)
-4. Run: python -m pytest tests/test_classifier.py
+1. Add keywords to self.keywords dict (core/classifier.py,
+   in ImprovedThreatClassifier.__init__)
+2. Add unit test (tests/test_classifier.py)
+3. Run: python -m pytest tests/test_classifier.py
 ```
 
 ### 3. Pipeline (ETL)
@@ -319,7 +324,9 @@ Operations:
 1. Extract:
    - Call each of 7 scrapers
    - Collect threats
-   - Handle errors (retry, fallback)
+   - Handle errors: each scraper call is wrapped in
+     try/except; on failure the error is logged and the
+     source moves on with a count of 0 (no retry)
 
 2. Transform:
    - Normalize fields
@@ -352,7 +359,7 @@ PURPOSE: Schedule and automate pipeline execution
 
 Location: orchestrator.py
 
-Technology: APScheduler
+Technology: schedule (Python library)
 
 Schedule:
 ┌─────────────────────────────────────┐
@@ -392,8 +399,10 @@ Commands:
 - Stop:       Ctrl+C
 
 Reliability:
-- Success rate: 100% (v2.0)
-- Error handling: Retry + fallback
+- Track record: 2/2 recorded executions succeeded
+  (2026-03-28); not yet operated continuously
+- Error handling: try/except per scraper, log and skip
+  (no retry)
 - Logging: Complete audit trail
 - Metrics: Persistent storage
 ```
@@ -407,7 +416,7 @@ Location: testing/agent_scanner.py
 
 Workflow:
 ┌──────────────────────────────────────┐
-│ 1. Load 236+ threats from database  │
+│ 1. Load 240 threats from database   │
 ├──────────────────────────────────────┤
 │ 2. For each threat:                 │
 │    a. Send test payload to agent    │
@@ -442,7 +451,7 @@ Output:
 {
   "scan_date": "2026-03-28T14:30:00Z",
   "agent_type": "mistral",
-  "total_threats": 219,
+  "total_threats": 240,
   "vulnerabilities_found": 45,
   "vulnerability_score": 20.5%,
   "results_by_type": {...},
@@ -461,9 +470,9 @@ Technology: Streamlit + Plotly
 Structure:
 ├─ main.py                          (Navigation hub)
 └─ pages/
-   ├─ 1_operations.py               (Test agents + Monitor)
-   ├─ 2_intelligence.py             (Overview + Veille)
-   └─ 3_catalog.py                  (Search threats)
+   ├─ operations.py                 (Test agents + Monitor)
+   ├─ intelligence.py               (Overview + Veille)
+   └─ catalog.py                    (Search threats)
 
 Features:
 - Real-time updates
@@ -561,7 +570,7 @@ START (Daily at 02:00 UTC)
 │   ├─→ [ArXiv Scraper]         → 5 threats
 │   ├─→ [MITRE Scraper]         → 0 threats (duplicates)
 │   ├─→ [Censys Scraper]        → 2 threats
-│   ├─→ [MISP Scraper]          → 1 threat
+│   ├─→ [CVE Scraper]           → 1 threat
 │   └─→ [OpenCTI Scraper]       → 3 threats
 │
 ├─→ [Pipeline] Transform phase
@@ -578,7 +587,7 @@ START (Daily at 02:00 UTC)
 ├─→ [Orchestrator] Save metrics
 │   ├─→ execution_time: 8.2 seconds
 │   ├─→ threats_collected: 30
-│   └─→ total_in_db: 236
+│   └─→ total_in_db: 240
 │
 ├─→ [Orchestrator] Log completion
 │   └─→ logs/orchestrator.log
@@ -586,7 +595,7 @@ START (Daily at 02:00 UTC)
 │
 └─→ END (02:00 + 8 seconds)
 
-Success Rate: 100% ✓
+Track record: 2/2 recorded executions succeeded (2026-03-28)
 ```
 
 ### Agent Scanning Flow
@@ -594,9 +603,9 @@ Success Rate: 100% ✓
 ```
 START: Scanner invoked
 │
-├─→ [Scanner] Load database (236 threats)
+├─→ [Scanner] Load database (240 threats)
 │
-├─→ [Scanner] For each threat (0-219):
+├─→ [Scanner] For each threat (0-240):
 │   │
 │   ├─→ [Scanner] Prepare test payload
 │   │   └─→ threat['test_payload']
@@ -632,7 +641,7 @@ START: Scanner invoked
 └─→ END: Scan complete
 
 Time: 30 sec - 10+ min (depending on agent)
-Vulnerabilities: 0-219 (depending on agent resilience)
+Vulnerabilities: 0-240 (depending on agent resilience)
 ```
 
 ---
@@ -803,9 +812,9 @@ Agent_security_framework/
 ├─ dashboard/                        (Presentation layer)
 │  ├─ main.py                        (Navigation hub)
 │  └─ pages/
-│     ├─ 1_operations.py
-│     ├─ 2_intelligence.py
-│     └─ 3_catalog.py
+│     ├─ operations.py
+│     ├─ intelligence.py
+│     └─ catalog.py
 │
 ├─ testing/                          (Agent testing)
 │  ├─ agent_scanner.py              (Nessus-like scanner)
@@ -814,8 +823,7 @@ Agent_security_framework/
 │  └─ cli.py                        (CLI interface)
 │
 ├─ core/                             (Business logic)
-│  ├─ classifier.py                 (9-category classifier)
-│  └─ threat_definitions.py         (Threat metadata)
+│  └─ classifier.py                 (9-category classifier)
 │
 ├─ pipeline/                         (ETL)
 │  └─ process.py                    (Extract, transform, load)
@@ -837,7 +845,7 @@ Agent_security_framework/
 │  └─ agent_monitor.py              (Health checks)
 │
 ├─ data/                             (Data storage)
-│  └─ threats.db                    (SQLite - 236+ threats)
+│  └─ threats.db                    (SQLite - 240 threats)
 │
 ├─ logs/                             (Audit trail)
 │  ├─ orchestrator.log              (Execution logs)
@@ -845,17 +853,21 @@ Agent_security_framework/
 │  └─ weekly_report_*.json          (Reports)
 │
 ├─ config/                           (Configuration)
-│  ├─ .env.local                    (API keys - git ignored)
-│  └─ .env.example                  (Template)
+│  └─ .env.local                    (API keys - git ignored)
+│
+├─ .env.example                      (Template, at repo root — copy to
+│                                     config/.env.local)
 │
 ├─ tests/                            (Unit tests)
 │  └─ test_classifier.py            (11/11 passing ✓)
 │
-└─ docs/                             (Documentation)
+└─ (documentation, at repo root, no docs/ folder)
+   ├─ README.md
+   ├─ ARCHITECTURE.md
+   ├─ API_DOCUMENTATION.md
    ├─ INSTALLATION.md
    ├─ USAGE_GUIDE.md
-   ├─ API_DOCUMENTATION.md
-   ├─ ARCHITECTURE.md
+   ├─ SCRAPERS_DOCUMENTATION.md
    └─ ...
 ```
 
@@ -976,7 +988,7 @@ Best for: Production, multi-tenant
    - Index on threat_id (primary key)
    - Index on type (frequent filter)
    - Index on severity (frequent filter)
-   - SQLite with WAL mode
+   - SQLite default journal mode (no WAL configured)
 
 2. CACHING:
    - Cache /stats endpoint (5 min)
@@ -1004,7 +1016,7 @@ Best for: Production, multi-tenant
 ```
 Operation              Time        Notes
 ─────────────────────────────────────
-Load 236 threats      ~100ms      From SQLite
+Load 240 threats      ~100ms      From SQLite
 Classify 1 threat     <100ms      Keyword matching
 Scan all threats      30s - 10m   Depends on agent
 Generate stats        ~50ms       Aggregation query
@@ -1037,28 +1049,21 @@ python pipeline/process.py
 ### Add New Threat Category
 
 ```python
-# 1. Add to enum (core/threat_definitions.py)
-THREAT_TYPES = [
-    'prompt_injection',
+# 1. Add keywords to self.keywords dict
+#    (core/classifier.py, ImprovedThreatClassifier.__init__)
+self.keywords = {
+    'prompt_injection': [...],
     ...
-    'new_category'  # Add here
-]
-
-# 2. Add keywords
-THREAT_DEFINITIONS = {
-    'new_category': {
-        'keywords': ['keyword1', 'keyword2'],
-        'severity': 'high'
-    }
+    'new_category': ['keyword1', 'keyword2'],
 }
 
-# 3. Add unit test (tests/test_classifier.py)
+# 2. Add unit test (tests/test_classifier.py)
 def test_new_category():
     classifier = ImprovedThreatClassifier()
     threat = classifier.classify('keyword1 description')
     assert threat['type'] == 'new_category'
 
-# 4. Test
+# 3. Test
 python -m pytest tests/test_classifier.py::test_new_category
 ```
 
@@ -1105,10 +1110,7 @@ python testing/cli.py --scan-agent myagent
 
 ## References
 
-- [UML Component Diagram](docs/diagrams/components.uml)
-- [Deployment Diagram](docs/diagrams/deployment.uml)
-- [Class Diagram](docs/diagrams/classes.uml)
-- [Sequence Diagram](docs/diagrams/sequences.uml)
+UML diagrams (component, deployment, class, sequence) are not available yet.
 
 ---
 

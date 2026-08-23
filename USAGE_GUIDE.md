@@ -41,7 +41,7 @@ streamlit run dashboard/main.py
 You'll see a welcome page with 3 buttons:
 - **Operations** - Test agents & monitor production
 - **Intelligence** - Threat overview & veille automation
-- **Catalog** - Search 236+ threats
+- **Catalog** - Search 240+ threats
 
 ### Test Scanner
 
@@ -113,7 +113,7 @@ Test AI agents for vulnerabilities and monitor production agents.
 ```
 Click "Operations" on navigation hub
 or
-streamlit run dashboard/pages/1_operations.py
+streamlit run dashboard/pages/operations.py
 ```
 
 ### Layout
@@ -173,7 +173,7 @@ Dropdown: Select agent type
    - Charts fill in gradually
 
 4. Wait 10-15 minutes
-   (219 threats × 3-4 sec per threat)
+   (240 threats × 3-4 sec per threat)
 
 5. View results:
    - Vulnerabilities found: ~35-50
@@ -261,7 +261,7 @@ Threat overview, veille automation status, recent threats, logs.
 ```
 Click "Intelligence" on navigation hub
 or
-streamlit run dashboard/pages/2_intelligence.py
+streamlit run dashboard/pages/intelligence.py
 ```
 
 ### Tabs Overview
@@ -271,7 +271,7 @@ streamlit run dashboard/pages/2_intelligence.py
 **Threat Metrics**
 ```
 📊 KPI Cards:
-├─ Total Menaces: 236
+├─ Total Menaces: 240
 ├─ Critiques: 58
 ├─ Hautes: 145
 ├─ Moyennes: 33
@@ -280,7 +280,7 @@ streamlit run dashboard/pages/2_intelligence.py
 ⚙️ Orchestrator Status:
 ├─ Exécutions: 1+
 ├─ Taux succès: 100%
-├─ Menaces collectées: 236
+├─ Menaces collectées: 240
 ├─ Dernière exécution: (timestamp)
 └─ Prochaines tâches: (schedule)
 
@@ -301,9 +301,9 @@ streamlit run dashboard/pages/2_intelligence.py
 1. Every morning, check "Vue d'Ensemble"
 
 2. KPI cards tell you at a glance:
-   - Total threats: 236 (baseline)
+   - Total threats: 240 (baseline)
    - Critical: 58 (what to focus on)
-   - Orchestrator: 100% success (system healthy)
+   - Orchestrator: 100% success (2/2 runs to date — small sample, not a long track record)
 
 3. Check Orchestrator Status:
    - Dernière exécution: "Today 02:00 UTC" ✓
@@ -463,14 +463,12 @@ Log Format:
 
 4. Scroll to find [ERROR]:
    [2026-03-28 02:00:00] [ERROR] NVD scraper timeout
-   [2026-03-28 02:00:05] [ERROR] Retry attempt 1...
-   [2026-03-28 02:00:10] [ERROR] Retry attempt 2...
-   [2026-03-28 02:00:15] [ERROR] NVD scraper failed
+   [2026-03-28 02:00:00] [ERROR] NVD scraper failed - continuing with 0 results
 
 5. Understand issue:
-   - NVD API was slow
-   - 3 retries attempted
-   - Finally failed after timeout
+   - NVD API was slow or unreachable
+   - No retry is attempted — the pipeline logs the error and moves on
+   - NVD contributed 0 threats for this run
 
 6. Options:
    - Wait for next run (02:00 UTC tomorrow)
@@ -489,13 +487,13 @@ Log Format:
 ## Dashboard 3: Catalog
 
 ### Purpose
-Search and explore 236+ threats with advanced filtering.
+Search and explore 240+ threats with advanced filtering.
 
 ### Access
 ```
 Click "Catalog" on navigation hub
 or
-streamlit run dashboard/pages/3_catalog.py
+streamlit run dashboard/pages/catalog.py
 ```
 
 ### Features
@@ -525,7 +523,7 @@ Filter by Source:
 ├─ MITRE ATT&CK
 ├─ ArXiv
 ├─ Censys
-├─ MISP
+├─ CVE
 └─ OpenCTI
 
 Search:
@@ -875,7 +873,7 @@ print(f"Total threats: {stats['total']}")
 
 # Response:
 {
-  "total_threats": 236,
+  "total_threats": 240,
   "by_severity": {
     "critical": 58,
     "high": 145,
@@ -932,7 +930,7 @@ GET /sources
     "mitre_attack",
     "arxiv",
     "censys",
-    "misp",
+    "cve",
     "opencti"
   ]
 }
@@ -1461,7 +1459,7 @@ Now that you know how to use the framework:
 
 ## Additional Resources
 
-- [README.md](../README.md) - Project overview
+- [README.md](README.md) - Project overview
 - [INSTALLATION.md](INSTALLATION.md) - Setup guide
 - [API_DOCUMENTATION.md](API_DOCUMENTATION.md) - REST API details
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design
