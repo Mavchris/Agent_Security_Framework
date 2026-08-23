@@ -503,14 +503,19 @@ git push origin feature/my-feature
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) file
+## License
 
-This means:
-- ✅ Use commercially
-- ✅ Modify code
-- ✅ Distribute
-- ⚠️ Include license in distributions
-- ❌ Hold liable for issues
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+This means you are free to use, study, modify, and redistribute this software, 
+including for commercial purposes — provided that any modified version, including 
+one deployed as a network service (SaaS), is also made available under the same 
+license with its corresponding source code.
+
+See the [LICENSE](LICENSE) file for the full legal text, or 
+<https://www.gnu.org/licenses/agpl-3.0.html> for a plain-language summary.
+
+**Copyright (C) 2026 Christian Ngiamba**
 
 ---
 
