@@ -3,109 +3,106 @@ Main Dashboard - Navigation Hub
 Access all 3 dashboards from here
 """
 
+import os
+import sys
+
 import streamlit as st
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from utils.style import icon, load_theme  # noqa: E402
 
 # Page config
 st.set_page_config(
     page_title="Agent Security Intelligence Platform",
-    page_icon="🛡️",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+load_theme()
 
 # ============================================
 # HEADER
 # ============================================
 
-st.markdown("""
-    <div style='text-align: center; margin-bottom: 40px;'>
-        <h1>🛡️ Agent Security Intelligence Platform</h1>
-        <p style='font-size: 18px; color: #666;'>Complete threat intelligence and agent security framework</p>
+st.markdown(
+    f"""
+    <div class='asif-hero'>
+        {icon('shield', size=36)}
+        <h1 class='asif-h1' style='margin-top:12px;'>Agent Security Intelligence Platform</h1>
+        <p class='asif-subtitle'>Complete threat intelligence and agent security framework</p>
     </div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
 # ============================================
 # NAVIGATION CARDS
 # ============================================
 
-st.markdown("""
-<style>
-    .dashboard-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 30px;
-        border-radius: 10px;
-        color: white;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .dashboard-card h2 {
-        margin-top: 0;
-    }
-    .dashboard-card p {
-        margin: 10px 0;
-        font-size: 14px;
-    }
-</style>
-""", unsafe_allow_html=True)
+cards = [
+    {
+        "icon": "bar-chart",
+        "title": "Intelligence",
+        "subtitle": "Threat Intelligence at a Glance",
+        "desc": "High-level metrics, threat distribution.",
+        "features": [
+            "Total threats & KPI cards",
+            "Distribution charts",
+            "Recent threats table",
+        ],
+        "page": "pages/intelligence.py",
+        "key": "dash1",
+    },
+    {
+        "icon": "search",
+        "title": "Catalog",
+        "subtitle": "Detailed Threat Browse & Search",
+        "desc": "Complete threat catalog with filters and details.",
+        "features": [
+            "All threats",
+            "Multi-filter (type / source / severity)",
+            
+            "Pagination & export",
+        ],
+        "page": "pages/catalog.py",
+        "key": "dash2",
+    },
+    {
+        "icon": "settings",
+        "title": "Operations",
+        "subtitle": "Agent Testing & Monitoring",
+        "desc": "Test your agents and monitor production systems.",
+        "features": [
+            "Agent vulnerability testing",
+            "Test reports",
+            "Production monitoring",
+            "Real-time alerts",
+        ],
+        "page": "pages/operations.py",
+        "key": "dash3",
+    },
+]
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3 = st.columns(3, gap="large")
 
-with col1:
-    st.markdown("""
-    <div class='dashboard-card'>
-        <h2>📊 Dashboard 1: Overview</h2>
-        <p><strong>Threat Intelligence at a Glance</strong></p>
-        <p>High-level metrics, threat distribution, and statistics</p>
-        <ul style='font-size: 12px;'>
-            <li> Total Threats</li>
-            <li>KPI Cards</li>
-            <li>Distribution Charts</li>
-            <li>Top 10 Threats Table</li>
-            <li>CSV/JSON Export</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("📊 Open Dashboard 1", use_container_width=True, key="dash1"):
-        st.switch_page("pages/intelligence.py")
-
-with col2:
-    st.markdown("""
-    <div class='dashboard-card'>
-        <h2>🔍 Dashboard 2: Catalog</h2>
-        <p><strong>Detailed Threat Browse & Search</strong></p>
-        <p>Complete threat catalog with filters and details</p>
-        <ul style='font-size: 12px;'>
-            <li>All Threats</li>
-            <li>Multi-filter (Type/Source/Severity)</li>
-            <li>Full-text Search</li>
-            <li>Expandable Details</li>
-            <li>Pagination & Export</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("🔍 Open Dashboard 2", use_container_width=True, key="dash2"):
-        st.switch_page("pages/catalog.py")
-
-with col3:
-    st.markdown("""
-    <div class='dashboard-card'>
-        <h2>⚙️ Dashboard 3: Operations</h2>
-        <p><strong>Agent Testing & Monitoring</strong></p>
-        <p>Test your agents and monitor production systems</p>
-        <ul style='font-size: 12px;'>
-            <li>Agent Vulnerability Testing</li>
-            <li>Test Reports</li>
-            <li>Production Monitoring</li>
-            <li>Real-time Alerts</li>
-            <li>Trend Analysis</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("⚙️ Open Dashboard 3", use_container_width=True, key="dash3"):
-        st.switch_page("pages/operations.py")
+for col, card in zip((col1, col2, col3), cards):
+    with col:
+        features_html = "".join(f"<li>{f}</li>" for f in card["features"])
+        st.markdown(
+            f"""
+            <div class='nav-card'>
+                <div class='nav-card-icon'>{icon(card['icon'], size=24)}</div>
+                <p class='nav-card-title'>{card['title']}</p>
+                <p class='asif-caption' style='margin-bottom:10px;'>{card['subtitle']}</p>
+                <p class='nav-card-desc'>{card['desc']}</p>
+                <ul class='nav-card-features'>{features_html}</ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        if st.button("Open dashboard", use_container_width=True, key=card["key"], type="secondary"):
+            st.switch_page(card["page"])
 
 # ============================================
 # STATISTICS
@@ -113,18 +110,18 @@ with col3:
 
 st.divider()
 
-st.markdown("### 📈 Platform Statistics")
+st.markdown("<div class='asif-section-title'>Platform Statistics</div>", unsafe_allow_html=True)
 
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("Total Threats", "219", "From 7 CTI sources")
+    st.metric("Total Threats", "226", "From 7 CTI sources")
 
 with col2:
-    st.metric("Threat Types", "9", "Categories")
+    st.metric("Threat Types", "8", "Categories")
 
 with col3:
-    st.metric("Intelligence Sources", "6", "Active feeds")
+    st.metric("Intelligence Sources", "7", "Active feeds")
 
 with col4:
     st.metric("Classification", "46%", "High-quality")
@@ -138,12 +135,12 @@ with col5:
 
 st.divider()
 
-st.markdown("### 🔗 Quick Links")
+st.markdown("<div class='asif-section-title'>Quick Links</div>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("#### Intelligence")
+    st.markdown("<p class='asif-caption'>Intelligence</p>", unsafe_allow_html=True)
     st.markdown("""
     - [NVD (NIST)](https://nvd.nist.gov/) - Vulnerabilities
     - [MITRE ATT&CK](https://attack.mitre.org/) - Techniques
@@ -151,7 +148,7 @@ with col1:
     """)
 
 with col2:
-    st.markdown("#### Threat Data")
+    st.markdown("<p class='asif-caption'>Threat Data</p>", unsafe_allow_html=True)
     st.markdown("""
     - [GitHub Security](https://github.com/security) - Advisories
     - [Censys](https://censys.io/) - Internet Exposure
@@ -159,7 +156,7 @@ with col2:
     """)
 
 with col3:
-    st.markdown("#### Documentation")
+    st.markdown("<p class='asif-caption'>Documentation</p>", unsafe_allow_html=True)
     st.markdown("""
     - [README](../README.md)
     - [Architecture](../docs/architecture.md)
@@ -173,8 +170,8 @@ with col3:
 st.divider()
 
 st.markdown("""
-    <div style='text-align: center; color: #666;'>
-        <small>Agent Security Intelligence Framework | v1.0 | 
+    <div style='text-align: center; color: var(--text-tertiary);'>
+        <small>Agent Security Intelligence Framework | v1.0 |
         <a href='https://github.com/Mavchris/Agent_Security_Framework'>GitHub</a>
         </small>
     </div>

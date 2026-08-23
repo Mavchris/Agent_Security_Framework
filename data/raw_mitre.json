@@ -10,11 +10,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1055.011/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.369478"
   },
   {
     "threat_id": "MITRE-T1053.005",
@@ -31,7 +31,7 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.369478"
   },
   {
     "threat_id": "MITRE-T1205.002",
@@ -44,13 +44,13 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1205.002/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.369478"
   },
   {
     "threat_id": "MITRE-T1066",
@@ -63,13 +63,13 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1066/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.369478"
   },
   {
     "threat_id": "MITRE-T1560.001",
@@ -88,7 +88,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1021.005",
@@ -107,7 +107,7 @@
       "Windows",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1047",
@@ -124,7 +124,28 @@
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
+  },
+  {
+    "threat_id": "MITRE-T1687",
+    "title": "Exploitation for Defense Impairment",
+    "description": "Adversaries may exploit vulnerabilities in security software, infrastructure, or defensive components to degrade, disable, or otherwise continue to impair their ability to prevent, detect, or respond to malicious activity. \n \nAdversaries may exploit a system or application vulnerability to directly interfere with defensive mechanisms. Exploitation occurs when an adversary takes advantage of a programming error in software, services, or the operating system to execute adversary-controlled code, o",
+    "test_payload": "Test detection for T1687",
+    "detection_keywords": [
+      "T1687"
+    ],
+    "severity": "critical",
+    "source": "MITRE ATT&CK",
+    "url": "https://attack.mitre.org/techniques/T1687/",
+    "tactic": "defense-impairment",
+    "platforms": [
+      "IaaS",
+      "Linux",
+      "macOS",
+      "SaaS",
+      "Windows"
+    ],
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1156",
@@ -142,7 +163,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1113",
@@ -158,10 +179,10 @@
     "tactic": "collection",
     "platforms": [
       "Linux",
-      "Windows",
-      "macOS"
+      "macOS",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1027.011",
@@ -174,12 +195,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1027.011/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
-      "Windows",
-      "Linux"
+      "Linux",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1067",
@@ -197,7 +218,7 @@
       "Linux",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1037",
@@ -212,13 +233,13 @@
     "url": "https://attack.mitre.org/techniques/T1037/",
     "tactic": "persistence",
     "platforms": [
-      "macOS",
-      "Windows",
+      "ESXi",
       "Linux",
+      "macOS",
       "Network Devices",
-      "ESXi"
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1557",
@@ -238,7 +259,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1033",
@@ -258,7 +279,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1583",
@@ -275,7 +296,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1218.011",
@@ -288,11 +309,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1218.011/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1613",
@@ -309,7 +330,7 @@
     "platforms": [
       "Containers"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1583.007",
@@ -326,7 +347,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1143",
@@ -339,12 +360,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1143/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1161",
@@ -361,7 +382,7 @@
     "platforms": [
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1132.001",
@@ -378,10 +399,10 @@
     "platforms": [
       "ESXi",
       "Linux",
-      "Windows",
-      "macOS"
+      "macOS",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1027.009",
@@ -394,13 +415,13 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1027.009/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1150",
@@ -413,11 +434,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1150/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1556.003",
@@ -430,12 +451,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1556.003/",
-    "tactic": "credential-access",
+    "tactic": "defense-impairment",
     "platforms": [
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1578.004",
@@ -448,11 +469,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1578.004/",
-    "tactic": "defense-evasion",
+    "tactic": "defense-impairment",
     "platforms": [
       "IaaS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1148",
@@ -465,12 +486,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1148/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1592",
@@ -487,7 +508,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1596.003",
@@ -504,7 +525,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1056.001",
@@ -524,7 +545,7 @@
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1564.012",
@@ -537,17 +558,17 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1564.012/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1222.002",
-    "title": "Linux and Mac File and Directory Permissions Modification",
+    "title": "Linux and Mac Permissions",
     "description": "Adversaries may modify file or directory permissions/attributes to evade access control lists (ACLs) and access protected files.(Citation: Hybrid Analysis Icacls1 June 2018)(Citation: Hybrid Analysis Icacls2 May 2018) File and directory permissions are commonly managed by ACLs configured by the file or directory owner, or users with the appropriate permissions. File and directory ACL implementations vary by platform, but generally explicitly designate which users or groups can perform which acti",
     "test_payload": "Test detection for T1222.002",
     "detection_keywords": [
@@ -556,12 +577,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1222.002/",
-    "tactic": "defense-evasion",
+    "tactic": "defense-impairment",
     "platforms": [
-      "macOS",
-      "Linux"
+      "Linux",
+      "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1110.001",
@@ -576,18 +597,18 @@
     "url": "https://attack.mitre.org/techniques/T1110.001/",
     "tactic": "credential-access",
     "platforms": [
-      "Windows",
-      "SaaS",
+      "Containers",
+      "ESXi",
       "IaaS",
+      "Identity Provider",
       "Linux",
       "macOS",
-      "Containers",
       "Network Devices",
       "Office Suite",
-      "Identity Provider",
-      "ESXi"
+      "SaaS",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1216.001",
@@ -600,11 +621,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1216.001/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1597.002",
@@ -621,7 +642,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1003",
@@ -640,7 +661,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1129",
@@ -659,7 +680,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1602",
@@ -676,7 +697,7 @@
     "platforms": [
       "Network Devices"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1561.002",
@@ -693,10 +714,10 @@
     "platforms": [
       "Linux",
       "macOS",
-      "Windows",
-      "Network Devices"
+      "Network Devices",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1498.001",
@@ -716,7 +737,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1492",
@@ -735,7 +756,7 @@
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1574.007",
@@ -748,13 +769,13 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1574.007/",
-    "tactic": "persistence",
+    "tactic": "stealth",
     "platforms": [
-      "Windows",
+      "Linux",
       "macOS",
-      "Linux"
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1213.002",
@@ -769,15 +790,15 @@
     "url": "https://attack.mitre.org/techniques/T1213.002/",
     "tactic": "collection",
     "platforms": [
-      "Windows",
-      "Office Suite"
+      "Office Suite",
+      "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1006",
     "title": "Direct Volume Access",
-    "description": "Adversaries may directly access a volume to bypass file access controls and file system monitoring. Windows allows programs to have direct access to logical volumes. Programs with direct access may read and write files directly from the drive by analyzing file system data structures. This technique may bypass Windows file access controls as well as file system monitoring tools. (Citation: Hakobyan 2009)\n\nUtilities, such as `NinjaCopy`, exist to perform these actions in PowerShell.(Citation: Gith",
+    "description": "Adversaries may directly access a volume to bypass file access controls and file system monitoring. Windows allows programs to have direct access to logical volumes. Programs with direct access may read and write files directly from the drive by analyzing file system data structures. This technique may bypass Windows file access controls as well as file system monitoring tools.(Citation: Hakobyan 2009)\n\nUtilities, such as `NinjaCopy`, exist to perform these actions in PowerShell.(Citation: Githu",
     "test_payload": "Test detection for T1006",
     "detection_keywords": [
       "T1006"
@@ -785,12 +806,12 @@
     "severity": "high",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1006/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Network Devices",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1044",
@@ -809,7 +830,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1588.007",
@@ -826,7 +847,7 @@
     "platforms": [
       "PRE"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1666",
@@ -839,11 +860,11 @@
     "severity": "medium",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1666/",
-    "tactic": "defense-evasion",
+    "tactic": "defense-impairment",
     "platforms": [
       "IaaS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1564.008",
@@ -856,14 +877,14 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1564.008/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Windows",
       "Linux",
       "macOS",
       "Office Suite"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1491.002",
@@ -883,7 +904,7 @@
       "Linux",
       "macOS"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   },
   {
     "threat_id": "MITRE-T1027.013",
@@ -896,29 +917,12 @@
     "severity": "critical",
     "source": "MITRE ATT&CK",
     "url": "https://attack.mitre.org/techniques/T1027.013/",
-    "tactic": "defense-evasion",
+    "tactic": "stealth",
     "platforms": [
       "Linux",
       "macOS",
       "Windows"
     ],
-    "collected_at": "2026-03-28T13:59:35.502143"
-  },
-  {
-    "threat_id": "MITRE-T1171",
-    "title": "LLMNR/NBT-NS Poisoning and Relay",
-    "description": "Link-Local Multicast Name Resolution (LLMNR) and NetBIOS Name Service (NBT-NS) are Microsoft Windows components that serve as alternate methods of host identification. LLMNR is based upon the Domain Name System (DNS) format and allows hosts on the same local link to perform name resolution for other hosts. NBT-NS identifies systems on a local network by their NetBIOS name. (Citation: Wikipedia LLMNR) (Citation: TechNet NetBIOS)\n\nAdversaries can spoof an authoritative source for name resolution o",
-    "test_payload": "Test detection for T1171",
-    "detection_keywords": [
-      "T1171"
-    ],
-    "severity": "medium",
-    "source": "MITRE ATT&CK",
-    "url": "https://attack.mitre.org/techniques/T1171/",
-    "tactic": "credential-access",
-    "platforms": [
-      "Windows"
-    ],
-    "collected_at": "2026-03-28T13:59:35.502143"
+    "collected_at": "2026-06-02T15:07:21.371487"
   }
 ]
