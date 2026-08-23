@@ -18,6 +18,7 @@ from scrapers.arxiv_scraper import ArxivScraper
 from scrapers.mitre_scraper import MitreAttackScraper
 from scrapers.censys_scraper import CensysScraper
 from scrapers.opencti_scraper import OpenCTIScraper
+from scrapers.nvd_scraper import NVDScraper
 from core.classifier import ImprovedThreatClassifier
 
 
@@ -66,7 +67,7 @@ def run_pipeline():
     create_database()
     
     # STEP 1: SCRAPE FROM ALL SOURCES
-    print("\n[STEP 1/3] SCRAPING FROM ALL SOURCES (6 SOURCES)...")
+    print("\n[STEP 1/3] SCRAPING FROM ALL SOURCES (7 SOURCES)...")
     print("-" * 70)
     
     all_threats = []
@@ -137,6 +138,19 @@ def run_pipeline():
         print(f"   ❌ Error: {e}")
         source_counts['Censys'] = 0
     
+    # NVD Scraper
+    print("\n🛡️ NVD Scraper...")
+    try:
+        nvd_scraper = NVDScraper()
+        nvd_threats = nvd_scraper.fetch_cves(max_results=100)
+        nvd_scraper.save_to_json()
+        all_threats.extend(nvd_threats)
+        source_counts['NVD'] = len(nvd_threats)
+        print(f"   ✅ Collected {len(nvd_threats)} NVD threats")
+    except Exception as e:
+        print(f"   ❌ Error: {e}")
+        source_counts['NVD'] = 0
+
     # OpenCTI Scraper
     print("\n🌐 OpenCTI Scraper...")
     try:
@@ -251,7 +265,7 @@ def run_pipeline():
     print(f"   - data/raw_github.json")
     print(f"   - data/raw_arxiv.json")
     print(f"   - data/raw_mitre.json")
-    print(f"   - data/raw_shodan.json")
+    print(f"   - data/raw_nvd.json")
     print(f"   - data/raw_opencti.json")
     print(f"   - data/threats.db")
     print("\n" + "=" * 70)

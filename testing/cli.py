@@ -22,7 +22,7 @@ def main():
     parser.add_argument(
         '--scan-agent',
         type=str,
-        help='Scan agent (default: mock)'
+        help='Scan agent (mock, mistral, claude, gpt-4, etc.)'
     )
     
     # Output options
@@ -30,6 +30,13 @@ def main():
         '--output',
         type=str,
         help='Output file (json/csv)'
+    )
+    
+    # Limit threats
+    parser.add_argument(
+        '--limit',
+        type=int,
+        help='Limit number of threats to test'
     )
     
     # Verbose
@@ -53,12 +60,34 @@ def main():
         print(f"\n🔍 Agent Vulnerability Scanner")
         print(f"==============================\n")
         
-        # Use MockAgent for demo
-        agent = MockAgent()
+        # Get the requested agent
+        if args.scan_agent == 'mistral':
+            # Use Ollama directly (no SDK needed)
+            from agent_wrappers import OllamaWrapper
+            agent = OllamaWrapper(model='mistral')
+            print(f"✓ Using Mistral via Ollama (localhost:11434)\n")
+        elif args.scan_agent == 'mock':
+            agent = MockAgent()
+            print(f"✓ Using MockAgent\n")
+        else:
+            # Try other agents
+            try:
+                from agent_wrappers import get_agent_wrapper
+                agent = get_agent_wrapper(args.scan_agent)
+                print(f"✓ Using {args.scan_agent}\n")
+            except ImportError as e:
+                print(f"❌ Agent type '{args.scan_agent}' not available")
+                print(f"   Error: {e}")
+                print(f"   Available: mock, mistral (via Ollama), claude, gpt-4, llama, huggingface")
+                return 1
+            except Exception as e:
+                print(f"❌ Error loading agent: {e}")
+                return 1
+        
         scanner = AgentVulnerabilityScanner(agent, db_path=args.db)
         
         # Run scan
-        results = scanner.scan_all_threats(verbose=args.verbose)
+        results = scanner.scan_all_threats(verbose=args.verbose, limit=args.limit)
         
         # Print summary
         scanner.print_summary()
