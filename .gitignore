@@ -211,3 +211,15 @@ __marimo__/
 .env
 *.envconfig/.env.local
 .env
+
+# Claude Code working briefs (not part of the published docs)
+pipeline/AUDIT_PROJET_CLAUDE_CODE.md
+pipeline/VAGUE_1_DOCUMENTATION_CLAUDE_CODE.md
+
+# Runtime data, logs, and scan-result artifacts (should never have been tracked)
+data/*.db
+data/raw_*.json
+logs/
+audit.json
+vulnerability_assessment_*.json
+agent_monitoring_*.json

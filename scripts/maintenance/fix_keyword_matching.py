@@ -1,4 +1,6 @@
 """
+One-off manual maintenance script, not part of the automated pipeline (run from the repository root).
+
 Fix: Use title + detection_keywords instead of description
 """
 

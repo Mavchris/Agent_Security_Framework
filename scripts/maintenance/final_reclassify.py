@@ -1,4 +1,6 @@
 """
+One-off manual maintenance script, not part of the automated pipeline (run from the repository root, writes directly to the threats table).
+
 Smart reclassification - Trusted sources only
 """
 

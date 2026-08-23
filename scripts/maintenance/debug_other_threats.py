@@ -1,4 +1,6 @@
 """
+One-off manual maintenance script, not part of the automated pipeline (run from the repository root).
+
 Debug: Analyze why so many threats are classified as 'other'
 """
 

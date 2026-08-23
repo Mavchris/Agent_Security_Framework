@@ -1,8 +1,13 @@
 requests==2.31.0
-beautifulsoup4==4.12.3
 pandas==2.2.1
 streamlit==1.32.2
 plotly==5.20.0
 fastapi==0.109.0
 uvicorn==0.27.0
 pydantic==2.5.0
+python-dotenv==1.2.2
+schedule==1.2.2
+
+# Dev/test
+pytest==9.1.1
+pytest-cov==7.1.0
