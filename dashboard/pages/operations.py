@@ -119,25 +119,25 @@ with tab1:
         agent_config = {}
 
         if agent_type == "Mock (Demo)":
-            agent_config = {"type": "mock"}
+            agent_config = {"agent_type": "mock"}
             st.markdown(info_banner("Using Mock agent for demonstration (no API calls)"), unsafe_allow_html=True)
 
         elif agent_type == "Claude":
-            agent_config = {"type": "claude"}
+            agent_config = {"agent_type": "claude"}
             st.markdown(info_banner("Requires ANTHROPIC_API_KEY environment variable"), unsafe_allow_html=True)
 
         elif agent_type == "GPT-4":
             model = st.selectbox("Model", ["gpt-4", "gpt-3.5-turbo"])
-            agent_config = {"type": "openai", "model": model}
+            agent_config = {"agent_type": "openai", "model": model}
             st.markdown(info_banner("Requires OPENAI_API_KEY environment variable"), unsafe_allow_html=True)
 
         elif agent_type == "Llama (Local)":
             model = st.text_input("Model name", value="llama2", help="Ollama model name")
-            agent_config = {"type": "llama", "model": model}
+            agent_config = {"agent_type": "llama", "model": model}
             st.markdown(info_banner("Requires Ollama running locally (ollama serve)"), unsafe_allow_html=True)
 
         elif agent_type == "Mistral":
-            agent_config = {"type": "mistral"}
+            agent_config = {"agent_type": "mistral"}
             st.markdown(info_banner("Requires MISTRAL_API_KEY environment variable"), unsafe_allow_html=True)
 
         elif agent_type == "HuggingFace":
@@ -146,7 +146,7 @@ with tab1:
                 value="mistralai/Mistral-7B-Instruct-v0.1",
                 help="HuggingFace model identifier"
             )
-            agent_config = {"type": "hf", "model_name": model}
+            agent_config = {"agent_type": "hf", "model_name": model}
             st.markdown(info_banner("Downloads model locally (may be large)"), unsafe_allow_html=True)
 
         elif agent_type == "Custom":
@@ -159,7 +159,7 @@ with tab1:
                 height=200,
                 help="Class with query(prompt) method"
             )
-            agent_config = {"type": "custom", "code": custom_code}
+            agent_config = {"agent_type": "custom", "code": custom_code}
 
     # RUN SCAN
     if test_button:
