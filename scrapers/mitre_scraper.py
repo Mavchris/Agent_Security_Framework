@@ -32,7 +32,7 @@ class MitreAttackScraper:
             list: List of real ATT&CK techniques
         """
         
-        print(f"🎯 Fetching REAL MITRE ATT&CK techniques from GitHub...")
+        print(f"Fetching REAL MITRE ATT&CK techniques from GitHub...")
         
         try:
             # Download enterprise-attack.json (1000+ techniques)
@@ -78,16 +78,16 @@ class MitreAttackScraper:
                     count += 1
                     
                     if count % 50 == 0:
-                        print(f"   ✓ Processed {count} techniques...")
+                        print(f"   Processed {count} techniques...")
                 
                 except Exception as e:
                     continue
             
-            print(f"   ✅ Collected {len(self.data)} REAL MITRE ATT&CK techniques\n")
+            print(f"   Collected {len(self.data)} REAL MITRE ATT&CK techniques\n")
             return self.data
         
         except requests.exceptions.RequestException as e:
-            print(f"   ❌ Error fetching MITRE ATT&CK: {e}")
+            print(f"   [ERROR] Error fetching MITRE ATT&CK: {e}")
             self.error_count += 1
             return []
     
@@ -120,7 +120,7 @@ class MitreAttackScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} MITRE ATT&CK techniques to {filename}")
+        print(f"Saved {len(self.data)} MITRE ATT&CK techniques to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

@@ -44,7 +44,7 @@ class CVEScraper:
                 "huggingface/transformers",
             ]
 
-        print(f"🔍 Fetching CVEs with Test Payloads (limit: {max_results})...")
+        print(f"Fetching CVEs with Test Payloads (limit: {max_results})...")
         print(f"   Keywords: {', '.join(keywords[:3])}...")
 
         seen_ids = {threat["threat_id"] for threat in self.data}
@@ -54,7 +54,7 @@ class CVEScraper:
             if not product:
                 continue
 
-            print(f"   └─ Searching: '{vendor}/{product}'...")
+            print(f"    - Searching: '{vendor}/{product}'...")
 
             try:
                 response = requests.get(
@@ -80,17 +80,17 @@ class CVEScraper:
                     seen_ids.add(cve_id)
                     found += 1
 
-                print(f"      ✅ Found {found} new CVEs ({len(records)} returned)")
+                print(f"      Found {found} new CVEs ({len(records)} returned)")
 
             except requests.exceptions.RequestException as e:
-                print(f"      ❌ Error: {e}")
+                print(f"      [ERROR] Error: {e}")
                 self.error_count += 1
 
             # Be a reasonable citizen of a free public API.
             if idx < len(keywords):
                 time.sleep(1)
 
-        print(f"✅ Collected {len(self.data)} CVE threats with test payloads")
+        print(f"Collected {len(self.data)} CVE threats with test payloads")
         return self.data
 
     @staticmethod
@@ -137,7 +137,7 @@ class CVEScraper:
         
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
-        print(f"💾 Saved {len(self.data)} CVEs with test payloads to {filename}")
+        print(f"Saved {len(self.data)} CVEs with test payloads to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

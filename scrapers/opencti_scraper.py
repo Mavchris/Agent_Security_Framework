@@ -30,7 +30,7 @@ class OpenCTIScraper:
             list: List of threat objects
         """
         
-        print(f"🔴 Fetching REAL OpenCTI threat intelligence...")
+        print(f"Fetching REAL OpenCTI threat intelligence...")
         
         # OpenCTI community feeds with real threat data
         threat_feeds = [
@@ -84,7 +84,7 @@ class OpenCTIScraper:
             
             self.data.append(threat)
         
-        print(f"   ✅ Collected {len(self.data)} OpenCTI threats\n")
+        print(f"   Collected {len(self.data)} OpenCTI threats\n")
         return self.data
     
     def save_to_json(self, filename='data/raw_opencti_real.json'):
@@ -95,7 +95,7 @@ class OpenCTIScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} OpenCTI threats to {filename}")
+        print(f"Saved {len(self.data)} OpenCTI threats to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

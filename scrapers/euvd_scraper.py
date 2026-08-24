@@ -72,12 +72,12 @@ class EUVDScraper:
                 "LLM security",
             ]
 
-        print(f"🇪🇺 Fetching EUVD vulnerabilities ({len(queries)} queries)...")
+        print(f"[EU] Fetching EUVD vulnerabilities ({len(queries)} queries)...")
 
         seen_ids = {threat["threat_id"] for threat in self.data}
 
         for idx, query in enumerate(queries, 1):
-            print(f"   └─ Searching: '{query}'...")
+            print(f"    - Searching: '{query}'...")
 
             try:
                 response = request_with_retry(
@@ -97,13 +97,13 @@ class EUVDScraper:
                     seen_ids.add(euvd_id)
                     found += 1
 
-                print(f"      ✅ Found {found} new entries ({len(items)} of {total} total)")
+                print(f"      Found {found} new entries ({len(items)} of {total} total)")
 
             except Exception as e:
-                print(f"      ❌ Error: {e}")
+                print(f"      [ERROR] Error: {e}")
                 self.error_count += 1
 
-        print(f"\n✅ Total EUVD entries collected: {len(self.data)}")
+        print(f"\nTotal EUVD entries collected: {len(self.data)}")
         return self.data
 
     def _get(self, query, size):
@@ -151,7 +151,7 @@ class EUVDScraper:
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=2, ensure_ascii=False)
 
-        print(f"💾 Saved {len(self.data)} EUVD entries to {filename}")
+        print(f"Saved {len(self.data)} EUVD entries to {filename}")
 
     def get_stats(self):
         """Print collection statistics"""

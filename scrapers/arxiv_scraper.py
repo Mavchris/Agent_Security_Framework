@@ -45,12 +45,12 @@ class ArxivScraper:
                 "agent safety"
             ]
 
-        print(f"📚 Searching ArXiv for papers ({len(queries)} queries)...")
+        print(f"Searching ArXiv for papers ({len(queries)} queries)...")
 
         seen_ids = {threat["threat_id"] for threat in self.data}
 
         for idx, query in enumerate(queries, 1):
-            print(f"   └─ Searching: '{query}'...")
+            print(f"    - Searching: '{query}'...")
 
             try:
                 response = requests.get(
@@ -110,13 +110,13 @@ class ArxivScraper:
                     seen_ids.add(threat_id)
                     found += 1
 
-                print(f"      ✅ Found {found} new papers ({len(entries)} returned)")
+                print(f"      Found {found} new papers ({len(entries)} returned)")
 
             except requests.exceptions.RequestException as e:
-                print(f"      ❌ Error: {e}")
+                print(f"      [ERROR] Error: {e}")
                 self.error_count += 1
             except ET.ParseError as e:
-                print(f"      ❌ Error parsing ArXiv response: {e}")
+                print(f"      [ERROR] Error parsing ArXiv response: {e}")
                 self.error_count += 1
 
             # ArXiv's API usage policy asks for no more than one request
@@ -124,7 +124,7 @@ class ArxivScraper:
             if idx < len(queries):
                 time.sleep(3)
 
-        print(f"\n✅ Total ArXiv papers collected: {len(self.data)}")
+        print(f"\nTotal ArXiv papers collected: {len(self.data)}")
         return self.data
     
     def save_to_json(self, filename='data/raw_arxiv.json'):
@@ -136,7 +136,7 @@ class ArxivScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} ArXiv papers with test payloads to {filename}")
+        print(f"Saved {len(self.data)} ArXiv papers with test payloads to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

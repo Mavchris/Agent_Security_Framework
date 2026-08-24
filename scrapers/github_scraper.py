@@ -59,10 +59,10 @@ class GitHubScraper:
                 "agent attack"
             ]
         
-        print(f"🔍 Searching GitHub for exploits ({len(queries)} queries)...")
+        print(f"Searching GitHub for exploits ({len(queries)} queries)...")
         
         for idx, query in enumerate(queries, 1):
-            print(f"   └─ Searching: '{query}'...")
+            print(f"    - Searching: '{query}'...")
             
             try:
                 # Search GitHub repos
@@ -85,7 +85,7 @@ class GitHubScraper:
                 results = response.json()
                 repos = results.get('items', [])
                 
-                print(f"      ✅ Found {len(repos)} repos")
+                print(f"      Found {len(repos)} repos")
                 
                 # Process each repo
                 for repo in repos:
@@ -110,10 +110,10 @@ class GitHubScraper:
                         continue
             
             except requests.exceptions.RequestException as e:
-                print(f"      ❌ Error: {str(e)[:50]}")
+                print(f"      [ERROR] Error: {str(e)[:50]}")
                 self.error_count += 1
         
-        print(f"\n✅ Total GitHub repos collected: {len(self.data)}")
+        print(f"\nTotal GitHub repos collected: {len(self.data)}")
         return self.data
     
     def _estimate_severity(self, repo: dict) -> str:
@@ -141,7 +141,7 @@ class GitHubScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} GitHub repos with test payloads to {filename}")
+        print(f"Saved {len(self.data)} GitHub repos with test payloads to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

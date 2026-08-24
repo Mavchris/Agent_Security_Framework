@@ -33,7 +33,7 @@ class NVDScraper:
                 "information disclosure", "dos", "remote"
             ]
         
-        print(f"🔍 Fetching REAL CVEs from NVD API...")
+        print(f"Fetching REAL CVEs from NVD API...")
         print(f"   Keywords: {', '.join(keywords[:5])}...\n")
         
         params = {
@@ -87,16 +87,16 @@ class NVDScraper:
                     count += 1
                     
                     if count % 20 == 0:
-                        print(f"   ✓ Processed {count} CVEs...")
+                        print(f"   Processed {count} CVEs...")
                 
                 except Exception as e:
                     continue
             
-            print(f"   ✅ Collected {len(self.data)} REAL NVD CVEs\n")
+            print(f"   Collected {len(self.data)} REAL NVD CVEs\n")
             return self.data
         
         except requests.exceptions.RequestException as e:
-            print(f"   ❌ Error fetching from NVD: {e}")
+            print(f"   [ERROR] Error fetching from NVD: {e}")
             self.error_count += 1
             return []
     
@@ -127,7 +127,7 @@ class NVDScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} NVD CVEs to {filename}")
+        print(f"Saved {len(self.data)} NVD CVEs to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

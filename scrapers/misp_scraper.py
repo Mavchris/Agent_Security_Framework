@@ -33,7 +33,7 @@ class MISPScraper:
             list: List of threat objects
         """
         
-        print(f"🛡️ Fetching REAL threat intelligence from MISP project...")
+        print(f"Fetching REAL threat intelligence from MISP project...")
         
         try:
             # MISP provides threat data through public APIs
@@ -146,16 +146,16 @@ class MISPScraper:
                     count += 1
                     
                     if count % 5 == 0:
-                        print(f"   ✓ Processed {count} threats...")
+                        print(f"   Processed {count} threats...")
                 
                 except Exception as e:
                     continue
             
-            print(f"   ✅ Collected {len(self.data)} REAL MISP threats\n")
+            print(f"   Collected {len(self.data)} REAL MISP threats\n")
             return self.data
         
         except Exception as e:
-            print(f"   ❌ Error fetching MISP: {e}")
+            print(f"   [ERROR] Error fetching MISP: {e}")
             self.error_count += 1
             return []
     
@@ -167,7 +167,7 @@ class MISPScraper:
         Optional: Connect to public MISP instances
         """
         
-        print(f"\n💡 TIP: To fetch REAL MISP data:")
+        print(f"\nTIP: To fetch REAL MISP data:")
         print(f"   1. Visit https://www.misp-project.org/feeds/")
         print(f"   2. Use their public APIs")
         print(f"   3. Or download MISP JSON exports")
@@ -181,7 +181,7 @@ class MISPScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} MISP threats to {filename}")
+        print(f"Saved {len(self.data)} MISP threats to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""

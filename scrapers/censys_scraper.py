@@ -50,7 +50,7 @@ class CensysScraper:
                 "Machine learning service exposed"
             ]
         
-        print(f"🌐 Fetching REAL internet exposures from Censys...")
+        print(f"Fetching REAL internet exposures from Censys...")
         print(f"   Queries: {len(queries)}\n")
         
         count = 0
@@ -87,13 +87,13 @@ class CensysScraper:
                     if count >= max_per_query * len(queries):
                         break
                 
-                print(f"      ✅ Generated {len(exposure_types)} threat patterns")
+                print(f"      Generated {len(exposure_types)} threat patterns")
             
             except Exception as e:
-                print(f"      ❌ Error: {e}")
+                print(f"      [ERROR] Error: {e}")
                 self.error_count += 1
         
-        print(f"\n✅ Collected {len(self.data)} Censys exposure patterns\n")
+        print(f"\nCollected {len(self.data)} Censys exposure patterns\n")
         return self.data
     
     def _get_severity(self, exposure_type: str) -> str:
@@ -117,7 +117,7 @@ class CensysScraper:
          Steps to get free API key:
             1. Go to https://censys.io
          2. Sign up for free account
-        3. Go to account settings → API
+        3. Go to account settings -> API
         4. Create API credentials
         5. Add to config/.env.local: CENSYS_API_KEY=your_key
     
@@ -128,14 +128,14 @@ class CensysScraper:
         api_key = api_key or self.api_key
 
         if not api_key:
-            print("\n💡 TIP: For REAL Censys data:")
+            print("\nTIP: For REAL Censys data:")
             print("   1. Go to https://censys.io")
             print("   2. Create FREE account")
             print("   3. Get API key from account settings")
             print("   4. Add to config/.env.local: CENSYS_API_KEY=your_key")
             return
 
-        print(f"\n🔑 Fetching REAL data with Censys API key...")
+        print(f"\nFetching REAL data with Censys API key...")
 
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -170,7 +170,7 @@ class CensysScraper:
                 if response.status_code == 200:
                     results = response.json()
                     hosts = results.get('result', {}).get('hosts', [])
-                    print(f"   ✅ Found {len(hosts)} hosts for '{query}'")
+                    print(f"   Found {len(hosts)} hosts for '{query}'")
 
                     # Process found hosts
                     for host_data in hosts[:10]:  # Limit to 10 per query
@@ -189,13 +189,13 @@ class CensysScraper:
                         self.data.append(threat)
 
                 elif response.status_code == 401:
-                    print(f"   ❌ Authentication failed - check your API key")
+                    print(f"   Authentication failed - check your API key")
                     break
                 else:
-                    print(f"   ⚠️  Query '{query}' returned: {response.status_code}")
+                    print(f"   [WARN] Query '{query}' returned: {response.status_code}")
 
         except Exception as e:
-            print(f"   ❌ Error: {str(e)[:100]}")
+            print(f"   [ERROR] Error: {str(e)[:100]}")
     
     def save_to_json(self, filename='data/raw_shodan.json'):
         """Save collected exposures to JSON"""
@@ -204,7 +204,7 @@ class CensysScraper:
         with open(filename, 'w') as f:
             json.dump(self.data, f, indent=2)
         
-        print(f"💾 Saved {len(self.data)} Censys exposures to {filename}")
+        print(f"Saved {len(self.data)} Censys exposures to {filename}")
     
     def get_stats(self):
         """Print collection statistics"""
