@@ -53,10 +53,20 @@ def create_database():
         source TEXT,
         url TEXT,
         collected_at TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        ai_relevant BOOLEAN DEFAULT 0
     )
     ''')
-    
+
+    # Migration: add ai_relevant to a pre-existing database that predates
+    # this column. Default 0 is just a placeholder - the full reclassify
+    # pass overwrites it for every row, this only covers new inserts that
+    # might land before a full reclassification is run.
+    try:
+        cursor.execute('ALTER TABLE threats ADD COLUMN ai_relevant BOOLEAN DEFAULT 0')
+    except sqlite3.OperationalError:
+        pass  # column already exists
+
     conn.commit()
     conn.close()
     print("✅ Database tables created/verified")
@@ -218,6 +228,7 @@ def run_pipeline():
         # Use the improved classifier with dict input
         threat_type = classifier.classify(threat)
         threat['threat_type'] = threat_type
+        threat['ai_relevant'] = classifier.is_ai_relevant(threat, threat_type)
         classified_threats.append(threat)
     
     # Count by type
@@ -256,12 +267,13 @@ def run_pipeline():
             source = threat.get('source', 'Unknown')
             url = threat.get('url', '')
             collected_at = threat.get('collected_at', datetime.now().isoformat())
-            
+            ai_relevant = threat.get('ai_relevant', False)
+
             cursor.execute('''
-            INSERT INTO threats 
-            (threat_id, title, description, test_payload, detection_keywords, 
-             threat_type, severity, source, url, collected_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO threats
+            (threat_id, title, description, test_payload, detection_keywords,
+             threat_type, severity, source, url, collected_at, ai_relevant)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 threat_id,
                 title,
@@ -272,7 +284,8 @@ def run_pipeline():
                 severity,
                 source,
                 url,
-                collected_at
+                collected_at,
+                ai_relevant
             ))
             
             success += 1
