@@ -28,6 +28,8 @@ from scrapers.mitre_scraper import MitreAttackScraper
 from scrapers.censys_scraper import CensysScraper
 from scrapers.opencti_scraper import OpenCTIScraper
 from scrapers.nvd_scraper import NVDScraper
+from scrapers.circl_vulnerability_lookup_scraper import CIRCLVulnerabilityLookupScraper
+from scrapers.euvd_scraper import EUVDScraper
 from core.classifier import ImprovedThreatClassifier
 
 
@@ -76,7 +78,7 @@ def run_pipeline():
     create_database()
     
     # STEP 1: SCRAPE FROM ALL SOURCES
-    print("\n[STEP 1/3] SCRAPING FROM ALL SOURCES (7 SOURCES)...")
+    print("\n[STEP 1/3] SCRAPING FROM ALL SOURCES (9 SOURCES)...")
     print("-" * 70)
     
     all_threats = []
@@ -172,7 +174,33 @@ def run_pipeline():
     except Exception as e:
         print(f"   ❌ Error: {e}")
         source_counts['OpenCTI'] = 0
-    
+
+    # CIRCL Vulnerability-Lookup Scraper (CNVD/FSTEC/JVN/CERT-FR)
+    print("\n🌍 CIRCL Vulnerability-Lookup Scraper...")
+    try:
+        circl_scraper = CIRCLVulnerabilityLookupScraper()
+        circl_threats = circl_scraper.fetch_vulnerabilities(max_per_source=25)
+        circl_scraper.save_to_json()
+        all_threats.extend(circl_threats)
+        source_counts['CIRCL'] = len(circl_threats)
+        print(f"   ✅ Collected {len(circl_threats)} CIRCL threats")
+    except Exception as e:
+        print(f"   ❌ Error: {e}")
+        source_counts['CIRCL'] = 0
+
+    # EUVD Scraper (ENISA)
+    print("\n🇪🇺 EUVD Scraper...")
+    try:
+        euvd_scraper = EUVDScraper()
+        euvd_threats = euvd_scraper.fetch_vulnerabilities(max_per_query=25)
+        euvd_scraper.save_to_json()
+        all_threats.extend(euvd_threats)
+        source_counts['EUVD'] = len(euvd_threats)
+        print(f"   ✅ Collected {len(euvd_threats)} EUVD threats")
+    except Exception as e:
+        print(f"   ❌ Error: {e}")
+        source_counts['EUVD'] = 0
+
     print(f"\n✅ SCRAPING COMPLETE")
     print(f"   Total threats collected: {len(all_threats)}")
     print(f"\n   Sources breakdown:")
@@ -276,6 +304,8 @@ def run_pipeline():
     print(f"   - data/raw_mitre.json")
     print(f"   - data/raw_nvd.json")
     print(f"   - data/raw_opencti.json")
+    print(f"   - data/raw_circl_vulnerability_lookup.json")
+    print(f"   - data/raw_euvd.json")
     print(f"   - data/threats.db")
     print("\n" + "=" * 70)
 
