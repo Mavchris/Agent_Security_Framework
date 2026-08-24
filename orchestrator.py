@@ -13,12 +13,19 @@ import sys
 import os
 import logging
 
+# Force UTF-8 output: on Windows, sys.stdout/stderr default to the system
+# codepage (cp1252), which cannot encode the emoji used throughout this
+# pipeline's console/log messages and previously crashed run_pipeline()
+# before a single scraper could execute.
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/orchestrator.log'),
+        logging.FileHandler('logs/orchestrator.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

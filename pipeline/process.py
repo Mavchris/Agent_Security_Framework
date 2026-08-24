@@ -9,6 +9,15 @@ from datetime import datetime
 import sys
 import os
 
+# Force UTF-8 output: on Windows, sys.stdout/stderr default to the system
+# codepage (cp1252), which cannot encode the emoji used throughout this
+# pipeline's console messages. Only reconfigure when run directly
+# (python pipeline/process.py) — when imported by orchestrator.py, that
+# entry point has already reconfigured the process-wide streams.
+if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
