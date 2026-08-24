@@ -837,8 +837,7 @@ Agent_security_framework/
 │
 ├─ testing/                          (Agent testing)
 │  ├─ agent_scanner.py              (Nessus-like scanner)
-│  ├─ agent_wrappers.py             (7 LLM engines)
-│  ├─ agent_tester.py               (Test harness)
+│  ├─ agent_wrappers.py             (7 LLM engines, incl. MockAgentWrapper)
 │  └─ cli.py                        (CLI interface)
 │
 ├─ core/                             (Business logic)

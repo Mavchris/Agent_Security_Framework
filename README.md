@@ -333,8 +333,7 @@ Agent_security_framework/
 │
 ├─ testing/                     (agent testing)
 │  ├─ agent_scanner.py          (vulnerability scanner)
-│  ├─ agent_wrappers.py         (7 LLM engines)
-│  ├─ agent_tester.py           (test harness)
+│  ├─ agent_wrappers.py         (7 LLM engines, incl. MockAgentWrapper)
 │  └─ cli.py                    (command-line interface)
 │
 ├─ core/                        (core services)

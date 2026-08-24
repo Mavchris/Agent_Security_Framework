@@ -11,7 +11,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agent_scanner import AgentVulnerabilityScanner
-from agent_tester import MockAgent, AgentVulnerabilityTester
+from agent_wrappers import get_agent_wrapper
 
 def main():
     parser = argparse.ArgumentParser(
@@ -47,10 +47,8 @@ def main():
     )
     
     # Legacy options (keep for compatibility)
-    parser.add_argument('--test-mock', action='store_true', help='Test MockAgent')
     parser.add_argument('--type', type=str, help='Filter by threat type')
     parser.add_argument('--source', type=str, help='Filter by source')
-    parser.add_argument('--export', type=str, help='Export results')
     parser.add_argument('--db', type=str, default='data/threats.db', help='Database path')
     
     args = parser.parse_args()
@@ -67,12 +65,11 @@ def main():
             agent = OllamaWrapper(model='mistral')
             print(f"✓ Using Mistral via Ollama (localhost:11434)\n")
         elif args.scan_agent == 'mock':
-            agent = MockAgent()
+            agent = get_agent_wrapper('mock')
             print(f"✓ Using MockAgent\n")
         else:
             # Try other agents
             try:
-                from agent_wrappers import get_agent_wrapper
                 agent = get_agent_wrapper(args.scan_agent)
                 print(f"✓ Using {args.scan_agent}\n")
             except ImportError as e:
@@ -100,25 +97,7 @@ def main():
                 scanner.export_csv(args.output)
         
         return 0
-    
-    # LEGACY MODE (keep old functionality)
-    elif args.test_mock:
-        print("\n🧪 Testing MockAgent")
-        print("===================\n")
-        
-        mock_agent = MockAgent()
-        tester = AgentVulnerabilityTester(mock_agent, db_path=args.db)
-        
-        # Test all
-        report = tester.generate_report()
-        tester.print_report()
-        
-        # Export if requested
-        if args.export:
-            tester.export_report(args.export)
-        
-        return 0
-    
+
     else:
         parser.print_help()
         return 1
