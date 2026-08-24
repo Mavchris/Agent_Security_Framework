@@ -24,7 +24,7 @@ Complete system architecture documentation for the Agent Security Intelligence F
 ### Purpose
 
 The Agent Security Intelligence Framework is designed to:
-1. **Collect** threat intelligence from 7 CTI sources
+1. **Collect** threat intelligence from 9 CTI sources
 2. **Classify** threats into 9 security categories
 3. **Test** AI agents against real-world threats
 4. **Monitor** agent security posture continuously
@@ -54,9 +54,9 @@ The Agent Security Intelligence Framework is designed to:
 │   CURRENT STATUS (v2.0)          │
 ├──────────────────────────────────┤
 │ Total Code:      4000+ lines     │
-│ Test Coverage:   11/11 passing   │
-│ Threats DB:      240 threats     │
-│ CTI Sources:     7 active        │
+│ Test Coverage:   13/13 passing   │
+│ Threats DB:      653 threats     │
+│ CTI Sources:     9 active        │
 │ Threat Types:    9 categories    │
 │ Dashboards:      3 production    │
 │ API Endpoints:   10 functional   │
@@ -159,7 +159,7 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │         │                                        │
 │  ┌──────┴──────────────────────────────┐        │
 │  │   Pipeline (ETL)                   │        │
-│  │  ├─ Extract (7 sources)            │        │
+│  │  ├─ Extract (9 sources)            │        │
 │  │  ├─ Transform (normalize)          │        │
 │  │  └─ Load (SQLite)                  │        │
 │  └──────┬──────────────────────────┘        │
@@ -171,7 +171,7 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │                                                      │
 │  ┌──────────────────────────────────────┐          │
 │  │   SQLite Database (threats.db)       │          │
-│  │  ├─ threats table (240 rows)         │          │
+│  │  ├─ threats table (653 rows)         │          │
 │  │  ├─ classifications                 │          │
 │  │  └─ metadata                        │          │
 │  └──────────────────────────────────────┘          │
@@ -199,10 +199,15 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 │  │(Research)│  │(Internet)│  │(Vulnerabilities)    │
 │  └──────────┘  └──────────┘  └──────────┘          │
 │                                                      │
-│  ┌──────────────────────────┐                       │
-│  │    OpenCTI               │                       │
-│  │(Structured Intelligence) │                       │
-│  └──────────────────────────┘                       │
+│  ┌──────────┐  ┌──────────────────────┐             │
+│  │ OpenCTI  │  │  CIRCL Vuln-Lookup    │             │
+│  │(Synthetic│  │(CNVD/FSTEC/JVN/CERT-FR)             │
+│  └──────────┘  └──────────────────────┘             │
+│                                                      │
+│  ┌──────────┐                                       │
+│  │  EUVD    │                                       │
+│  │ (ENISA)  │                                       │
+│  └──────────┘                                       │
 │                                                      │
 └──────────────────────────────────────────────────────┘
 
@@ -228,21 +233,23 @@ AGENT SECURITY INTELLIGENCE FRAMEWORK
 
 ## Component Descriptions
 
-### 1. Scrapers (7 sources)
+### 1. Scrapers (9 sources)
 
 ```
 PURPOSE: Extract threat data from CTI feeds
 
 Location: scrapers/
 
-Components (active, 7):
-├─ cve_scraper.py           (CVE vulnerabilities)
-├─ github_scraper.py        (Security advisories)
-├─ arxiv_scraper.py         (Research papers)
-├─ mitre_scraper.py         (Attack techniques)
-├─ censys_scraper.py        (Internet exposures)
-├─ nvd_scraper.py           (CVE vulnerabilities, wired in but no rows yet)
-└─ opencti_scraper.py       (Structured intel)
+Components (active, 9):
+├─ cve_scraper.py                          (CVE vulnerabilities, via cve.circl.lu)
+├─ github_scraper.py                       (Security advisories)
+├─ arxiv_scraper.py                        (Research papers, via export.arxiv.org)
+├─ mitre_scraper.py                        (Attack techniques)
+├─ censys_scraper.py                       (Internet exposures - synthetic, see Known Limitations)
+├─ nvd_scraper.py                          (CVE vulnerabilities)
+├─ opencti_scraper.py                      (Structured intel - synthetic, see Known Limitations)
+├─ circl_vulnerability_lookup_scraper.py   (CNVD/FSTEC/JVN/CERT-FR, via vulnerability.circl.lu)
+└─ euvd_scraper.py                         (EU Vulnerability Database, via ENISA)
 
 Note: scrapers/misp_scraper.py also exists but is not
 currently wired into the pipeline (pipeline/process.py
@@ -266,33 +273,45 @@ Responsibilities:
 
 ### 2. Classifier (9 categories)
 
+Taxonomy revised 2026-08-24 to align with the OWASP Top 10 for LLM Applications (2025 v2.0), replacing the 8-category taxonomy from the defended thesis report. Data-driven: derived from analyzing a ~140-entry sample of what was landing in `other` (see DATA_SOURCES.md), not applied wholesale from the OWASP list — two OWASP categories (System Prompt Leakage, Vector/Embedding Weaknesses) were deliberately **not** added because the corpus showed no real matching content.
+
 ```
 PURPOSE: Categorize threats into security types
 
 Location: core/classifier.py
 
-Categories (240 threats):
-├─ other                   (55.8%)
-├─ prompt_injection        (29.6%)
-├─ api_abuse               (10.8%)
-├─ tool_abuse              (1.3%)
-├─ model_extraction        (0.8%)
-├─ behavioral_anomaly      (0.8%)
-├─ supply_chain            (0.4%)
-├─ data_leakage            (0.4%)
-├─ data_poisoning          (0%)
-└─ resource_exhaustion     (0%)
+Categories (653 threats, after full reclassification):
+├─ other                        (62.0%)
+├─ prompt_injection             (24.3%)
+├─ sensitive_info_disclosure    (4.7%)
+├─ excessive_agency             (3.7%)
+├─ supply_chain                 (1.7%)
+├─ unbounded_consumption        (1.5%)
+├─ improper_output_handling     (1.2%)
+├─ model_extraction             (0.3%)
+├─ data_poisoning               (0.3%)
+└─ misinformation               (0.2%)
+
+Plus a separate `ai_relevant` boolean (not a category — computed
+independently): true for anything matched above, or for "other" entries
+that still mention AI/LLM-specific vocabulary. 362/653 (55.4%) true.
+Of the 405 "other" entries, 114 are ai_relevant=true (real AI-adjacent
+content, just not a clean fit for the 9 categories) and 291 are
+ai_relevant=false (confirmed off-topic - e.g. pre-2000 NVD CVEs pulled
+in by a broad keyword search, classic non-AI MITRE ATT&CK techniques).
 
 Algorithm:
-1. Tokenize threat title + description
-2. Match against keyword patterns
-3. Calculate confidence score
-4. Assign primary category
-5. Return classified threat
+1. Build a lowercase text blob from title + description + test_payload
+   + detection_keywords
+2. Match against keyword patterns for each of the 9 categories
+3. Assign the category with the most keyword hits; 0 hits -> "other"
+4. Separately, compute ai_relevant: true by construction if a category
+   matched, else a secondary keyword pass over AI/LLM-specific terms
 
 Metrics:
-- Unit tests:  11/11 passing ✓
-- Coverage:    All 240 threats
+- Unit tests:  13/13 passing ✓
+- Coverage:    All 653 threats (full reclassification, see
+                scripts/maintenance/reclassify_taxonomy_2026_08.py)
 - Accuracy:    Keyword-based (no ML)
 - Speed:       <100ms per threat
 
@@ -312,7 +331,7 @@ PURPOSE: Collect, process, store threat data
 Location: pipeline/process.py
 
 Flow:
-Extract (7 sources)
+Extract (9 sources)
     ↓
 Transform (normalize, classify, deduplicate)
     ↓
@@ -366,7 +385,7 @@ Schedule:
 │ DAILY PIPELINE (02:00 UTC)          │
 ├─────────────────────────────────────┤
 │ 1. Run ETL pipeline                 │
-│ 2. Collect from 7 sources           │
+│ 2. Collect from 9 sources           │
 │ 3. Update database                  │
 │ 4. Save metrics                     │
 │ 5. Log results                      │
@@ -416,7 +435,7 @@ Location: testing/agent_scanner.py
 
 Workflow:
 ┌──────────────────────────────────────┐
-│ 1. Load 240 threats from database   │
+│ 1. Load 653 threats from database   │
 ├──────────────────────────────────────┤
 │ 2. For each threat:                 │
 │    a. Send test payload to agent    │
@@ -451,7 +470,7 @@ Output:
 {
   "scan_date": "2026-03-28T14:30:00Z",
   "agent_type": "mistral",
-  "total_threats": 240,
+  "total_threats": 653,
   "vulnerabilities_found": 45,
   "vulnerability_score": 20.5%,
   "results_by_type": {...},
@@ -587,7 +606,7 @@ START (Daily at 02:00 UTC)
 ├─→ [Orchestrator] Save metrics
 │   ├─→ execution_time: 8.2 seconds
 │   ├─→ threats_collected: 30
-│   └─→ total_in_db: 240
+│   └─→ total_in_db: 653
 │
 ├─→ [Orchestrator] Log completion
 │   └─→ logs/orchestrator.log
@@ -603,9 +622,9 @@ Track record: 2/2 recorded executions succeeded (2026-03-28)
 ```
 START: Scanner invoked
 │
-├─→ [Scanner] Load database (240 threats)
+├─→ [Scanner] Load database (653 threats)
 │
-├─→ [Scanner] For each threat (0-240):
+├─→ [Scanner] For each threat (0-653):
 │   │
 │   ├─→ [Scanner] Prepare test payload
 │   │   └─→ threat['test_payload']
@@ -641,7 +660,7 @@ START: Scanner invoked
 └─→ END: Scan complete
 
 Time: 30 sec - 10+ min (depending on agent)
-Vulnerabilities: 0-240 (depending on agent resilience)
+Vulnerabilities: 0-653 (depending on agent resilience)
 ```
 
 ---
@@ -658,7 +677,7 @@ CREATE TABLE threats (
     description TEXT,
     type TEXT NOT NULL,          -- 9 categories
     severity TEXT NOT NULL,       -- critical/high/medium/low
-    source TEXT NOT NULL,         -- 7 CTI sources
+    source TEXT NOT NULL,         -- 9 CTI sources
     url TEXT,
     test_payload TEXT,
     detection_keywords TEXT,      -- JSON array
@@ -845,7 +864,7 @@ Agent_security_framework/
 │  └─ agent_monitor.py              (Health checks)
 │
 ├─ data/                             (Data storage)
-│  └─ threats.db                    (SQLite - 240 threats)
+│  └─ threats.db                    (SQLite - 653 threats)
 │
 ├─ logs/                             (Audit trail)
 │  ├─ orchestrator.log              (Execution logs)
@@ -859,7 +878,7 @@ Agent_security_framework/
 │                                     config/.env.local)
 │
 ├─ tests/                            (Unit tests)
-│  └─ test_classifier.py            (11/11 passing ✓)
+│  └─ test_classifier.py            (13/13 passing ✓)
 │
 └─ (documentation, at repo root, no docs/ folder)
    ├─ README.md
@@ -1016,7 +1035,7 @@ Best for: Production, multi-tenant
 ```
 Operation              Time        Notes
 ─────────────────────────────────────
-Load 240 threats      ~100ms      From SQLite
+Load 653 threats      ~100ms      From SQLite
 Classify 1 threat     <100ms      Keyword matching
 Scan all threats      30s - 10m   Depends on agent
 Generate stats        ~50ms       Aggregation query
