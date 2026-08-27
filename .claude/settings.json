@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/test_scrapers.py -v -s -k CIRCL)",
+      "Bash(python -m py_compile scrapers/censys_scraper.py)"
+    ]
+  }
+}

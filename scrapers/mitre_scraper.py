@@ -5,21 +5,24 @@ Downloads MITRE ATT&CK framework from official GitHub
 """
 
 import requests
-import json
 from datetime import datetime
 
-class MitreAttackScraper:
+from scrapers.base_scraper import BaseScraper
+
+class MitreAttackScraper(BaseScraper):
     """
     Scrapes REAL MITRE ATT&CK techniques from official GitHub
     Downloads enterprise-attack.json containing 1000+ techniques
     100% free, no authentication needed
     """
-    
+
+    SOURCE_NAME = "MITRE ATT&CK"
+    ITEM_LABEL = "MITRE ATT&CK techniques"
+    DEFAULT_OUTPUT_FILE = "data/raw_mitre.json"
+
     def __init__(self):
         # Official MITRE GitHub repository
-        self.base_url = "https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack"
-        self.data = []
-        self.error_count = 0
+        super().__init__(base_url="https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack")
     
     def fetch_techniques(self, max_results=200):
         """
@@ -87,8 +90,7 @@ class MitreAttackScraper:
             return self.data
         
         except requests.exceptions.RequestException as e:
-            print(f"   [ERROR] Error fetching MITRE ATT&CK: {e}")
-            self.error_count += 1
+            self._record_error(e, prefix="Error fetching MITRE ATT&CK")
             return []
     
     def _get_severity(self, technique: dict) -> str:
@@ -112,43 +114,16 @@ class MitreAttackScraper:
             return kill_chain[0].get('phase_name', 'unknown')
         return 'unknown'
     
-    def save_to_json(self, filename='data/raw_mitre.json'):
-        """Save collected techniques to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} MITRE ATT&CK techniques to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== MITRE ATT&CK SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
-            
-            # Count by tactic
-            tactic_count = {}
-            for threat in self.data:
-                tactic = threat.get('tactic', 'unknown')
-                tactic_count[tactic] = tactic_count.get(tactic, 0) + 1
-            
-            print("\nTop Tactics:")
-            for tactic, count in sorted(tactic_count.items(), key=lambda x: x[1], reverse=True)[:10]:
-                print(f"  - {str(tactic):<30} : {count}")
+    def _print_extra_stats(self):
+        # Count by tactic
+        tactic_count = {}
+        for threat in self.data:
+            tactic = threat.get('tactic', 'unknown')
+            tactic_count[tactic] = tactic_count.get(tactic, 0) + 1
+
+        print("\nTop Tactics:")
+        for tactic, count in sorted(tactic_count.items(), key=lambda x: x[1], reverse=True)[:10]:
+            print(f"  - {str(tactic):<30} : {count}")
 
 
 # Test

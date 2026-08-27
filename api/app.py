@@ -5,6 +5,7 @@ Exposes threat data from SQLite database
 
 from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 import sqlite3
 from typing import List, Optional
 from datetime import datetime
@@ -261,17 +262,21 @@ from monitoring.agent_monitor import AgentMonitor
 # Global monitor instance (in production, one per agent)
 monitor_instance = None
 
+
+class LogRequestBody(BaseModel):
+    """Request body for POST /monitoring/log-request"""
+    agent_name: str
+    prompt: str
+    response: str
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+
 @app.post("/monitoring/log-request")
-async def log_request(
-    agent_name: str,
-    prompt: str,
-    response: str,
-    user_id: str = None,
-    session_id: str = None
-):
+async def log_request(body: LogRequestBody):
     """
     Log a request for monitoring
-    
+
     POST /monitoring/log-request
     {
         "agent_name": "MyAgent",
@@ -281,29 +286,29 @@ async def log_request(
         "session_id": "session456"
     }
     """
-    
+
     try:
         # Initialize monitor if needed
         global monitor_instance
-        if not monitor_instance or monitor_instance.agent_name != agent_name:
-            monitor_instance = AgentMonitor(agent_name=agent_name)
-        
+        if not monitor_instance or monitor_instance.agent_name != body.agent_name:
+            monitor_instance = AgentMonitor(agent_name=body.agent_name)
+
         # Log the request
         log_entry = monitor_instance.log_request(
-            prompt=prompt,
-            response=response,
-            user_id=user_id,
-            session_id=session_id
+            prompt=body.prompt,
+            response=body.response,
+            user_id=body.user_id,
+            session_id=body.session_id
         )
-        
+
         return {
             "status": "logged",
-            "agent_name": agent_name,
+            "agent_name": body.agent_name,
             "alert_triggered": log_entry['alert_triggered'],
             "risk_level": log_entry['risk_level'],
             "detected_threats": len(log_entry['detected_threats'])
         }
-    
+
     except Exception as e:
         return {
             "error": str(e),

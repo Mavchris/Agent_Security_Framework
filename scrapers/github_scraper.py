@@ -5,28 +5,33 @@ Uses official GitHub API (100% FREE)
 """
 
 import requests
-import json
 from datetime import datetime
 
-class GitHubScraper:
+from scrapers.base_scraper import BaseScraper
+
+class GitHubScraper(BaseScraper):
     """
     Scrapes REAL GitHub repositories related to security
     Using official GitHub API (free tier)
-    
+
     Rate limits:
     - Without token: 60 requests/hour (still FREE!)
     - With token: 5,000 requests/hour (also FREE!)
     """
-    
+
+    SOURCE_NAME = "GITHUB"
+    ITEM_LABEL = "GitHub repos with test payloads"
+    DEFAULT_OUTPUT_FILE = "data/raw_github.json"
+
     def __init__(self, token=None):
         """
         Initialize with optional GitHub token
-        
+
         Args:
             token: GitHub personal access token (free to create at github.com/settings/tokens)
                    If None, uses unauthenticated API (60 req/hour)
         """
-        self.base_url = "https://api.github.com"
+        super().__init__(base_url="https://api.github.com")
         self.token = token
         self.headers = {
             "Accept": "application/vnd.github.v3+json",
@@ -34,9 +39,6 @@ class GitHubScraper:
         }
         if token:
             self.headers["Authorization"] = f"token {token}"
-        
-        self.data = []
-        self.error_count = 0
     
     def fetch_exploits(self, queries=None, max_per_query=30):
         """
@@ -110,8 +112,7 @@ class GitHubScraper:
                         continue
             
             except requests.exceptions.RequestException as e:
-                print(f"      [ERROR] Error: {str(e)[:50]}")
-                self.error_count += 1
+                self._record_error(str(e)[:50])
         
         print(f"\nTotal GitHub repos collected: {len(self.data)}")
         return self.data
@@ -133,47 +134,20 @@ class GitHubScraper:
         else:
             return 'low'
     
-    def save_to_json(self, filename='data/raw_github.json'):
-        """Save collected repos to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} GitHub repos with test payloads to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== GITHUB SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
-            
-            # Average stars
-            avg_stars = sum(t.get('stars', 0) for t in self.data) / len(self.data)
-            print(f"\nAverage Stars: {avg_stars:.1f}")
-            
-            # Languages
-            languages = {}
-            for threat in self.data:
-                lang = threat.get('language', 'Unknown')
-                languages[lang] = languages.get(lang, 0) + 1
-            
-            print("\nTop Languages:")
-            for lang, count in sorted(languages.items(), key=lambda x: x[1], reverse=True)[:5]:
-                print(f"  - {str(lang):<15} : {count}")
+    def _print_extra_stats(self):
+        # Average stars
+        avg_stars = sum(t.get('stars', 0) for t in self.data) / len(self.data)
+        print(f"\nAverage Stars: {avg_stars:.1f}")
+
+        # Languages
+        languages = {}
+        for threat in self.data:
+            lang = threat.get('language', 'Unknown')
+            languages[lang] = languages.get(lang, 0) + 1
+
+        print("\nTop Languages:")
+        for lang, count in sorted(languages.items(), key=lambda x: x[1], reverse=True)[:5]:
+            print(f"  - {str(lang):<15} : {count}")
 
 
 # Test

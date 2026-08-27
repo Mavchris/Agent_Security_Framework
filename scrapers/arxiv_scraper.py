@@ -6,22 +6,25 @@ Collects research papers on LLM security with test cases
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime
-import json
 import time
+
+from scrapers.base_scraper import BaseScraper
 
 ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
 
 
-class ArxivScraper:
+class ArxivScraper(BaseScraper):
     """
     Scrapes ArXiv papers related to LLM/AI agent security
     Each paper enriched with test_payload and severity
     """
 
+    SOURCE_NAME = "ARXIV"
+    ITEM_LABEL = "ArXiv papers with test payloads"
+    DEFAULT_OUTPUT_FILE = "data/raw_arxiv.json"
+
     def __init__(self):
-        self.base_url = "http://export.arxiv.org/api/query"
-        self.data = []
-        self.error_count = 0
+        super().__init__(base_url="http://export.arxiv.org/api/query")
 
     def fetch_papers(self, queries=None, max_per_query=30):
         """
@@ -113,11 +116,9 @@ class ArxivScraper:
                 print(f"      Found {found} new papers ({len(entries)} returned)")
 
             except requests.exceptions.RequestException as e:
-                print(f"      [ERROR] Error: {e}")
-                self.error_count += 1
+                self._record_error(e)
             except ET.ParseError as e:
-                print(f"      [ERROR] Error parsing ArXiv response: {e}")
-                self.error_count += 1
+                self._record_error(e, prefix="Error parsing ArXiv response")
 
             # ArXiv's API usage policy asks for no more than one request
             # every 3 seconds.
@@ -127,43 +128,14 @@ class ArxivScraper:
         print(f"\nTotal ArXiv papers collected: {len(self.data)}")
         return self.data
     
-    def save_to_json(self, filename='data/raw_arxiv.json'):
-        """Save collected papers to JSON file"""
-        
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} ArXiv papers with test payloads to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== ARXIV SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
-            
-            # Date range
-            dates = [threat.get('published', '') for threat in self.data]
-            dates_sorted = sorted([d for d in dates if d])
-            
-            if dates_sorted:
-                print(f"\nDate Range:")
-                print(f"  - Oldest: {dates_sorted[0]}")
-                print(f"  - Newest: {dates_sorted[-1]}")
+    def _print_extra_stats(self):
+        dates = [threat.get('published', '') for threat in self.data]
+        dates_sorted = sorted([d for d in dates if d])
+
+        if dates_sorted:
+            print(f"\nDate Range:")
+            print(f"  - Oldest: {dates_sorted[0]}")
+            print(f"  - Newest: {dates_sorted[-1]}")
 
 
 # Test

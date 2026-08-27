@@ -5,19 +5,22 @@ Scrapes real CVE data from NIST NVD
 """
 
 import requests
-import json
 from datetime import datetime
 
-class NVDScraper:
+from scrapers.base_scraper import BaseScraper
+
+class NVDScraper(BaseScraper):
     """
     Scrapes real CVE data from NVD API
     Focus on CVEs related to LLM/AI agents
     """
-    
+
+    SOURCE_NAME = "NVD"
+    ITEM_LABEL = "NVD CVEs"
+    DEFAULT_OUTPUT_FILE = "data/raw_nvd.json"
+
     def __init__(self):
-        self.base_url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
-        self.data = []
-        self.error_count = 0
+        super().__init__(base_url="https://services.nvd.nist.gov/rest/json/cves/2.0")
     
     def fetch_cves(self, keywords=None, max_results=100):
         """
@@ -96,8 +99,7 @@ class NVDScraper:
             return self.data
         
         except requests.exceptions.RequestException as e:
-            print(f"   [ERROR] Error fetching from NVD: {e}")
-            self.error_count += 1
+            self._record_error(e, prefix="Error fetching from NVD")
             return []
     
     def _get_severity(self, vuln: dict) -> str:
@@ -119,33 +121,6 @@ class NVDScraper:
         
         return 'unknown'
     
-    def save_to_json(self, filename='data/raw_nvd.json'):
-        """Save collected CVEs to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} NVD CVEs to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== NVD SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
 
 
 # Test

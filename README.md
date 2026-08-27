@@ -407,20 +407,22 @@ Documentation-vs-code audit findings, listed plainly rather than left implicit:
 - **Task scheduling**: implemented with the `schedule` library, not APScheduler.
 - **Automation track record**: the orchestrator has now completed a real run collecting genuine new data (2026-08-24: +297 threats, all 9 sources succeeded, 0 crashes) after fixing a `UnicodeEncodeError` that previously crashed `run_pipeline()` before any scraper could execute on Windows (the root cause of the earlier "0 new threats" runs). Still short on long-term unattended track record.
 - **Classification**: keyword-based by design (see roadmap below, this isn't hidden). The taxonomy was revised 2026-08-24 (9 categories aligned to OWASP LLM Top 10 2025 v2.0, plus a new `ai_relevant` boolean field) after a data-driven review of the 440/653 (67.4%) threats that were landing in `other` under the original 8-category taxonomy from the defended thesis report — see DATA_SOURCES.md for the corpus analysis. After reclassifying the full database, `other` is **405/653 (62.0%)** — a real but modest improvement, not the 35-45% initially guessed before verifying against the full corpus. Of those 405, 114 are `ai_relevant=true` (genuine AI-adjacent content that doesn't fit one of the 9 categories cleanly) and 291 are `ai_relevant=false` (confirmed off-topic: pre-2000 generic NVD CVEs, classic non-AI MITRE ATT&CK techniques, JVN/FSTEC/CNVD vendor bugs unrelated to AI). Roughly half the "other" rate is a structural property of broad-coverage sources like NVD/MITRE/JVN returning everything they have, not a taxonomy gap.
-- **Test coverage**: `pytest --cov=. --cov-report=term-missing` (41 tests, `tests/test_classifier.py` + `tests/test_scrapers.py`, network mocked) reports **30% overall (2309 statements, 1614 missed)**. That's up from a previously-measured 27%, but the increase is purely mechanical — it comes from deleting `testing/agent_tester.py` and `scrapers/avid_scraper.py` and trimming `testing/cli.py`, which shrank the denominator; no new tests were added to raise it. By module:
+- **Test coverage**: `pytest --cov=. --cov-report=term-missing` (45 tests: `tests/test_classifier.py`, `tests/test_scrapers.py`, `tests/test_api.py`, network mocked) reports **36% overall (2343 statements, 1508 missed)**. By module:
 
   | Module | Coverage | Notes |
   |---|---|---|
   | `tests/` | 95–98% | the test suite itself |
   | `scrapers/circl_vulnerability_lookup_scraper.py`, `cve_scraper.py` | 71–73% | mocked, exercised |
   | `scrapers/arxiv_scraper.py`, `euvd_scraper.py` | 57–62% | mocked, exercised |
+  | `monitoring/agent_monitor.py` | 43% | exercised indirectly via the `test_api.py` `POST /monitoring/log-request` tests |
   | `scrapers/github_scraper.py`, `opencti_scraper.py`, `retry.py` | 50–56% | mocked, exercised |
   | `core/classifier.py` | 69% | mocked, exercised |
   | `scrapers/censys_scraper.py` | 42% | mocked, exercised |
+  | `api/app.py` | 30% | `POST /monitoring/log-request` covered (Vague 3c); the `GET` endpoints (`/threats`, `/stats`, etc.) still have no tests |
   | `scrapers/misp_scraper.py`, `mitre_scraper.py`, `nvd_scraper.py` | 0% | no tests written |
-  | `pipeline/process.py`, `orchestrator.py`, `api/app.py`, `monitoring/agent_monitor.py`, `testing/*.py`, `dashboard/main.py`, `dashboard/utils/style.py` | 0% | no tests written |
+  | `pipeline/process.py`, `orchestrator.py`, `testing/*.py`, `dashboard/main.py`, `dashboard/utils/style.py` | 0% | no tests written |
 
-  `testing/` and `monitoring/` now at least appear in the report at their real 0% (added empty `__init__.py` package markers so `pytest --cov` auto-discovers them — previously they were silently omitted from the report entirely rather than shown as untested). `dashboard/pages/*.py` (`catalog.py`, `intelligence.py`, `operations.py` — 1,414 lines combined) cannot be made to appear even with an explicit `--cov=dashboard.pages` flag (`CoverageWarning: Module dashboard.pages was never imported`): Streamlit's multipage runner launches these files directly rather than importing them as a Python package, so they structurally escape standard coverage measurement — not a bug to fix, a tooling limitation to live with. See [ROADMAP.md](ROADMAP.md) for the priority order for a future dedicated test vague.
+  `testing/` and `monitoring/` appear in the report at their real coverage (added empty `__init__.py` package markers so `pytest --cov` auto-discovers them — previously they were silently omitted from the report entirely rather than shown as untested). `dashboard/pages/*.py` (`catalog.py`, `intelligence.py`, `operations.py` — 1,414 lines combined) cannot be made to appear even with an explicit `--cov=dashboard.pages` flag (`CoverageWarning: Module dashboard.pages was never imported`): Streamlit's multipage runner launches these files directly rather than importing them as a Python package, so they structurally escape standard coverage measurement — not a bug to fix, a tooling limitation to live with. See [ROADMAP.md](ROADMAP.md) for the priority order for a future dedicated test vague.
 
 ⚠️ **In Progress**
 - Documentation (README, guides, API docs)

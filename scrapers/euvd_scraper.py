@@ -4,12 +4,11 @@ Real vulnerability data from ENISA (EU cybersecurity agency), mandated
 under the NIS2 directive. Public API, no authentication required.
 """
 
-import json
 from datetime import datetime
 
 import requests
 
-from scrapers.retry import request_with_retry
+from scrapers.base_scraper import BaseScraper
 
 BASE_URL = "https://euvdservices.enisa.europa.eu/api/search"
 
@@ -40,13 +39,15 @@ def _severity_from_score(score):
     return "unknown"
 
 
-class EUVDScraper:
+class EUVDScraper(BaseScraper):
     """Scrapes real vulnerability data from the EU Vulnerability Database (ENISA)"""
 
+    SOURCE_NAME = "EUVD"
+    ITEM_LABEL = "EUVD entries"
+    DEFAULT_OUTPUT_FILE = "data/raw_euvd.json"
+
     def __init__(self):
-        self.base_url = BASE_URL
-        self.data = []
-        self.error_count = 0
+        super().__init__(base_url=BASE_URL)
 
     def fetch_vulnerabilities(self, queries=None, max_per_query=25):
         """
@@ -80,7 +81,7 @@ class EUVDScraper:
             print(f"    - Searching: '{query}'...")
 
             try:
-                response = request_with_retry(
+                response = self.request_with_retry(
                     lambda q=query: self._get(q, max_per_query)
                 )
                 payload = response.json()
@@ -100,8 +101,7 @@ class EUVDScraper:
                 print(f"      Found {found} new entries ({len(items)} of {total} total)")
 
             except Exception as e:
-                print(f"      [ERROR] Error: {e}")
-                self.error_count += 1
+                self._record_error(e)
 
         print(f"\nTotal EUVD entries collected: {len(self.data)}")
         return self.data
@@ -142,31 +142,6 @@ class EUVDScraper:
             "published": _parse_date(item.get("datePublished")),
             "collected_at": datetime.now().isoformat(),
         }
-
-    def save_to_json(self, filename="data/raw_euvd.json"):
-        """Save collected entries to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or ".", exist_ok=True)
-
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.data, f, indent=2, ensure_ascii=False)
-
-        print(f"Saved {len(self.data)} EUVD entries to {filename}")
-
-    def get_stats(self):
-        """Print collection statistics"""
-
-        print("\n=== EUVD SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-
-        if self.data:
-            severity_count = {}
-            for threat in self.data:
-                severity_count[threat["severity"]] = severity_count.get(threat["severity"], 0) + 1
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
 
 
 # Test

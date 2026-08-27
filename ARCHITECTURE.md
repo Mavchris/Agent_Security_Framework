@@ -255,13 +255,21 @@ Note: scrapers/misp_scraper.py also exists but is not
 currently wired into the pipeline (pipeline/process.py
 never imports or calls it).
 
-Interface:
-class Scraper(ABC):
-    def scrape(self) -> List[Dict]:
-        """Fetch threats from source"""
-    
-    def parse(self, data: Dict) -> Threat:
-        """Convert to Threat object"""
+Shared base (scrapers/base_scraper.py, BaseScraper - added Vague 3c):
+    __init__(base_url=None)   - self.data, self.error_count, self.base_url
+    save_to_json(filename)    - UTF-8 JSON dump; default path per scraper
+                                 via DEFAULT_OUTPUT_FILE
+    get_stats()               - banner, totals, errors, severity breakdown
+    request_with_retry(fn)    - wraps scrapers/retry.py, no separate import needed
+    _print_extra_stats()      - hook for scraper-specific stats (GitHub stars/
+                                 languages, MITRE tactics, Censys exposure types,
+                                 CIRCL by-source, ArXiv date range); no-op by default
+
+Deliberately NOT shared (differs legitimately per source - see the
+Vague 3c diagnostic): the fetch method itself (name, signature, loop
+shape - per-keyword vs per-source vs single bulk call vs synthetic
+generation), response parsing (JSON vs XML vs hardcoded), auth
+(GitHub token, Censys API key), and per-source severity mapping.
 
 Responsibilities:
 - Connect to external APIs
@@ -741,32 +749,36 @@ def get_agent_wrapper(agent_type: str) -> AgentWrapper:
 
 **Benefit:** Add new agents by implementing single interface
 
-### 2. Adapter Pattern (Scrapers)
+### 2. Base Class (Scrapers)
 
 ```python
-# Problem: 7 different CTI source formats
-# Solution: Adapt each to common Threat format
+# Problem: 9 different CTI source formats, but the real duplication
+# (Vague 3c diagnostic) was only in init/persistence/stats bookkeeping -
+# not in the fetch/parse logic itself, which differs legitimately per
+# source (JSON vs XML, per-keyword vs per-source vs bulk fetch, auth).
+# Solution: share only what's actually identical; no forced fetch()/
+# parse() abstraction.
 
-class Scraper(ABC):
-    def scrape(self) -> List[Dict]:
-        """Fetch from source"""
-    def parse(self, data: Dict) -> Threat:
-        """Convert to Threat object"""
+class BaseScraper:
+    def __init__(self, base_url=None): ...
+    def save_to_json(self, filename=None): ...
+    def get_stats(self): ...
+    def request_with_retry(self, request_fn, **kwargs): ...
+    def _print_extra_stats(self): ...  # hook, no-op by default
 
-class NVDScraper(Scraper):
-    def scrape(self) -> List[Dict]:
-        # NVD-specific API call
-    def parse(self, nvd_data: Dict) -> Threat:
-        # Adapt NVD format to Threat
+class NVDScraper(BaseScraper):
+    DEFAULT_OUTPUT_FILE = "data/raw_nvd.json"
+    def fetch_cves(self, keywords=None, max_results=100):
+        # NVD-specific API call + parsing - no shared fetch() exists
 
-class GitHubScraper(Scraper):
-    def scrape(self) -> List[Dict]:
-        # GitHub-specific API call
-    def parse(self, github_data: Dict) -> Threat:
-        # Adapt GitHub format to Threat
+class GitHubScraper(BaseScraper):
+    DEFAULT_OUTPUT_FILE = "data/raw_github.json"
+    def fetch_exploits(self, queries=None, max_per_query=30):
+        # GitHub-specific API call + parsing
 ```
 
-**Benefit:** Uniform interface for heterogeneous sources
+**Benefit:** Removes the real duplication (init/save/stats) without
+forcing a one-size-fits-all interface the 9 sources don't share.
 
 ### 3. Template Method (Pipeline)
 
@@ -847,13 +859,16 @@ Agent_security_framework/
 │  └─ process.py                    (Extract, transform, load)
 │
 ├─ scrapers/                         (CTI collection)
+│  ├─ base_scraper.py               (BaseScraper - shared init/save/stats, Vague 3c)
+│  ├─ retry.py                      (request_with_retry, wrapped by BaseScraper)
 │  ├─ nvd_scraper.py
 │  ├─ github_scraper.py
 │  ├─ arxiv_scraper.py
 │  ├─ mitre_scraper.py
 │  ├─ censys_scraper.py
-│  ├─ misp_scraper.py
-│  ├─ opencti_scraper.py
+│  ├─ circl_vulnerability_lookup_scraper.py
+│  ├─ euvd_scraper.py
+│  ├─ misp_scraper.py               (not wired into the pipeline)
 │  └─ cve_scraper.py
 │
 ├─ api/                              (REST API)
@@ -903,7 +918,7 @@ orchestrator.py
 └─ depends on: logs/orchestrator.log
 
 pipeline/process.py
-├─ depends on: scrapers/* (all 7)
+├─ depends on: scrapers/* (all 9 active; misp_scraper.py exists but isn't wired in)
 ├─ depends on: core/classifier.py
 └─ depends on: data/threats.db
 

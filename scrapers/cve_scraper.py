@@ -6,20 +6,23 @@ Each CVE includes test_payload and detection_keywords for testing
 """
 
 import requests
-import json
 from datetime import datetime
 import time
+
+from scrapers.base_scraper import BaseScraper
 
 # CVSS baseSeverity values are already uppercase words (LOW/MEDIUM/HIGH/CRITICAL);
 # normalize to the lowercase convention used across this project.
 _CVSS_KEYS = ("cvssV4_0", "cvssV3_1", "cvssV3_0", "cvssV2_0")
 
 
-class CVEScraper:
+class CVEScraper(BaseScraper):
+    SOURCE_NAME = "CVE"
+    ITEM_LABEL = "CVEs with test payloads"
+    DEFAULT_OUTPUT_FILE = "data/raw_cves.json"
+
     def __init__(self):
-        self.base_url = "https://cve.circl.lu/api/search"
-        self.data = []
-        self.error_count = 0
+        super().__init__(base_url="https://cve.circl.lu/api/search")
 
     def fetch_cves(self, keywords=None, max_results=50):
         """
@@ -83,8 +86,7 @@ class CVEScraper:
                 print(f"      Found {found} new CVEs ({len(records)} returned)")
 
             except requests.exceptions.RequestException as e:
-                print(f"      [ERROR] Error: {e}")
-                self.error_count += 1
+                self._record_error(e)
 
             # Be a reasonable citizen of a free public API.
             if idx < len(keywords):
@@ -130,35 +132,10 @@ class CVEScraper:
             "collected_at": datetime.now().isoformat(),
         }
     
-    def save_to_json(self, filename='data/raw_cves.json'):
-        """Save collected data to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        print(f"Saved {len(self.data)} CVEs with test payloads to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== CVE SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
+    def _print_extra_stats(self):
         if len(self.data) + self.error_count > 0:
             success_rate = (len(self.data) / (len(self.data) + self.error_count)) * 100
             print(f"Success rate: {success_rate:.1f}%")
-        
-        # Count by severity
-        severity_count = {}
-        for threat in self.data:
-            severity = threat.get('severity', 'unknown')
-            severity_count[severity] = severity_count.get(severity, 0) + 1
-        
-        print("\nBy Severity:")
-        for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-            print(f"  - {severity:<10} : {count}")
 
 
 # Test

@@ -6,28 +6,30 @@ Better alternative to Shodan (which is paid)
 """
 
 import requests
-import json
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+
+from scrapers.base_scraper import BaseScraper
 
 # Load environment variables
 load_dotenv('config/.env.local')
 
 
-class CensysScraper:
+class CensysScraper(BaseScraper):
     """
     Scrapes real internet exposure data from Censys API
     Censys API is FREE tier: 500 queries/day (excellent!)
     """
-    
+
+    SOURCE_NAME = "CENSYS"
+    ITEM_LABEL = "Censys exposures"
+    DEFAULT_OUTPUT_FILE = "data/raw_shodan.json"
+
     def __init__(self, api_key=None):
         """Initialize Censys scraper"""
-        
-        self.base_url = "https://search.censys.io"
+        super().__init__(base_url="https://search.censys.io")
         self.api_key = api_key or os.getenv('CENSYS_API_KEY')
-        self.data = []
-        self.error_count = 0
     
     def fetch_exposures(self, queries=None, max_per_query=50):
         """
@@ -90,9 +92,8 @@ class CensysScraper:
                 print(f"      Generated {len(exposure_types)} threat patterns")
             
             except Exception as e:
-                print(f"      [ERROR] Error: {e}")
-                self.error_count += 1
-        
+                self._record_error(e)
+
         print(f"\nCollected {len(self.data)} Censys exposure patterns\n")
         return self.data
     
@@ -197,42 +198,16 @@ class CensysScraper:
         except Exception as e:
             print(f"   [ERROR] Error: {str(e)[:100]}")
     
-    def save_to_json(self, filename='data/raw_shodan.json'):
-        """Save collected exposures to JSON"""
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} Censys exposures to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== CENSYS SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        print(f"Errors: {self.error_count}")
-        
-        if len(self.data) > 0:
-            # Count by severity
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
-            
-            # Count by exposure type
-            exposure_count = {}
-            for threat in self.data:
-                exp_type = threat.get('exposure_type', 'unknown')
-                exposure_count[exp_type] = exposure_count.get(exp_type, 0) + 1
-            
-            print("\nBy Exposure Type:")
-            for exp_type, count in sorted(exposure_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {str(exp_type):<30} : {count}")
+    def _print_extra_stats(self):
+        # Count by exposure type
+        exposure_count = {}
+        for threat in self.data:
+            exp_type = threat.get('exposure_type', 'unknown')
+            exposure_count[exp_type] = exposure_count.get(exp_type, 0) + 1
+
+        print("\nBy Exposure Type:")
+        for exp_type, count in sorted(exposure_count.items(), key=lambda x: x[1], reverse=True):
+            print(f"  - {str(exp_type):<30} : {count}")
 
 
 # Test

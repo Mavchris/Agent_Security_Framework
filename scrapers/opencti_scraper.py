@@ -5,18 +5,22 @@ Downloads from OpenCTI community feeds
 """
 
 import requests
-import json
 from datetime import datetime
 
-class OpenCTIScraper:
+from scrapers.base_scraper import BaseScraper
+
+class OpenCTIScraper(BaseScraper):
     """
     Scrapes REAL threat intelligence from OpenCTI
     OpenCTI is open-source threat intelligence platform
     """
-    
+
+    SOURCE_NAME = "OPENCTI"
+    ITEM_LABEL = "OpenCTI threats"
+    DEFAULT_OUTPUT_FILE = "data/raw_opencti_real.json"
+
     def __init__(self):
-        self.data = []
-        self.error_count = 0
+        super().__init__()
     
     def fetch_threats(self, max_results=100):
         """
@@ -87,35 +91,10 @@ class OpenCTIScraper:
         print(f"   Collected {len(self.data)} OpenCTI threats\n")
         return self.data
     
-    def save_to_json(self, filename='data/raw_opencti_real.json'):
-        """Save collected threats to JSON"""
-        import os
-        os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
-        
-        with open(filename, 'w') as f:
-            json.dump(self.data, f, indent=2)
-        
-        print(f"Saved {len(self.data)} OpenCTI threats to {filename}")
-    
-    def get_stats(self):
-        """Print collection statistics"""
-        
-        print("\n=== OpenCTI REAL SCRAPER STATS ===")
-        print(f"Total collected: {len(self.data)}")
-        
-        if len(self.data) > 0:
-            severity_count = {}
-            for threat in self.data:
-                severity = threat.get('severity', 'unknown')
-                severity_count[severity] = severity_count.get(severity, 0) + 1
-            
-            print("\nBy Severity:")
-            for severity, count in sorted(severity_count.items(), key=lambda x: x[1], reverse=True):
-                print(f"  - {severity:<10} : {count}")
 
 
 if __name__ == "__main__":
-    scraper = OpenCTIRealScraper()
+    scraper = OpenCTIScraper()
     scraper.fetch_threats(max_results=50)
     scraper.save_to_json()
     scraper.get_stats()

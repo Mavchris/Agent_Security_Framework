@@ -526,9 +526,9 @@ POST /monitoring/log-request
 **Description:**
 Log a request for monitoring and audit purposes (for production agents).
 
-**Query Parameters:**
+**Request Body** (JSON, `LogRequestBody`):
 
-| Parameter | Type | Required | Default | Description |
+| Field | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `agent_name` | string | Yes | - | Name of the agent making the request |
 | `prompt` | string | Yes | - | The prompt sent to the agent |
@@ -540,22 +540,21 @@ Log a request for monitoring and audit purposes (for production agents).
 
 ```json
 {
-  "data": {
-    "logged": true,
-    "log_id": "log_20260328_143000_abc123"
-  },
-  "status": "success",
-  "timestamp": "2026-03-28T14:30:00Z"
+  "status": "logged",
+  "agent_name": "MyAgent",
+  "alert_triggered": false,
+  "risk_level": "low",
+  "detected_threats": 0
 }
 ```
 
 **Examples:**
 
 ```bash
-curl -X POST "http://localhost:8000/monitoring/log-request?agent_name=MyAgent&prompt=Hello&response=Hi%20there"
+curl -X POST "http://localhost:8000/monitoring/log-request" \
+  -H "Content-Type: application/json" \
+  -d '{"agent_name": "MyAgent", "prompt": "Hello", "response": "Hi there"}'
 ```
-
-Note: this endpoint currently accepts these as query parameters rather than a JSON request body; switching to a Pydantic request model is planned.
 
 **Python Example:**
 
@@ -570,10 +569,10 @@ log_data = {
 
 response = requests.post(
     'http://localhost:8000/monitoring/log-request',
-    params=log_data
+    json=log_data
 )
 
-print(f"Logged: {response.json()['data']['logged']}")
+print(f"Status: {response.json()['status']}")
 ```
 
 ---
@@ -988,8 +987,10 @@ curl http://localhost:8000/stats | python -m json.tool
 # With headers
 curl -H "Accept: application/json" http://localhost:8000/threats
 
-# POST request (query parameters, not a JSON body - see Monitoring Endpoints)
-curl -X POST "http://localhost:8000/monitoring/log-request?agent_name=test&prompt=Hello&response=OK"
+# POST request (JSON body - see Monitoring Endpoints)
+curl -X POST "http://localhost:8000/monitoring/log-request" \
+  -H "Content-Type: application/json" \
+  -d '{"agent_name": "test", "prompt": "Hello", "response": "OK"}'
 ```
 
 ### Python Complete Example
@@ -1036,8 +1037,8 @@ class ThreatIntelligenceClient:
     
     def log_request(self, agent_name: str, prompt: str, response_text: str,
                      user_id: str = None, session_id: str = None):
-        """Log an agent request for monitoring (sent as query parameters,
-        matching the current api/app.py handler signature - no JSON body)"""
+        """Log an agent request for monitoring (sent as a JSON body,
+        matching the current api/app.py LogRequestBody model)"""
         data = {
             'agent_name': agent_name,
             'prompt': prompt,
@@ -1047,8 +1048,8 @@ class ThreatIntelligenceClient:
             data['user_id'] = user_id
         if session_id:
             data['session_id'] = session_id
-        response = requests.post(f'{self.base_url}/monitoring/log-request', params=data)
-        return response.json()['data']['logged']
+        response = requests.post(f'{self.base_url}/monitoring/log-request', json=data)
+        return response.json()['status'] == 'logged'
     
     def get_agent_stats(self, agent_name: str) -> Dict:
         """Get agent statistics"""
