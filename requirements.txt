@@ -8,6 +8,11 @@ pydantic==2.5.0
 python-dotenv==1.2.2
 schedule==1.2.2
 
+# Optional agent SDKs (lazy-imported by testing/agent_wrappers.py - only
+# needed if you actually register/scan an agent of that type)
+anthropic==1.2.0
+openai==3.5.0
+
 # Dev/test
 pytest==9.1.1
 pytest-cov==7.1.0
