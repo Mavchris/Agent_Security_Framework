@@ -13,16 +13,16 @@ classifier = ImprovedThreatClassifier()
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
-print("🔄 Smart reclassification...\n")
+print("Smart reclassification...\n")
 
 strategies = {
-    'CVE': 'classify',          # ✅ CVE = TRUSTED
-    'GitHub': 'classify',       # ✅ GitHub = CLASSIFY ALL
-    'ArXiv': 'classify',        # ✅ ArXiv = TRUSTED
-    'MITRE ATT&CK': 'classify', # ✅ MITRE = CLASSIFY (not generic)
-    'Censys': 'api_abuse',      # ✅ Censys = ALL api_abuse
-    'MISP': 'classify',         # ✅ MISP = TRUSTED
-    'OpenCTI': 'classify'       # ✅ OpenCTI = TRUSTED
+    'CVE': 'classify',          # CVE = TRUSTED
+    'GitHub': 'classify',       # GitHub = CLASSIFY ALL
+    'ArXiv': 'classify',        # ArXiv = TRUSTED
+    'MITRE ATT&CK': 'classify', # MITRE = CLASSIFY (not generic)
+    'Censys': 'api_abuse',      # Censys = ALL api_abuse
+    'MISP': 'classify',         # MISP = TRUSTED
+    'OpenCTI': 'classify'       # OpenCTI = TRUSTED
 }
 
 cursor.execute('SELECT id, title, description, source, detection_keywords FROM threats')
@@ -56,7 +56,7 @@ for idx, (threat_id, title, description, source, keywords_str) in enumerate(thre
     )
     
     if idx % 50 == 0:
-        print(f"✓ {idx}/{len(threats)}")
+        print(f"{idx}/{len(threats)}")
 
 conn.commit()
 
@@ -64,7 +64,7 @@ conn.commit()
 cursor.execute('SELECT threat_type, COUNT(*) as count FROM threats GROUP BY threat_type ORDER BY count DESC')
 stats = cursor.fetchall()
 
-print(f"\n✅ Done!\n")
+print(f"\nDone!\n")
 print("="*60)
 print("FINAL DISTRIBUTION")
 print("="*60 + "\n")
@@ -72,7 +72,7 @@ print("="*60 + "\n")
 total = sum(count for _, count in stats)
 for threat_type, count in stats:
     pct = (count / total * 100)
-    bar = "█" * int(pct / 2)
+    bar = "#" * int(pct / 2)
     print(f"{threat_type:<25} : {count:3d} ({pct:5.1f}%) {bar}")
 
 conn.close()

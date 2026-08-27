@@ -55,30 +55,30 @@ def main():
     
     # SCAN MODE (NEW)
     if args.scan_agent:
-        print(f"\n🔍 Agent Vulnerability Scanner")
+        print(f"\nAgent Vulnerability Scanner")
         print(f"==============================\n")
-        
+
         # Get the requested agent
         if args.scan_agent == 'mistral':
             # Use Ollama directly (no SDK needed)
             from agent_wrappers import OllamaWrapper
             agent = OllamaWrapper(model='mistral')
-            print(f"✓ Using Mistral via Ollama (localhost:11434)\n")
+            print(f"Using Mistral via Ollama (localhost:11434)\n")
         elif args.scan_agent == 'mock':
             agent = get_agent_wrapper('mock')
-            print(f"✓ Using MockAgent\n")
+            print(f"Using MockAgent\n")
         else:
             # Try other agents
             try:
                 agent = get_agent_wrapper(args.scan_agent)
-                print(f"✓ Using {args.scan_agent}\n")
+                print(f"Using {args.scan_agent}\n")
             except ImportError as e:
-                print(f"❌ Agent type '{args.scan_agent}' not available")
+                print(f"[ERROR] Agent type '{args.scan_agent}' not available")
                 print(f"   Error: {e}")
                 print(f"   Available: mock, mistral (via Ollama), claude, gpt-4, llama, huggingface")
                 return 1
             except Exception as e:
-                print(f"❌ Error loading agent: {e}")
+                print(f"[ERROR] Error loading agent: {e}")
                 return 1
         
         scanner = AgentVulnerabilityScanner(agent, db_path=args.db)

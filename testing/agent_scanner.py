@@ -88,7 +88,7 @@ class AgentVulnerabilityScanner:
         self.results['total_threats'] = len(threats)
         
         if verbose:
-            print(f"🔍 Scanning {len(threats)} threats...\n")
+            print(f"Scanning {len(threats)} threats...\n")
         
         for idx, threat in enumerate(threats, 1):
             result = self.test_threat(threat)
@@ -124,7 +124,7 @@ class AgentVulnerabilityScanner:
             # Progress
             if verbose and idx % 25 == 0:
                 progress = (idx / len(threats)) * 100
-                print(f"  ⏳ {progress:.0f}% ({idx}/{len(threats)})")
+                print(f"  {progress:.0f}% ({idx}/{len(threats)})")
         
         # Calculate vulnerability score
         if self.results['total_threats'] > 0:
@@ -134,7 +134,7 @@ class AgentVulnerabilityScanner:
             )
         
         if verbose:
-            print(f"✅ Scan complete!\n")
+            print(f"Scan complete!\n")
         
         return self.results
     
@@ -149,7 +149,7 @@ class AgentVulnerabilityScanner:
         print(f"Total Threats: {self.results['total_threats']}")
         print(f"Vulnerabilities Found: {len(self.results['vulnerabilities'])}")
         print(f"Safe Threats: {len(self.results['safe_threats'])}")
-        print(f"\n🚨 VULNERABILITY SCORE: {self.results['vulnerability_score']:.1f}%\n")
+        print(f"\nVULNERABILITY SCORE: {self.results['vulnerability_score']:.1f}%\n")
         
         # By Type
         print("VULNERABILITIES BY THREAT TYPE:")
@@ -158,7 +158,7 @@ class AgentVulnerabilityScanner:
             for ttype in sorted(self.results['by_type'].keys()):
                 stats = self.results['by_type'][ttype]
                 pct = (stats['vulnerable'] / stats['total'] * 100) if stats['total'] > 0 else 0
-                bar = "█" * int(pct / 5)
+                bar = "#" * int(pct / 5)
                 print(f"{ttype:<25} : {stats['vulnerable']:2d}/{stats['total']:3d} ({pct:5.1f}%) {bar}")
         
         # By Severity
@@ -168,12 +168,12 @@ class AgentVulnerabilityScanner:
             for severity in sorted(self.results['by_severity'].keys()):
                 stats = self.results['by_severity'][severity]
                 pct = (stats['vulnerable'] / stats['total'] * 100) if stats['total'] > 0 else 0
-                bar = "█" * int(pct / 5)
+                bar = "#" * int(pct / 5)
                 print(f"{severity:<25} : {stats['vulnerable']:2d}/{stats['total']:3d} ({pct:5.1f}%) {bar}")
         
         # Top vulnerabilities
         if self.results['vulnerabilities']:
-            print("\n🔴 TOP 10 VULNERABILITIES:")
+            print("\nTOP 10 VULNERABILITIES:")
             print("-" * 70)
             top_vulns = self.results['vulnerabilities'][:10]
             for idx, v in enumerate(top_vulns, 1):
@@ -183,13 +183,13 @@ class AgentVulnerabilityScanner:
         print("RECOMMENDATIONS:")
         print("="*70)
         recommendations = [
-            "🔒 Implement input validation for all user inputs",
-            "🛡️ Add prompt injection filtering",
-            "📊 Monitor API abuse patterns",
-            "🔑 Rotate API keys regularly",
-            "📝 Log all agent interactions",
-            "🔄 Regular security updates",
-            "👥 Security awareness training"
+            "Implement input validation for all user inputs",
+            "Add prompt injection filtering",
+            "Monitor API abuse patterns",
+            "Rotate API keys regularly",
+            "Log all agent interactions",
+            "Regular security updates",
+            "Security awareness training"
         ]
         for rec in recommendations:
             print(f"  {rec}")
@@ -200,7 +200,7 @@ class AgentVulnerabilityScanner:
         """Export results to JSON"""
         with open(filename, 'w') as f:
             json.dump(self.results, f, indent=2)
-        print(f"✅ Report exported to {filename}")
+        print(f"Report exported to {filename}")
     
     def export_csv(self, filename):
         """Export vulnerabilities to CSV"""
@@ -218,4 +218,4 @@ class AgentVulnerabilityScanner:
                     'type': vuln['type'],
                     'severity': vuln['severity']
                 })
-        print(f"✅ Vulnerabilities exported to {filename}")
+        print(f"Vulnerabilities exported to {filename}")
