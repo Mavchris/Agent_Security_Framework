@@ -513,6 +513,16 @@ div[data-testid="column"]:has(.nav-card):hover .stButton > button[kind="secondar
 .kpi-card.severity-low { border-left-color: var(--low); }
 .kpi-card.severity-accent { border-left-color: var(--accent); }
 
+/* Soft KPI variant - reuses the same badge tokens (10% bg, full-color text,
+   30% border) as .badge-*, for KPIs where the value itself must be
+   color-coded at a glance rather than just accented via the left border. */
+.kpi-card.kpi-soft-critical { background: var(--critical-bg); border-color: var(--critical-border); border-left-color: var(--critical); }
+.kpi-card.kpi-soft-critical .kpi-value { color: var(--critical); }
+.kpi-card.kpi-soft-high { background: var(--high-bg); border-color: var(--high-border); border-left-color: var(--high); }
+.kpi-card.kpi-soft-high .kpi-value { color: var(--high); }
+.kpi-card.kpi-soft-low { background: var(--low-bg); border-color: var(--low-border); border-left-color: var(--low); }
+.kpi-card.kpi-soft-low .kpi-value { color: var(--low); }
+
 .kpi-label {
     font-size: 12px;
     font-weight: 500;

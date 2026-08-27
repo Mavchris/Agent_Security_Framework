@@ -17,7 +17,8 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.style import (  # noqa: E402
-    apply_plotly_theme, badge, icon, info_banner, load_theme, mini_card, status_dot_html,
+    apply_plotly_theme, badge, icon, info_banner, load_theme, mini_card, score_card,
+    status_dot_html,
 )
 
 # Page config
@@ -196,10 +197,9 @@ with tab1:
             col1, col2, col3, col4 = st.columns(4)
 
             with col1:
-                st.metric(
-                    "Vulnerability Score",
-                    f"{results['vulnerability_score']:.1f}%",
-                    delta="Overall Risk"
+                st.markdown(
+                    score_card("Vulnerability Score", results['vulnerability_score']),
+                    unsafe_allow_html=True
                 )
 
             with col2:

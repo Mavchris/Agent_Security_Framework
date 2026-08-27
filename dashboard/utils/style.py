@@ -105,6 +105,29 @@ def status_dot_html(status: str = "healthy", label: str = "") -> str:
     return f'<span class="status-dot-wrap"><span class="status-dot {status}"></span>{label_html}</span>'
 
 
+def score_severity(score: float) -> str:
+    """Map a 0-100 vulnerability score to a severity tier for coloring.
+    >=60 critical (red), 30-59 high (orange), <30 low (green)."""
+    if score >= 60:
+        return "critical"
+    if score >= 30:
+        return "high"
+    return "low"
+
+
+def score_card(label: str, score: float) -> str:
+    """KPI card for a percentage score, colored via the same soft-badge
+    tokens used for severity badges (background/text/border), not just the
+    left-border accent that plain kpi_card() uses."""
+    severity = score_severity(score)
+    return f"""
+    <div class="kpi-card kpi-soft-{severity}">
+        <p class="kpi-label">{label}</p>
+        <p class="kpi-value">{score:.1f}%</p>
+    </div>
+    """
+
+
 def kpi_card(label: str, value, severity: str = "neutral", trend: str = None, trend_label: str = None) -> str:
     """severity: neutral | critical | high | medium | low | accent
        trend: up | down | neutral (optional)"""
