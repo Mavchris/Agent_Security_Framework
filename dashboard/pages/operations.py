@@ -37,6 +37,8 @@ load_theme()
 try:
     from testing.agent_wrappers import get_agent_wrapper
     from testing.agent_scanner import AgentVulnerabilityScanner
+    from core.agent_registry import build_wrapper, deactivate_agent, list_agents, register_agent
+    from monitoring import monitoring_store
 except ImportError as e:
     st.error(f"Import Error: {e}")
 
@@ -83,6 +85,159 @@ st.markdown(
 )
 
 # ============================================
+# SHARED: AGENT REGISTRATION FORM
+# ============================================
+
+def render_registration_form(key_prefix):
+    """"Register a new agent" form, shared by the "Test Agent" and
+    "Monitor Production" tabs so registration isn't gated behind a
+    specific tab. Two explicit entry paths - "My own agent" locks
+    straight to remote_http, "Reference baseline model" shows the 6
+    quick types - see the Vague that split this out to stop users
+    registering a raw Claude/GPT-4 thinking it was their own agent.
+
+    key_prefix must be unique per call site: both tabs' widgets exist
+    in the same script run simultaneously (Streamlit renders all tab
+    content on every rerun, it only hides the inactive tab visually),
+    so identical widget keys across two calls would collide.
+    """
+    success_key = f"{key_prefix}_last_registered_agent"
+    if st.session_state.get(success_key):
+        st.success(f"Agent '{st.session_state.pop(success_key)}' registered.")
+
+    reg_path = st.radio(
+        "What do you want to register?",
+        ["My own agent", "Reference baseline model"],
+        key=f"{key_prefix}_register_agent_path",
+        help=(
+            "\"My own agent\" connects to YOUR agent over HTTP - its system "
+            "prompt, tools and business logic included. \"Reference baseline "
+            "model\" tests a raw model via a generic API key, not your own agent."
+        ),
+    )
+
+    if reg_path == "My own agent":
+        reg_agent_type = "remote_http"
+        st.markdown(
+            info_banner(
+                "For an agent that only exists as a local script/function, see "
+                "docs/examples/local_agent_http_wrapper.py for a minimal example of "
+                "exposing it as a local HTTP endpoint first, then register it here "
+                "pointing to that local URL."
+            ),
+            unsafe_allow_html=True,
+        )
+    else:
+        reg_type_label = st.selectbox(
+            "Reference model",
+            ["Mock", "Claude", "GPT-4 (OpenAI)", "Llama (Local)", "Mistral", "HuggingFace"],
+            key=f"{key_prefix}_register_agent_type",
+        )
+        reg_type_map = {
+            "Mock": "mock",
+            "Claude": "claude",
+            "GPT-4 (OpenAI)": "openai",
+            "Llama (Local)": "llama",
+            "Mistral": "mistral",
+            "HuggingFace": "huggingface",
+        }
+        reg_agent_type = reg_type_map[reg_type_label]
+        st.markdown(
+            "<p style='color:var(--text-tertiary);font-size:13px;margin:-4px 0 12px;'>"
+            "Tests the raw model via a generic API key — without your system "
+            "prompt, tools, or business logic. Useful as a comparison baseline, "
+            "not for scanning your own agent."
+            "</p>",
+            unsafe_allow_html=True,
+        )
+
+    with st.form(f"{key_prefix}_register_agent_form", clear_on_submit=True):
+        reg_name = st.text_input("Agent name", key=f"{key_prefix}_reg_name")
+        reg_environment = st.text_input(
+            "Environment (optional)", placeholder="production / staging / test",
+            key=f"{key_prefix}_reg_environment",
+        )
+
+        reg_config = {}
+        if reg_agent_type == "openai":
+            reg_config["model"] = st.selectbox(
+                "Model", ["gpt-4", "gpt-3.5-turbo"], key=f"{key_prefix}_reg_openai_model"
+            )
+        elif reg_agent_type == "llama":
+            reg_config["model"] = st.text_input(
+                "Model name", value="llama2", key=f"{key_prefix}_reg_llama_model"
+            )
+        elif reg_agent_type == "huggingface":
+            reg_config["model_name"] = st.text_input(
+                "Model name", value="mistralai/Mistral-7B-Instruct-v0.1",
+                key=f"{key_prefix}_reg_hf_model",
+            )
+        elif reg_agent_type == "remote_http":
+            reg_config["endpoint_url"] = st.text_input(
+                "Endpoint URL", placeholder="https://agent.internal/query",
+                key=f"{key_prefix}_reg_endpoint_url",
+            )
+            col_a, col_b = st.columns(2)
+            with col_a:
+                reg_config["request_field"] = st.text_input(
+                    "Request field", value="prompt", key=f"{key_prefix}_reg_request_field"
+                )
+            with col_b:
+                reg_config["response_field"] = st.text_input(
+                    "Response field", value="response", key=f"{key_prefix}_reg_response_field"
+                )
+            reg_config["auth_env_var"] = st.text_input(
+                "Auth env var name (optional)",
+                placeholder="MY_AGENT_TOKEN",
+                help="The name of an environment variable in config/.env.local holding "
+                     "a bearer token - never the token itself.",
+                key=f"{key_prefix}_reg_auth_env_var",
+            )
+            reg_verify_ssl = st.checkbox(
+                "Verify TLS certificate", value=True, key=f"{key_prefix}_reg_verify_ssl"
+            )
+            reg_config["verify_ssl"] = reg_verify_ssl
+            if reg_verify_ssl:
+                reg_config["ca_cert_path"] = st.text_input(
+                    "Internal CA bundle path (optional)",
+                    placeholder="/etc/ssl/internal-ca.pem",
+                    key=f"{key_prefix}_reg_ca_cert_path",
+                )
+            else:
+                st.markdown(
+                    info_banner(
+                        "TLS verification disabled - traffic to this agent won't be "
+                        "protected against interception. Every call will log a warning.",
+                        "alert-triangle",
+                    ),
+                    unsafe_allow_html=True,
+                )
+
+        register_submitted = st.form_submit_button(
+            "Register Agent", key=f"{key_prefix}_register_submit"
+        )
+
+    if register_submitted:
+        if not reg_name:
+            st.error("Agent name is required.")
+        else:
+            clean_config = {k: v for k, v in reg_config.items() if v not in (None, "")}
+            try:
+                register_agent(
+                    reg_name, reg_agent_type,
+                    config=clean_config,
+                    environment=reg_environment or None,
+                )
+                # st.rerun() below discards any st.success() called before
+                # it, so the confirmation is shown after the rerun instead
+                # (see the session_state check at the top of this function).
+                st.session_state[success_key] = reg_name
+                st.rerun()
+            except ValueError as e:
+                st.error(str(e))
+
+
+# ============================================
 # TABS
 # ============================================
 
@@ -98,69 +253,106 @@ with tab1:
         unsafe_allow_html=True
     )
 
+    agent_source = st.radio(
+        "Agent source",
+        ["Quick type (no registration)", "Registered agent"],
+        horizontal=True,
+        help="Quick type: one-off test, nothing saved. Registered agent: pick one you've saved below.",
+        key="agent_source",
+    )
+
+    registered_agents = list_agents()
+    selected_registered_agent = None
+
     with st.container(border=True):
-        # Agent selection
-        col1, col2, col3 = st.columns([2, 1, 1])
+        if agent_source == "Quick type (no registration)":
+            # Agent selection
+            col1, col2, col3 = st.columns([2, 1, 1])
 
-        with col1:
-            agent_type = st.selectbox(
-                "Choose Agent Type",
-                ["Mock (Demo)", "Claude", "GPT-4", "Llama (Local)", "Mistral", "HuggingFace", "Custom"],
-                help="Select the type of agent to test"
-            )
+            with col1:
+                agent_type = st.selectbox(
+                    "Choose Agent Type",
+                    ["Mock (Demo)", "Claude", "GPT-4", "Llama (Local)", "Mistral", "HuggingFace"],
+                    help="Select the type of agent to test"
+                )
 
-        with col2:
-            agent_name = st.text_input("Agent Name", value="my_agent", help="Name for your agent")
+            with col2:
+                agent_name = st.text_input("Agent Name", value="my_agent", help="Name for your agent")
 
-        with col3:
-            st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
-            test_button = st.button("Run Scan", use_container_width=True, key="run_test", type="primary")
+            with col3:
+                st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+                test_button = st.button("Run Scan", use_container_width=True, key="run_test", type="primary")
 
-        # Agent-specific configurations
-        agent_config = {}
+            # Agent-specific configurations
+            agent_config = {}
 
-        if agent_type == "Mock (Demo)":
-            agent_config = {"agent_type": "mock"}
-            st.markdown(info_banner("Using Mock agent for demonstration (no API calls)"), unsafe_allow_html=True)
+            if agent_type == "Mock (Demo)":
+                agent_config = {"agent_type": "mock"}
+                st.markdown(info_banner("Using Mock agent for demonstration (no API calls)"), unsafe_allow_html=True)
 
-        elif agent_type == "Claude":
-            agent_config = {"agent_type": "claude"}
-            st.markdown(info_banner("Requires ANTHROPIC_API_KEY environment variable"), unsafe_allow_html=True)
+            elif agent_type == "Claude":
+                agent_config = {"agent_type": "claude"}
+                st.markdown(info_banner("Requires ANTHROPIC_API_KEY environment variable"), unsafe_allow_html=True)
 
-        elif agent_type == "GPT-4":
-            model = st.selectbox("Model", ["gpt-4", "gpt-3.5-turbo"])
-            agent_config = {"agent_type": "openai", "model": model}
-            st.markdown(info_banner("Requires OPENAI_API_KEY environment variable"), unsafe_allow_html=True)
+            elif agent_type == "GPT-4":
+                model = st.selectbox("Model", ["gpt-4", "gpt-3.5-turbo"])
+                agent_config = {"agent_type": "openai", "model": model}
+                st.markdown(info_banner("Requires OPENAI_API_KEY environment variable"), unsafe_allow_html=True)
 
-        elif agent_type == "Llama (Local)":
-            model = st.text_input("Model name", value="llama2", help="Ollama model name")
-            agent_config = {"agent_type": "llama", "model": model}
-            st.markdown(info_banner("Requires Ollama running locally (ollama serve)"), unsafe_allow_html=True)
+            elif agent_type == "Llama (Local)":
+                model = st.text_input("Model name", value="llama2", help="Ollama model name")
+                agent_config = {"agent_type": "llama", "model": model}
+                st.markdown(info_banner("Requires Ollama running locally (ollama serve)"), unsafe_allow_html=True)
 
-        elif agent_type == "Mistral":
-            agent_config = {"agent_type": "mistral"}
-            st.markdown(info_banner("Requires MISTRAL_API_KEY environment variable"), unsafe_allow_html=True)
+            elif agent_type == "Mistral":
+                agent_config = {"agent_type": "mistral"}
+                st.markdown(info_banner("Requires MISTRAL_API_KEY environment variable"), unsafe_allow_html=True)
 
-        elif agent_type == "HuggingFace":
-            model = st.text_input(
-                "Model name",
-                value="mistralai/Mistral-7B-Instruct-v0.1",
-                help="HuggingFace model identifier"
-            )
-            agent_config = {"agent_type": "hf", "model_name": model}
-            st.markdown(info_banner("Downloads model locally (may be large)"), unsafe_allow_html=True)
+            elif agent_type == "HuggingFace":
+                model = st.text_input(
+                    "Model name",
+                    value="mistralai/Mistral-7B-Instruct-v0.1",
+                    help="HuggingFace model identifier"
+                )
+                agent_config = {"agent_type": "hf", "model_name": model}
+                st.markdown(info_banner("Downloads model locally (may be large)"), unsafe_allow_html=True)
 
-        elif agent_type == "Custom":
-            st.markdown(
-                info_banner("Custom agent must be a Python class with a query() method", "alert-triangle"),
-                unsafe_allow_html=True
-            )
-            custom_code = st.text_area(
-                "Enter your agent code",
-                height=200,
-                help="Class with query(prompt) method"
-            )
-            agent_config = {"agent_type": "custom", "code": custom_code}
+        else:
+            agent_config = {}
+            if not registered_agents:
+                st.markdown(
+                    info_banner(
+                        "No agents registered yet - use the form below to register one.",
+                        "alert-triangle",
+                    ),
+                    unsafe_allow_html=True,
+                )
+                agent_name = None
+                agent_type = None
+                test_button = False
+            else:
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    labels = [
+                        f"{a['name']} ({a['agent_type']}"
+                        + (f", {a['environment']}" if a['environment'] else "")
+                        + ")"
+                        for a in registered_agents
+                    ]
+                    selected_label = st.selectbox(
+                        "Choose a registered agent", labels, key="registered_agent_select"
+                    )
+                    selected_registered_agent = registered_agents[labels.index(selected_label)]
+                with col2:
+                    st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+                    test_button = st.button(
+                        "Run Scan", use_container_width=True, key="run_test_registered", type="primary"
+                    )
+                agent_name = selected_registered_agent["name"]
+                agent_type = selected_registered_agent["agent_type"]
+
+    with st.expander("Register a new agent"):
+        render_registration_form("test_agent")
 
     # RUN SCAN
     if test_button:
@@ -168,7 +360,10 @@ with tab1:
             st.markdown(info_banner(f"Initializing {agent_type} agent..."), unsafe_allow_html=True)
 
             # Create agent wrapper
-            agent = get_agent_wrapper(**agent_config)
+            if selected_registered_agent is not None:
+                agent = build_wrapper(selected_registered_agent)
+            else:
+                agent = get_agent_wrapper(**agent_config)
 
             st.markdown(
                 info_banner(f"Scanning agent '{agent_name}' against {len(threats)} threats..."),
@@ -405,121 +600,137 @@ with tab1:
 with tab2:
     st.markdown("<div class='asif-section-title'>Production Monitoring</div>", unsafe_allow_html=True)
 
-    # Agent status
-    st.markdown(
-        f"<div class='asif-section-title' style='font-size:16px;'>"
-        f"{status_dot_html('healthy')} Agent Health Status</div>",
-        unsafe_allow_html=True
-    )
+    with st.expander("Register a new agent"):
+        render_registration_form("monitor")
 
-    agents = [
-        {'name': 'Agent-1', 'status': 'healthy', 'uptime': 99.9, 'alerts': 2},
-        {'name': 'Agent-2', 'status': 'healthy', 'uptime': 99.5, 'alerts': 5},
-        {'name': 'Agent-3', 'status': 'warning', 'uptime': 98.2, 'alerts': 12},
-    ]
+    monitored_agents = list_agents()
 
-    cols = st.columns(4)
-    for idx, agent in enumerate(agents):
-        with cols[idx]:
-            st.markdown(
-                f"""
-                <div class='kpi-card severity-{"low" if agent['status'] == 'healthy' else 'medium'}'>
-                    <p class='kpi-label'>{status_dot_html(agent['status'])} {agent['name']}</p>
-                    <p class='kpi-value' style='font-size:28px;'>{agent['uptime']}%</p>
-                    <div class='kpi-trend neutral'><span>{agent['alerts']} alerts</span></div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    # Reads straight from monitoring_store (data/monitoring.db) - the same
+    # persistence api/app.py's /monitoring/* endpoints write to, so this
+    # tab reflects real production activity logged from any process, not
+    # a separate, dashboard-only view.
 
-    st.divider()
+    if not monitored_agents:
+        st.markdown(
+            info_banner(
+                "No agents registered yet - use the form above to register one.",
+                "alert-triangle",
+            ),
+            unsafe_allow_html=True,
+        )
+    else:
+        # Agent status
+        st.markdown(
+            f"<div class='asif-section-title' style='font-size:16px;'>"
+            f"{status_dot_html('healthy')} Agent Health Status</div>",
+            unsafe_allow_html=True
+        )
 
-    # Real-time alerts
-    st.markdown("<div class='asif-section-title'>Real-time Alerts</div>", unsafe_allow_html=True)
+        cols = st.columns(min(4, len(monitored_agents)))
+        for idx, agent in enumerate(monitored_agents):
+            stats = monitoring_store.get_statistics(agent['name'])
+            status = 'healthy' if stats['alert_rate'] <= 30 else 'warning'
+            with cols[idx % len(cols)]:
+                st.markdown(
+                    f"""
+                    <div class='kpi-card severity-{"low" if status == "healthy" else "medium"}'>
+                        <p class='kpi-label'>{status_dot_html(status)} {agent['name']}</p>
+                        <p class='kpi-value' style='font-size:28px;'>{stats['total_requests_logged']}</p>
+                        <div class='kpi-trend neutral'><span>{stats['total_alerts']} alerts</span></div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-    alert_filter = st.selectbox(
-        "Filter by severity",
-        ["All", "Critical", "High", "Medium", "Low"]
-    )
+        st.divider()
 
-    alerts_data = [
-        {'time': '14:32', 'severity': 'Critical', 'agent': 'Agent-1', 'threat': 'Prompt Injection Attempt'},
-        {'time': '14:28', 'severity': 'High', 'agent': 'Agent-2', 'threat': 'Unauthorized Tool Access'},
-        {'time': '14:15', 'severity': 'Medium', 'agent': 'Agent-3', 'threat': 'API Rate Limit Exceeded'},
-        {'time': '14:05', 'severity': 'High', 'agent': 'Agent-1', 'threat': 'Data Exfiltration Attempt'},
-        {'time': '13:42', 'severity': 'Low', 'agent': 'Agent-2', 'threat': 'Unusual Request Pattern'},
-    ]
+        # Recent alerts, aggregated across all registered agents' session monitors
+        st.markdown("<div class='asif-section-title'>Recent Alerts</div>", unsafe_allow_html=True)
 
-    alerts_df = pd.DataFrame(alerts_data)
+        alert_filter = st.selectbox(
+            "Filter by severity",
+            ["All", "critical", "high", "medium", "low"]
+        )
 
-    if alert_filter != "All":
-        alerts_df = alerts_df[alerts_df['severity'] == alert_filter]
+        all_alerts = []
+        for agent in monitored_agents:
+            for alert in monitoring_store.get_alerts(agent_name=agent['name'], limit=20):
+                all_alerts.append({**alert, "agent_display_name": agent["name"]})
+        all_alerts.sort(key=lambda a: a["created_at"], reverse=True)
 
-    with st.container(border=True):
-        if len(alerts_df) == 0:
-            st.markdown("<p style='color:var(--text-tertiary);margin:0;'>No alerts for this filter.</p>",
-                        unsafe_allow_html=True)
-        for idx, alert in alerts_df.iterrows():
-            st.markdown(
-                f"""
-                <div style='display:flex;align-items:center;gap:12px;padding:8px 0;
-                            border-bottom:1px solid var(--border);font-size:14px;'>
-                    <span class='mono' style='color:var(--text-tertiary);min-width:48px;'>{alert['time']}</span>
-                    {badge(alert['severity'], alert['severity'].lower())}
-                    <span style='color:var(--text-secondary);min-width:80px;'>{alert['agent']}</span>
-                    <span style='color:var(--text-primary);'>{alert['threat']}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        if alert_filter != "All":
+            all_alerts = [a for a in all_alerts if a["severity"] == alert_filter]
 
-    st.divider()
+        with st.container(border=True):
+            if not all_alerts:
+                st.markdown(
+                    "<p style='color:var(--text-tertiary);margin:0;'>"
+                    "No alerts yet - log requests for a registered agent "
+                    "(POST /monitoring/log-request) to populate this.</p>",
+                    unsafe_allow_html=True
+                )
+            for alert in all_alerts[:20]:
+                st.markdown(
+                    f"""
+                    <div style='display:flex;align-items:center;gap:12px;padding:8px 0;
+                                border-bottom:1px solid var(--border);font-size:14px;'>
+                        <span class='mono' style='color:var(--text-tertiary);min-width:150px;'>{alert['created_at']}</span>
+                        {badge(alert['severity'].upper(), alert['severity'])}
+                        <span style='color:var(--text-secondary);min-width:120px;'>{alert['agent_display_name']}</span>
+                        <span style='color:var(--text-primary);'>{alert['message']}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-    # Threat detection trends
-    st.markdown("<div class='asif-section-title'>Threat Detection Trends (Last 7 days)</div>", unsafe_allow_html=True)
+        st.divider()
 
-    dates = pd.date_range(start='2025-03-20', periods=7, freq='D')
-    trend_data = pd.DataFrame({
-        'Date': dates,
-        'Prompt Injection': [5, 7, 6, 8, 9, 11, 13],
-        'Tool Abuse': [2, 1, 3, 2, 4, 3, 5],
-        'API Abuse': [1, 2, 1, 3, 2, 4, 3],
-        'Other': [3, 4, 5, 6, 7, 8, 9]
-    })
+        # Agent actions - real, wired to the registry and this session's monitors
+        st.markdown("<div class='asif-section-title'>Agent Actions</div>", unsafe_allow_html=True)
 
-    fig = px.line(
-        trend_data,
-        x='Date',
-        y=['Prompt Injection', 'Tool Abuse', 'API Abuse', 'Other'],
-        title="Detection Trends",
-        markers=True
-    )
-    apply_plotly_theme(fig)
-    fig.update_layout(height=400)
-    st.plotly_chart(fig, use_container_width=True)
+        action_labels = [a['name'] for a in monitored_agents]
+        selected_action_label = st.selectbox("Select agent", action_labels, key="monitor_action_agent")
+        selected_action_agent = monitored_agents[action_labels.index(selected_action_label)]
 
-    st.divider()
+        col1, col2, col3 = st.columns(3)
 
-    # Quick actions
-    st.markdown("<div class='asif-section-title'>Quick Actions</div>", unsafe_allow_html=True)
+        with col1:
+            if st.button("Run Health Check", use_container_width=True):
+                stats = monitoring_store.get_statistics(selected_action_agent['name'])
+                if stats['total_requests_logged'] == 0:
+                    st.info(f"{selected_action_agent['name']}: no requests logged yet.")
+                elif stats['alert_rate'] > 30:
+                    st.warning(
+                        f"{selected_action_agent['name']}: alert rate "
+                        f"{stats['alert_rate']:.1f}% - degraded."
+                    )
+                else:
+                    st.success(
+                        f"{selected_action_agent['name']}: healthy "
+                        f"({stats['alert_rate']:.1f}% alert rate)."
+                    )
 
-    col1, col2, col3, col4 = st.columns(4)
+        with col2:
+            if st.button("View Monitoring History", use_container_width=True):
+                logs = monitoring_store.get_logs(agent_name=selected_action_agent['name'], limit=20)
+                if not logs:
+                    st.info("No requests logged for this agent.")
+                else:
+                    history_df = pd.DataFrame([
+                        {
+                            "Time": log["created_at"],
+                            "Alert": log["alert_triggered"],
+                            "Risk": log["risk_level"],
+                        }
+                        for log in logs
+                    ])
+                    st.dataframe(history_df, use_container_width=True, hide_index=True)
 
-    with col1:
-        if st.button("Lock Agent-1", use_container_width=True):
-            st.success("Agent-1 locked")
-
-    with col2:
-        if st.button("View Logs", use_container_width=True):
-            st.info("Loading logs...")
-
-    with col3:
-        if st.button("Restart Agent", use_container_width=True):
-            st.info("Restarting...")
-
-    with col4:
-        if st.button("Alert Team", use_container_width=True):
-            st.success("Alert sent")
+        with col3:
+            if st.button("Deactivate Monitoring", use_container_width=True):
+                deactivate_agent(selected_action_agent["id"])
+                st.success(f"{selected_action_agent['name']} deactivated.")
+                st.rerun()
 
 # ============================================
 # FOOTER
