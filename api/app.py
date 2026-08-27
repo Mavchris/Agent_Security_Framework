@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import sqlite3
-from typing import List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -266,8 +266,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from monitoring.agent_monitor import AgentMonitor
 
-# Global monitor instance (in production, one per agent)
-monitor_instance = None
+# One AgentMonitor per agent name, so monitoring multiple agents at once
+# doesn't overwrite each other's in-memory logs/alerts (used to be a single
+# global instance, reassigned on every agent_name switch - see ROADMAP).
+monitor_instances: Dict[str, AgentMonitor] = {}
+
+
+def _get_or_create_monitor(agent_name: str) -> AgentMonitor:
+    if agent_name not in monitor_instances:
+        monitor_instances[agent_name] = AgentMonitor(agent_name=agent_name)
+    return monitor_instances[agent_name]
 
 
 class LogRequestBody(BaseModel):
@@ -294,10 +302,7 @@ async def log_request(body: LogRequestBody):
     }
     """
 
-    # Initialize monitor if needed
-    global monitor_instance
-    if not monitor_instance or monitor_instance.agent_name != body.agent_name:
-        monitor_instance = AgentMonitor(agent_name=body.agent_name)
+    monitor_instance = _get_or_create_monitor(body.agent_name)
 
     # Log the request
     log_entry = monitor_instance.log_request(
@@ -324,9 +329,7 @@ async def get_monitoring_stats(agent_name: str):
     GET /monitoring/stats/MyAgent
     """
 
-    global monitor_instance
-    if not monitor_instance or monitor_instance.agent_name != agent_name:
-        monitor_instance = AgentMonitor(agent_name=agent_name)
+    monitor_instance = _get_or_create_monitor(agent_name)
 
     stats = monitor_instance.get_statistics()
 
@@ -348,15 +351,13 @@ async def get_monitoring_alerts(
     GET /monitoring/alerts/MyAgent?limit=5
     """
 
-    global monitor_instance
-    if not monitor_instance or monitor_instance.agent_name != agent_name:
-        monitor_instance = AgentMonitor(agent_name=agent_name)
+    monitor_instance = _get_or_create_monitor(agent_name)
 
-    alerts = monitor_instance.alerts[-limit:]
+    alerts = monitor_instance.get_alerts(limit=limit)
 
     return {
         "agent_name": agent_name,
-        "total_alerts": len(monitor_instance.alerts),
+        "total_alerts": monitor_instance.get_statistics()['total_alerts'],
         "recent_alerts": alerts,
         "status": "success"
     }
@@ -370,9 +371,7 @@ async def get_agent_health(agent_name: str):
     GET /monitoring/health/MyAgent
     """
 
-    global monitor_instance
-    if not monitor_instance or monitor_instance.agent_name != agent_name:
-        monitor_instance = AgentMonitor(agent_name=agent_name)
+    monitor_instance = _get_or_create_monitor(agent_name)
 
     stats = monitor_instance.get_statistics()
 

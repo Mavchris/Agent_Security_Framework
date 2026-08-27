@@ -14,6 +14,7 @@ exception_handler that logs server-side and returns a generic 500, plus
 a restrictive-by-default CORS policy (no allow_origins=["*"]).
 """
 
+import sqlite3
 import unittest
 from unittest.mock import patch
 
@@ -21,12 +22,30 @@ from fastapi.testclient import TestClient
 
 from api.app import app
 
+MONITORING_DB_PATH = "data/monitoring.db"
+
+
+def _delete_monitoring_data(*agent_names):
+    """POST /monitoring/log-request now persists to data/monitoring.db
+    (see the monitoring-persistence vague) - tests that hit it for real
+    must clean up after themselves, unlike before when it was in-memory
+    and vanished with the test process."""
+    conn = sqlite3.connect(MONITORING_DB_PATH)
+    placeholders = ",".join("?" for _ in agent_names)
+    conn.execute(f"DELETE FROM monitoring_alerts WHERE agent_name IN ({placeholders})", agent_names)
+    conn.execute(f"DELETE FROM monitoring_logs WHERE agent_name IN ({placeholders})", agent_names)
+    conn.commit()
+    conn.close()
+
 
 class TestLogRequestEndpoint(unittest.TestCase):
     """Test suite for POST /monitoring/log-request"""
 
     def setUp(self):
         self.client = TestClient(app)
+
+    def tearDown(self):
+        _delete_monitoring_data("TestAgent")
 
     def test_log_request_valid_body(self):
         response = self.client.post(
@@ -157,6 +176,44 @@ class TestThreatNotFound(unittest.TestCase):
         response = self.client.get(f"/threats/{threat_id}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["threat_id"], threat_id)
+
+
+class TestMultiAgentMonitoring(unittest.TestCase):
+    """monitor_instances used to be a single global AgentMonitor, reassigned
+    (and its in-memory logs/alerts lost) every time a different agent_name
+    was monitored. This would have failed under that code: logging Alpha,
+    then Beta, then re-checking Alpha's stats used to come back reset."""
+
+    def setUp(self):
+        self.client = TestClient(app)
+
+    def tearDown(self):
+        _delete_monitoring_data("MultiTestAgentAlpha", "MultiTestAgentBeta")
+
+    def _log(self, agent_name, prompt):
+        response = self.client.post(
+            "/monitoring/log-request",
+            json={"agent_name": agent_name, "prompt": prompt, "response": "ok"},
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_two_agents_tracked_independently(self):
+        agent_a = "MultiTestAgentAlpha"
+        agent_b = "MultiTestAgentBeta"
+
+        self._log(agent_a, "first prompt")
+        self._log(agent_a, "second prompt")
+        self._log(agent_a, "third prompt")
+
+        # Interleave a different agent in between - this is what used to
+        # overwrite the single global monitor_instance.
+        self._log(agent_b, "only prompt")
+
+        stats_a = self.client.get(f"/monitoring/stats/{agent_a}").json()["statistics"]
+        stats_b = self.client.get(f"/monitoring/stats/{agent_b}").json()["statistics"]
+
+        self.assertEqual(stats_a["total_requests_logged"], 3)
+        self.assertEqual(stats_b["total_requests_logged"], 1)
 
 
 class TestCORSPolicy(unittest.TestCase):
