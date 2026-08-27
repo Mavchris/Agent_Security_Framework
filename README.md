@@ -18,7 +18,8 @@ A comprehensive security framework for testing, monitoring, and validating AI ag
 - **Scheduled Collection**: designed to run daily (02:00 UTC) + weekly maintenance (Monday 10:00 UTC) via the `schedule` library — see [Known Limitations](#known-limitations) for actual run history
 
 ### 🧪 Agent Testing
-- **Multi-Agent Support**: Mock, Claude, GPT-4, Llama, Mistral, HuggingFace, Custom
+- **Multi-Agent Support**: Mock, Claude, GPT-4 (OpenAI), Llama, Mistral, HuggingFace, and `remote_http` for any agent reachable over HTTP (including your own, via the `docs/examples/local_agent_http_wrapper.py` template)
+- **Persistent Agent Registry**: register agents once (`registered_agents` table), reuse them from both "Test Agent" and "Monitor Production" instead of re-typing a name per scan — see [Architecture](#architecture)
 - **Nessus-like Scanner**: Comprehensive vulnerability assessment
 - **Real-time Results**: JSON/CSV export with detailed breakdowns
 - **Confidence Scoring**: Evidence-based vulnerability detection
@@ -161,7 +162,8 @@ All documentation files live at the repository root, alongside this README (ther
 │              CORE SERVICES (Python)                 │
 │  ├─ Scanner: Threat testing engine                  │
 │  ├─ Classifier: 9-category threat classifier       │
-│  ├─ Wrappers: 7 agent engines support              │
+│  ├─ Wrappers: 8 agent engines support              │
+│  ├─ Registry: persistent multi-agent registry      │
 │  ├─ Orchestrator: Automated pipeline (`schedule`)  │
 │  └─ Monitor: Real-time threat detection            │
 └─────────────────────────────────────────────────────┘
@@ -175,7 +177,8 @@ All documentation files live at the repository root, alongside this README (ther
                           ↓
 ┌─────────────────────────────────────────────────────┐
 │              DATABASE & STORAGE                     │
-│  ├─ data/threats.db (SQLite, 653 threats)          │
+│  ├─ data/threats.db (SQLite, 653 threats + agents) │
+│  ├─ data/monitoring.db (SQLite, monitoring logs)   │
 │  ├─ logs/orchestrator.log (audit trail)            │
 │  ├─ logs/orchestrator_metrics.json (metrics)       │
 │  └─ data/*.json (raw CTI feeds)                    │
@@ -191,9 +194,20 @@ All documentation files live at the repository root, alongside this README (ther
 | **Orchestrator** | Automated pipeline scheduling | ⚠️ Implemented; 2 recorded runs (2026-03-28) |
 | **Dashboards** | Real-time visualization | ✅ 3 production dashboards |
 | **API** | REST interface | ✅ 10+ endpoints |
-| **Multi-Agent** | 7 LLM engine support | ✅ Complete |
+| **Multi-Agent** | 8 LLM/HTTP engine wrappers + persistent registry | ✅ Complete |
 | **Monitoring** | Health & alerts (basic) | ⚠️ Partial (alerts coming soon) |
 | **Authentication** | User access control | ❌ Planned for v2.0 |
+
+### Agent Registry
+
+Agents (including remote, enterprise-owned ones) can be registered once and reused, instead of re-typing a name/config for every scan:
+
+- **`registered_agents`** (SQLite table, `data/threats.db`): `name`, `agent_type` (`mock`/`claude`/`openai`/`mistral`/`llama`/`huggingface`/`remote_http`), `config` (JSON, shape depends on `agent_type`), `environment` (free text, e.g. "production"), `is_active`.
+- **`core/agent_registry.py`**: shared CRUD (`register_agent`, `list_agents`, `get_agent_config`, `deactivate_agent`, `build_wrapper`) — used by both dashboard tabs so they read from the same source of truth instead of each keeping their own agent list.
+- **`testing/agent_wrappers.py`'s `RemoteHTTPAgentWrapper`**: for a `remote_http` agent, POSTs `{request_field: prompt}` as JSON to `endpoint_url` and reads `response_field` back. Supports an internal CA bundle (`ca_cert_path`) and an `auth_env_var` — only the *name* of an environment variable is stored in the registry, never a secret itself (see [Security & Privacy](#security--privacy)).
+- **For an agent that only exists as a local script/function**: see `docs/examples/local_agent_http_wrapper.py`, a minimal template for exposing it as a local HTTP endpoint, which can then be registered as `remote_http` pointing at `http://localhost:PORT`. ASIF never executes your code directly - it only calls whatever URL you register.
+- **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
+- **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s public threat catalog — see [Security & Privacy](#security--privacy) for why). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
 
 ---
 
@@ -333,12 +347,18 @@ Agent_security_framework/
 │
 ├─ testing/                     (agent testing)
 │  ├─ agent_scanner.py          (vulnerability scanner)
-│  ├─ agent_wrappers.py         (7 LLM engines, incl. MockAgentWrapper)
+│  ├─ agent_wrappers.py         (8 engines, incl. MockAgentWrapper,
+│                                 RemoteHTTPAgentWrapper)
 │  └─ cli.py                    (command-line interface)
 │
 ├─ core/                        (core services)
-│  └─ classifier.py             (threat classifier - 9 categories; keyword
-│                                 lists live in the `self.keywords` dict)
+│  ├─ classifier.py             (threat classifier - 9 categories; keyword
+│  │                              lists live in the `self.keywords` dict)
+│  └─ agent_registry.py         (persistent multi-agent registry - CRUD
+│                                 over registered_agents)
+│
+├─ docs/examples/               (copy-paste templates, not imported by ASIF)
+│  └─ local_agent_http_wrapper.py  (expose a local script as remote_http)
 │
 ├─ pipeline/                    (ETL pipeline)
 │  └─ process.py                (extract, transform, load)
@@ -356,8 +376,14 @@ Agent_security_framework/
 ├─ api/                         (REST API)
 │  └─ app.py                    (FastAPI routes)
 │
+├─ monitoring/                  (agent monitoring)
+│  ├─ agent_monitor.py          (detection logic, writes through to monitoring_store)
+│  └─ monitoring_store.py       (persistence: monitoring_logs/monitoring_alerts)
+│
 ├─ data/                        (databases & storage)
-│  ├─ threats.db                (SQLite - 653 threats)
+│  ├─ threats.db                (SQLite - 653 threats + registered_agents)
+│  ├─ monitoring.db             (SQLite - monitoring logs/alerts, kept
+│  │                              separate from threats.db - see Security)
 │  └─ raw_*.json                (scraped data)
 │
 ├─ logs/                        (logs & metrics)

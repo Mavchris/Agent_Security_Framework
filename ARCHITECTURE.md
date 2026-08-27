@@ -466,13 +466,18 @@ Usage:
 python testing/cli.py --scan-agent mock --output results.json
 
 Agents Supported:
-- Mock:       Simulation (99.5% vulns)
-- Claude:     Anthropic API
-- GPT-4:      OpenAI API
-- Mistral:    Ollama local
-- Llama:      Ollama local
+- Mock:        Simulation (99.5% vulns)
+- Claude:      Anthropic API
+- GPT-4:       OpenAI API
+- Mistral:     Ollama local
+- Llama:       Ollama local
 - HuggingFace: Local model
-- Custom:     User's agent
+- Remote HTTP: Any agent reachable over HTTP (POST prompt, read response) -
+               see "Agent Registry" below and docs/examples/local_agent_http_wrapper.py
+               for wrapping a local script this way
+
+Can be used either as a one-off ("quick type", nothing saved) or via a
+registered agent from core/agent_registry.py (see "Agent Registry" below).
 
 Output:
 {
@@ -578,6 +583,92 @@ Design:
 
 Documentation:
 See API_DOCUMENTATION.md (1400+ lines)
+```
+
+### 8. Agent Registry
+
+```
+PURPOSE: Persist agent identity/config so "Test Agent" and "Monitor
+Production" share one source of truth instead of each keeping their own
+list (previously: a free-text name typed per scan, and a hardcoded
+Agent-1/2/3 list in the dashboard).
+
+Location: core/agent_registry.py
+Storage:  registered_agents table, data/threats.db
+
+Schema:
+  id, name (unique), agent_type (mock/claude/openai/mistral/llama/
+  huggingface/remote_http, CHECK-constrained), config (JSON, shape
+  depends on agent_type), environment (free text), is_active,
+  created_at
+
+CRUD:
+  register_agent(name, agent_type, config, environment) -> dict
+  list_agents(environment=None, active_only=True) -> list[dict]
+  get_agent_config(agent_id) -> dict | None
+  deactivate_agent(agent_id) -> bool          # soft delete (is_active=0)
+  build_wrapper(agent) -> BaseAgentWrapper    # -> get_agent_wrapper(agent_type, **config)
+
+Security:
+  config never holds a secret directly - a remote_http agent stores
+  auth_env_var (the *name* of an env var), the real token stays in
+  config/.env.local and is read at call time by RemoteHTTPAgentWrapper,
+  never persisted (see SECURITY.md).
+
+Related:
+  Live monitoring activity (logs/alerts) for an agent is persisted
+  separately - see "9. Monitoring Persistence" below - and links back
+  to this table via agent_id (application-level only, not a SQL FK:
+  it's a different database file).
+```
+
+### 9. Monitoring Persistence
+
+```
+PURPOSE: Shared, cross-process source of truth for agent monitoring
+activity, so an agent logging via POST /monitoring/log-request (api/app.py)
+is visible from the dashboard's "Monitor Production" tab and vice versa -
+previously each process kept its own in-memory AgentMonitor, so the two
+never agreed on what had happened.
+
+Location: monitoring/monitoring_store.py
+Storage:  monitoring_logs, monitoring_alerts tables, data/monitoring.db
+          - a SEPARATE file from data/threats.db (the public threat
+          catalog), since these tables can contain real production
+          prompt/response text (see SECURITY.md).
+
+Schema (monitoring_logs):
+  id, agent_id (nullable, no cross-file FK - see below), agent_name,
+  user_id, session_id, prompt, response, risk_level, alert_triggered,
+  detected_threats (JSON), created_at
+
+Schema (monitoring_alerts):
+  id, log_id (-> monitoring_logs.id), agent_id, agent_name, user_id,
+  session_id, alert_type, severity, message, detected_threats (JSON),
+  resolved, created_at
+
+Functions:
+  write_log(...) / write_alert(...) -> dict   # called by AgentMonitor.log_request()
+  get_logs(agent_name=None, limit=100) -> list[dict]
+  get_alerts(agent_name=None, limit=100) -> list[dict]
+  get_statistics(agent_name) -> dict
+
+Who calls it:
+  monitoring/agent_monitor.py - AgentMonitor.log_request() writes a log
+  (and an alert, if threats are detected) on every call; get_statistics()/
+  get_logs()/get_alerts() read back through this module rather than from
+  any in-memory list, so a freshly-constructed AgentMonitor in any
+  process sees the same history as any other.
+
+  dashboard/pages/operations.py's "Monitor Production" tab calls
+  monitoring_store directly (no AgentMonitor instance at all - it never
+  triggers detection, only reads).
+
+agent_id is a plain INTEGER, not a SQL foreign key: SQLite can't
+enforce a FOREIGN KEY across two separate database files. The link to
+registered_agents (data/threats.db) is resolved at write time via
+core.agent_registry.get_agent_by_name() and is nullable - an agent
+doesn't have to be pre-registered to log monitoring activity.
 ```
 
 ---
@@ -695,6 +786,53 @@ CREATE TABLE threats (
 );
 ```
 
+```sql
+CREATE TABLE registered_agents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    agent_type TEXT NOT NULL CHECK (agent_type IN (
+        'mock', 'claude', 'openai', 'mistral', 'llama', 'huggingface', 'remote_http'
+    )),
+    config TEXT NOT NULL DEFAULT '{}',   -- JSON, shape depends on agent_type
+    environment TEXT,                     -- free text, e.g. "production"
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+`data/monitoring.db` — a **separate file** from `data/threats.db`, see "9. Monitoring Persistence" above and SECURITY.md:
+
+```sql
+CREATE TABLE monitoring_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_id INTEGER,                     -- app-level link only, no cross-file FK
+    agent_name TEXT NOT NULL,
+    user_id TEXT,
+    session_id TEXT,
+    prompt TEXT NOT NULL,                 -- real prompt text, truncated to 500 chars
+    response TEXT NOT NULL,               -- real response text, truncated to 1000 chars
+    risk_level TEXT NOT NULL CHECK (risk_level IN ('low', 'medium', 'high', 'critical')),
+    alert_triggered BOOLEAN NOT NULL DEFAULT 0,
+    detected_threats TEXT NOT NULL DEFAULT '[]',  -- JSON
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE monitoring_alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    log_id INTEGER REFERENCES monitoring_logs(id),
+    agent_id INTEGER,
+    agent_name TEXT NOT NULL,
+    user_id TEXT,
+    session_id TEXT,
+    alert_type TEXT NOT NULL,             -- distinct threat_types, comma-joined
+    severity TEXT NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
+    message TEXT NOT NULL,
+    detected_threats TEXT NOT NULL DEFAULT '[]',  -- JSON
+    resolved BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
 ### Query Examples
 
 ```sql
@@ -722,29 +860,32 @@ ORDER BY created_at DESC;
 ### 1. Strategy Pattern (Agents)
 
 ```python
-# Problem: Support 7 different LLM engines
+# Problem: Support 8 different agent engines (7 LLM SDKs/local models,
+# plus a generic HTTP client for any remote agent)
 # Solution: Strategy pattern with single interface
 
-class AgentWrapper(ABC):
+class BaseAgentWrapper(ABC):
     @abstractmethod
     def query(self, prompt: str) -> str:
         pass
 
-class ClaudeWrapper(AgentWrapper):
+class ClaudeAgentWrapper(BaseAgentWrapper):
     def query(self, prompt: str) -> str:
         # Claude-specific implementation
-        
-class GPT4Wrapper(AgentWrapper):
+
+class OpenAIAgentWrapper(BaseAgentWrapper):
     def query(self, prompt: str) -> str:
         # GPT-4 specific implementation
 
+class RemoteHTTPAgentWrapper(BaseAgentWrapper):
+    def query(self, prompt: str) -> str:
+        # POST {request_field: prompt} to endpoint_url, read response_field back
+
 # Factory pattern for creation
-def get_agent_wrapper(agent_type: str) -> AgentWrapper:
-    if agent_type == 'claude':
-        return ClaudeWrapper()
-    elif agent_type == 'gpt4':
-        return GPT4Wrapper()
-    # ... etc
+def get_agent_wrapper(agent_type: str, **kwargs) -> BaseAgentWrapper:
+    agents = {'claude': ClaudeAgentWrapper, 'openai': OpenAIAgentWrapper,
+              'remote_http': RemoteHTTPAgentWrapper, ...}
+    return agents[agent_type](**kwargs)
 ```
 
 **Benefit:** Add new agents by implementing single interface
@@ -849,11 +990,16 @@ Agent_security_framework/
 │
 ├─ testing/                          (Agent testing)
 │  ├─ agent_scanner.py              (Nessus-like scanner)
-│  ├─ agent_wrappers.py             (7 LLM engines, incl. MockAgentWrapper)
+│  ├─ agent_wrappers.py             (8 engines, incl. MockAgentWrapper,
+│  │                                  RemoteHTTPAgentWrapper)
 │  └─ cli.py                        (CLI interface)
 │
 ├─ core/                             (Business logic)
-│  └─ classifier.py                 (9-category classifier)
+│  ├─ classifier.py                 (9-category classifier)
+│  └─ agent_registry.py             (persistent multi-agent registry)
+│
+├─ docs/examples/                    (copy-paste templates, not imported by ASIF)
+│  └─ local_agent_http_wrapper.py   (expose a local script as remote_http)
 │
 ├─ pipeline/                         (ETL)
 │  └─ process.py                    (Extract, transform, load)
@@ -875,10 +1021,13 @@ Agent_security_framework/
 │  └─ app.py                        (10 endpoints)
 │
 ├─ monitoring/                       (Agent monitoring)
-│  └─ agent_monitor.py              (Health checks)
+│  ├─ agent_monitor.py              (Detection logic, writes through to monitoring_store)
+│  └─ monitoring_store.py           (Persistence: monitoring_logs/monitoring_alerts)
 │
 ├─ data/                             (Data storage)
-│  └─ threats.db                    (SQLite - 653 threats)
+│  ├─ threats.db                    (SQLite - 653 threats + registered_agents)
+│  └─ monitoring.db                 (SQLite - monitoring_logs/monitoring_alerts,
+│                                     kept separate - see SECURITY.md)
 │
 ├─ logs/                             (Audit trail)
 │  ├─ orchestrator.log              (Execution logs)
@@ -1119,6 +1268,12 @@ streamlit run dashboard/main.py
 ```
 
 ### Add New Agent Type
+
+Most new agents don't need a new wrapper class at all: if it can be
+reached over HTTP (even a local script wrapped per
+`docs/examples/local_agent_http_wrapper.py`), register it as
+`remote_http` via `core/agent_registry.py` instead. Write a new wrapper
+only for a genuinely different transport/SDK:
 
 ```python
 # 1. Create wrapper (testing/agent_wrappers.py)
