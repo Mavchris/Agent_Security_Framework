@@ -2,7 +2,7 @@
 
 ## Current state: local / trusted-network use only
 
-ASIF is currently run locally (Streamlit dashboards on `localhost:8501`, FastAPI on `localhost:8000`) and hasn't been hardened for public deployment — see [SECURITY.md](SECURITY.md) for specifics (no auth, no CORS policy, raw error messages).
+ASIF is currently run locally (Streamlit dashboards on `localhost:8501`, FastAPI on `localhost:8000`) and hasn't been hardened for public deployment — see [SECURITY.md](SECURITY.md) for specifics (no auth; CORS and error responses are sanitized by default but still need explicit configuration - `CORS_ALLOWED_ORIGINS` - before exposure beyond a trusted network).
 
 ## Running it today
 

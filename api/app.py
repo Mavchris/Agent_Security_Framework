@@ -3,12 +3,18 @@ FastAPI REST API for Agent Security Intelligence Framework
 Exposes threat data from SQLite database
 """
 
-from fastapi import FastAPI, Query
+import logging
+import os
+
+from fastapi import FastAPI, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import sqlite3
 from typing import List, Optional
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -16,6 +22,29 @@ app = FastAPI(
     description="REST API for threat intelligence on AI agents",
     version="1.0.0"
 )
+
+# CORS: no permissive "*" default. This API has no auth (see SECURITY.md)
+# and is designed for local/trusted-network use only, so the default is
+# to allow no cross-origin requests at all. Set CORS_ALLOWED_ORIGINS (comma-
+# separated) before any deployment where a browser-based client on a
+# different origin needs to call this API - review SECURITY.md first.
+_cors_origins = [o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Log the real exception server-side; never leak str(e) to the client
+    (can expose file paths, SQL structure, etc - see SECURITY.md)."""
+    logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=exc)
+    return JSONResponse(status_code=500, content={"error": "Internal server error", "status": "error"})
+
 
 # Database path
 DB_PATH = 'data/threats.db'
@@ -60,9 +89,13 @@ async def health_check():
             "threats_count": count
         }
     except Exception as e:
+        # Kept as a local try/except rather than the global handler: a
+        # health check reporting itself unhealthy is a normal 200
+        # response for monitoring tools, not a 500 server error.
+        logger.error("Health check failed", exc_info=e)
         return {
             "status": "unhealthy",
-            "error": str(e)
+            "error": "Internal server error"
         }
 
 
@@ -82,132 +115,114 @@ async def get_threats(
     - limit: Number of results (default: 100, max: 1000)
     - offset: Pagination offset (default: 0)
     """
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # Build query
-        query = 'SELECT * FROM threats WHERE 1=1'
-        params = []
-        
-        if threat_type:
-            query += ' AND threat_type = ?'
-            params.append(threat_type)
-        
-        if source:
-            query += ' AND source = ?'
-            params.append(source)
-        
-        query += ' ORDER BY id DESC LIMIT ? OFFSET ?'
-        params.extend([limit, offset])
-        
-        # Execute query
-        cursor.execute(query, params)
-        threats = cursor.fetchall()
-        
-        # Get total count
-        count_query = 'SELECT COUNT(*) FROM threats WHERE 1=1'
-        if threat_type:
-            count_query += ' AND threat_type = ?'
-        if source:
-            count_query += ' AND source = ?'
-        
-        count_params = []
-        if threat_type:
-            count_params.append(threat_type)
-        if source:
-            count_params.append(source)
-        
-        cursor.execute(count_query, count_params)
-        total = cursor.fetchone()[0]
-        
-        conn.close()
-        
-        # Convert to dict
-        result = {
-            "total": total,
-            "limit": limit,
-            "offset": offset,
-            "count": len(threats),
-            "threats": [dict(threat) for threat in threats]
-        }
-        
-        return result
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Build query
+    query = 'SELECT * FROM threats WHERE 1=1'
+    params = []
+
+    if threat_type:
+        query += ' AND threat_type = ?'
+        params.append(threat_type)
+
+    if source:
+        query += ' AND source = ?'
+        params.append(source)
+
+    query += ' ORDER BY id DESC LIMIT ? OFFSET ?'
+    params.extend([limit, offset])
+
+    # Execute query
+    cursor.execute(query, params)
+    threats = cursor.fetchall()
+
+    # Get total count
+    count_query = 'SELECT COUNT(*) FROM threats WHERE 1=1'
+    if threat_type:
+        count_query += ' AND threat_type = ?'
+    if source:
+        count_query += ' AND source = ?'
+
+    count_params = []
+    if threat_type:
+        count_params.append(threat_type)
+    if source:
+        count_params.append(source)
+
+    cursor.execute(count_query, count_params)
+    total = cursor.fetchone()[0]
+
+    conn.close()
+
+    # Convert to dict
+    result = {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "count": len(threats),
+        "threats": [dict(threat) for threat in threats]
+    }
+
+    return result
 
 
 @app.get("/threats/{threat_id}")
 async def get_threat(threat_id: str):
     """Get specific threat by ID"""
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('SELECT * FROM threats WHERE threat_id = ?', (threat_id,))
-        threat = cursor.fetchone()
-        
-        conn.close()
-        
-        if threat:
-            return dict(threat)
-        else:
-            return {
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM threats WHERE threat_id = ?', (threat_id,))
+    threat = cursor.fetchone()
+
+    conn.close()
+
+    if threat:
+        return dict(threat)
+    else:
+        return JSONResponse(
+            status_code=404,
+            content={
                 "error": f"Threat {threat_id} not found",
                 "status": "not_found"
             }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+        )
 
 
 @app.get("/stats")
 async def get_stats():
     """Get statistics about threats"""
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # Total count
-        cursor.execute('SELECT COUNT(*) FROM threats')
-        total = cursor.fetchone()[0]
-        
-        # Count by type
-        cursor.execute('SELECT threat_type, COUNT(*) as count FROM threats GROUP BY threat_type ORDER BY count DESC')
-        by_type = {row[0]: row[1] for row in cursor.fetchall()}
-        
-        # Count by source
-        cursor.execute('SELECT source, COUNT(*) as count FROM threats GROUP BY source ORDER BY count DESC')
-        by_source = {row[0]: row[1] for row in cursor.fetchall()}
-        
-        # Date range
-        cursor.execute('SELECT MIN(collected_at), MAX(collected_at) FROM threats')
-        min_date, max_date = cursor.fetchone()
-        
-        conn.close()
-        
-        return {
-            "total_threats": total,
-            "by_threat_type": by_type,
-            "by_source": by_source,
-            "date_range": {
-                "earliest": min_date,
-                "latest": max_date
-            }
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Total count
+    cursor.execute('SELECT COUNT(*) FROM threats')
+    total = cursor.fetchone()[0]
+
+    # Count by type
+    cursor.execute('SELECT threat_type, COUNT(*) as count FROM threats GROUP BY threat_type ORDER BY count DESC')
+    by_type = {row[0]: row[1] for row in cursor.fetchall()}
+
+    # Count by source
+    cursor.execute('SELECT source, COUNT(*) as count FROM threats GROUP BY source ORDER BY count DESC')
+    by_source = {row[0]: row[1] for row in cursor.fetchall()}
+
+    # Date range
+    cursor.execute('SELECT MIN(collected_at), MAX(collected_at) FROM threats')
+    min_date, max_date = cursor.fetchone()
+
+    conn.close()
+
+    return {
+        "total_threats": total,
+        "by_threat_type": by_type,
+        "by_source": by_source,
+        "date_range": {
+            "earliest": min_date,
+            "latest": max_date
         }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+    }
 
 
 @app.get("/threat-types")
@@ -228,31 +243,23 @@ async def get_threat_types():
 @app.get("/sources")
 async def get_sources():
     """Get list of available sources"""
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('SELECT DISTINCT source FROM threats ORDER BY source')
-        sources = [row[0] for row in cursor.fetchall()]
-        
-        conn.close()
-        
-        return {
-            "sources": sources
-        }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT DISTINCT source FROM threats ORDER BY source')
+    sources = [row[0] for row in cursor.fetchall()]
+
+    conn.close()
+
+    return {
+        "sources": sources
+    }
 
 # ============================================
 # MONITORING ENDPOINTS
 # ============================================
 
 import sys
-import os
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -287,33 +294,26 @@ async def log_request(body: LogRequestBody):
     }
     """
 
-    try:
-        # Initialize monitor if needed
-        global monitor_instance
-        if not monitor_instance or monitor_instance.agent_name != body.agent_name:
-            monitor_instance = AgentMonitor(agent_name=body.agent_name)
+    # Initialize monitor if needed
+    global monitor_instance
+    if not monitor_instance or monitor_instance.agent_name != body.agent_name:
+        monitor_instance = AgentMonitor(agent_name=body.agent_name)
 
-        # Log the request
-        log_entry = monitor_instance.log_request(
-            prompt=body.prompt,
-            response=body.response,
-            user_id=body.user_id,
-            session_id=body.session_id
-        )
+    # Log the request
+    log_entry = monitor_instance.log_request(
+        prompt=body.prompt,
+        response=body.response,
+        user_id=body.user_id,
+        session_id=body.session_id
+    )
 
-        return {
-            "status": "logged",
-            "agent_name": body.agent_name,
-            "alert_triggered": log_entry['alert_triggered'],
-            "risk_level": log_entry['risk_level'],
-            "detected_threats": len(log_entry['detected_threats'])
-        }
-
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+    return {
+        "status": "logged",
+        "agent_name": body.agent_name,
+        "alert_triggered": log_entry['alert_triggered'],
+        "risk_level": log_entry['risk_level'],
+        "detected_threats": len(log_entry['detected_threats'])
+    }
 
 
 @app.get("/monitoring/stats/{agent_name}")
@@ -323,25 +323,18 @@ async def get_monitoring_stats(agent_name: str):
     
     GET /monitoring/stats/MyAgent
     """
-    
-    try:
-        global monitor_instance
-        if not monitor_instance or monitor_instance.agent_name != agent_name:
-            monitor_instance = AgentMonitor(agent_name=agent_name)
-        
-        stats = monitor_instance.get_statistics()
-        
-        return {
-            "agent_name": agent_name,
-            "statistics": stats,
-            "status": "success"
-        }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+
+    global monitor_instance
+    if not monitor_instance or monitor_instance.agent_name != agent_name:
+        monitor_instance = AgentMonitor(agent_name=agent_name)
+
+    stats = monitor_instance.get_statistics()
+
+    return {
+        "agent_name": agent_name,
+        "statistics": stats,
+        "status": "success"
+    }
 
 
 @app.get("/monitoring/alerts/{agent_name}")
@@ -354,26 +347,19 @@ async def get_monitoring_alerts(
     
     GET /monitoring/alerts/MyAgent?limit=5
     """
-    
-    try:
-        global monitor_instance
-        if not monitor_instance or monitor_instance.agent_name != agent_name:
-            monitor_instance = AgentMonitor(agent_name=agent_name)
-        
-        alerts = monitor_instance.alerts[-limit:]
-        
-        return {
-            "agent_name": agent_name,
-            "total_alerts": len(monitor_instance.alerts),
-            "recent_alerts": alerts,
-            "status": "success"
-        }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+
+    global monitor_instance
+    if not monitor_instance or monitor_instance.agent_name != agent_name:
+        monitor_instance = AgentMonitor(agent_name=agent_name)
+
+    alerts = monitor_instance.alerts[-limit:]
+
+    return {
+        "agent_name": agent_name,
+        "total_alerts": len(monitor_instance.alerts),
+        "recent_alerts": alerts,
+        "status": "success"
+    }
 
 
 @app.get("/monitoring/health/{agent_name}")
@@ -383,39 +369,32 @@ async def get_agent_health(agent_name: str):
     
     GET /monitoring/health/MyAgent
     """
-    
-    try:
-        global monitor_instance
-        if not monitor_instance or monitor_instance.agent_name != agent_name:
-            monitor_instance = AgentMonitor(agent_name=agent_name)
-        
-        stats = monitor_instance.get_statistics()
-        
-        # Determine health status
-        alert_rate = stats['alert_rate']
-        if alert_rate > 50:
-            health_status = "🔴 CRITICAL"
-        elif alert_rate > 30:
-            health_status = "🟠 WARNING"
-        elif alert_rate > 10:
-            health_status = "🟡 CAUTION"
-        else:
-            health_status = "🟢 HEALTHY"
-        
-        return {
-            "agent_name": agent_name,
-            "health_status": health_status,
-            "alert_rate": f"{alert_rate:.1f}%",
-            "total_requests": stats['total_requests_logged'],
-            "total_alerts": stats['total_alerts'],
-            "status": "success"
-        }
-    
-    except Exception as e:
-        return {
-            "error": str(e),
-            "status": "error"
-        }
+
+    global monitor_instance
+    if not monitor_instance or monitor_instance.agent_name != agent_name:
+        monitor_instance = AgentMonitor(agent_name=agent_name)
+
+    stats = monitor_instance.get_statistics()
+
+    # Determine health status
+    alert_rate = stats['alert_rate']
+    if alert_rate > 50:
+        health_status = "🔴 CRITICAL"
+    elif alert_rate > 30:
+        health_status = "🟠 WARNING"
+    elif alert_rate > 10:
+        health_status = "🟡 CAUTION"
+    else:
+        health_status = "🟢 HEALTHY"
+
+    return {
+        "agent_name": agent_name,
+        "health_status": health_status,
+        "alert_rate": f"{alert_rate:.1f}%",
+        "total_requests": stats['total_requests_logged'],
+        "total_alerts": stats['total_alerts'],
+        "status": "success"
+    }
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -140,6 +140,8 @@ For production deployment:
 - Use API keys
 - Restrict access by IP
 
+CORS is restrictive by default (no origins allowed) — set the `CORS_ALLOWED_ORIGINS` environment variable (comma-separated) before any browser-based client on a different origin needs to call this API.
+
 See [SECURITY.md](SECURITY.md) for hardening guide.
 
 ---
@@ -284,6 +286,15 @@ Get detailed information about a specific threat by ID.
   },
   "status": "success",
   "timestamp": "2026-03-28T14:30:00Z"
+}
+```
+
+**Response (404 Not Found):**
+
+```json
+{
+  "error": "Threat invalid_id not found",
+  "status": "not_found"
 }
 ```
 
@@ -811,46 +822,38 @@ print(f"Response Time: {health['response_time_ms']}ms")
 
 ## Error Handling
 
-### Error Response Format
+This section documents actual behavior, verified against `api/app.py` directly.
+
+### Unexpected server errors (500)
+
+Any unhandled exception (database error, etc.) is caught by a global FastAPI exception handler: the real exception and its traceback are logged server-side via `logging`, and the client only ever receives a generic message — never the raw `str(e)` (which could leak file paths or SQL structure; see [SECURITY.md](SECURITY.md)):
 
 ```json
 {
-  "data": null,
-  "status": "error",
-  "timestamp": "2026-03-28T14:30:00Z",
-  "message": "Threat not found"
+  "error": "Internal server error",
+  "status": "error"
+}
+```
+```
+Status: 500
+```
+
+**Exception**: `GET /health` keeps its own local error handling instead of the global one, and stays HTTP 200 even on failure (`{"status": "unhealthy", "error": "Internal server error"}`) — a health check reporting itself degraded is a normal response for monitoring tools, not a server error.
+
+### Threat not found
+
+`GET /threats/{threat_id}` with an unknown ID returns a real **HTTP 404**:
+
+```json
+{
+  "error": "Threat invalid_id not found",
+  "status": "not_found"
 }
 ```
 
-### HTTP Status Codes
+### Request validation errors (422)
 
-| Code | Meaning | Example |
-|------|---------|---------|
-| 200 | Success | Request succeeded |
-| 400 | Bad Request | Invalid query parameter |
-| 404 | Not Found | Threat ID doesn't exist |
-| 500 | Server Error | Database error |
-| 503 | Service Unavailable | API not running |
-
-### Common Errors
-
-**Threat Not Found:**
-```
-Status: 404
-Message: "Threat with ID 'invalid_id' not found"
-```
-
-**Invalid Parameter:**
-```
-Status: 400
-Message: "Invalid severity value. Must be one of: critical, high, medium, low"
-```
-
-**Database Error:**
-```
-Status: 500
-Message: "Database connection failed"
-```
+Endpoints with a Pydantic request body (currently only `POST /monitoring/log-request`) return FastAPI's standard 422 response when a required field is missing or the wrong type — see [Log Request](#6-log-request) for an example.
 
 ### Error Handling Example
 
@@ -859,19 +862,17 @@ import requests
 
 try:
     response = requests.get('http://localhost:8000/threats/invalid_id')
-    
+
     if response.status_code == 200:
-        threat = response.json()['data']
+        threat = response.json()
         print(f"Found: {threat['title']}")
     elif response.status_code == 404:
-        print(f"Error: {response.json()['message']}")
+        print(f"Not found: {response.json()['error']}")
     else:
-        print(f"Error: {response.status_code}")
-        
+        print(f"Error: {response.status_code} - {response.json().get('error')}")
+
 except requests.exceptions.ConnectionError:
     print("Error: Cannot connect to API")
-except Exception as e:
-    print(f"Error: {e}")
 ```
 
 ---
