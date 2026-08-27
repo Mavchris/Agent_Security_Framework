@@ -121,7 +121,7 @@ cards = [
         "icon": "bar-chart",
         "title": "Intelligence",
         "subtitle": "Threat Intelligence at a Glance",
-        "desc": "High-level metrics, threat distribution.",
+        "desc": "High-level metrics, threat distribution and other.",
         "features": [
             "Total threats & KPI cards",
             "Distribution charts",
@@ -212,7 +212,7 @@ if stats:
 
     with col1:
         st.markdown(
-            kpi_card("Total Threats", stats['total_threats'], severity="accent"),
+            kpi_card("Total scan Threats", stats['total_threats'], severity="accent"),
             unsafe_allow_html=True
         )
 
