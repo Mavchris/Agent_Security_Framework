@@ -31,6 +31,7 @@ from scrapers.nvd_scraper import NVDScraper
 from scrapers.circl_vulnerability_lookup_scraper import CIRCLVulnerabilityLookupScraper
 from scrapers.euvd_scraper import EUVDScraper
 from core.classifier import ImprovedThreatClassifier
+from core.translation import translate_threat_fields
 
 
 def create_database():
@@ -66,6 +67,24 @@ def create_database():
         cursor.execute('ALTER TABLE threats ADD COLUMN ai_relevant BOOLEAN DEFAULT 0')
     except sqlite3.OperationalError:
         pass  # column already exists
+
+    # Migration: translation columns (Vague 3a - core/translation.py).
+    # source_language is set by the scraper for known non-English sources
+    # (CNVD=zh, FSTEC=ru, CERT-FR=fr); title_translated/description_translated
+    # stay NULL per-field when translation wasn't attempted for that field
+    # (e.g. zh titles - see core/translation.py FIELDS_TO_TRANSLATE) or
+    # wasn't available/failed. translated_at lets a future engine change
+    # identify which rows predate it and need retranslation.
+    for column, coltype in [
+        ('source_language', 'TEXT'),
+        ('title_translated', 'TEXT'),
+        ('description_translated', 'TEXT'),
+        ('translated_at', 'TIMESTAMP'),
+    ]:
+        try:
+            cursor.execute(f'ALTER TABLE threats ADD COLUMN {column} {coltype}')
+        except sqlite3.OperationalError:
+            pass  # column already exists
 
     conn.commit()
     conn.close()
@@ -268,12 +287,16 @@ def run_pipeline():
             url = threat.get('url', '')
             collected_at = threat.get('collected_at', datetime.now().isoformat())
             ai_relevant = threat.get('ai_relevant', False)
+            source_language = threat.get('source_language')
+
+            translation = translate_threat_fields(title, description, source_language)
 
             cursor.execute('''
             INSERT INTO threats
             (threat_id, title, description, test_payload, detection_keywords,
-             threat_type, severity, source, url, collected_at, ai_relevant)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             threat_type, severity, source, url, collected_at, ai_relevant,
+             source_language, title_translated, description_translated, translated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 threat_id,
                 title,
@@ -285,7 +308,11 @@ def run_pipeline():
                 source,
                 url,
                 collected_at,
-                ai_relevant
+                ai_relevant,
+                source_language,
+                translation['title_translated'],
+                translation['description_translated'],
+                translation['translated_at'],
             ))
             
             success += 1

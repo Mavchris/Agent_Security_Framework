@@ -786,6 +786,17 @@ CREATE TABLE threats (
 );
 ```
 
+`threats` also carries 4 nullable translation columns (Vague 3a, `core/translation.py`), added via `ALTER TABLE` migration rather than shown in the `CREATE TABLE` above since they only apply to CNVD/FSTEC/CERT-FR rows:
+
+```sql
+ALTER TABLE threats ADD COLUMN source_language TEXT;        -- 'zh'/'ru'/'fr'; NULL for English-native sources
+ALTER TABLE threats ADD COLUMN title_translated TEXT;       -- NULL = not attempted for this field (e.g. zh titles) or unavailable/failed
+ALTER TABLE threats ADD COLUMN description_translated TEXT; -- same NULL semantics, per-field
+ALTER TABLE threats ADD COLUMN translated_at TIMESTAMP;     -- set only if at least one field above was translated
+```
+
+See [DATA_SOURCES.md](DATA_SOURCES.md#translation-of-non-english-sources) for the translation feature itself (optional dependency, per-language field policy, quality notes).
+
 ```sql
 CREATE TABLE registered_agents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

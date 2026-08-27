@@ -193,6 +193,23 @@ pip list
 
 Expected time: 2-5 minutes depending on internet speed.
 
+#### Optional: Translation of Non-English Sources
+
+`requirements.txt` does **not** install translation support — skip this unless you want CNVD (Chinese), FSTEC (Russian) and CERT-FR (French) threat entries auto-translated to English. It's a separate install because it pulls in PyTorch and the rest of the Argos Translate stack (~1.5GB on disk, ~1-2 minutes to install), on top of everything `requirements.txt` already installs.
+
+```bash
+# 1. Install the optional package
+pip install -r requirements-translation.txt
+
+# 2. Download the translation models (one-time, ~284MB total, offline afterwards)
+python scripts/maintenance/install_translation_models.py
+
+# 3. (Existing database only) backfill translations for entries already collected
+python scripts/maintenance/backfill_translations.py
+```
+
+Without this, the framework works exactly as it did before this feature existed — non-English entries are stored with their original text only, no crash, no missing functionality otherwise. See [DATA_SOURCES.md](DATA_SOURCES.md#translation-of-non-english-sources) for what gets translated, what doesn't (Chinese titles are deliberately skipped), and an honest note on translation quality per language.
+
 ### Step 5: Create Configuration Files
 
 #### Create .env.local for API Keys

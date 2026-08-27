@@ -17,3 +17,7 @@ openai==3.5.0
 pytest==9.1.1
 pytest-cov==7.1.0
 httpx==0.28.1
+
+# Optional: offline translation of non-English sources (CNVD/FSTEC/CERT-FR).
+# Not installed by default - pulls in torch and ~1GB of ML dependencies.
+# See requirements-translation.txt.

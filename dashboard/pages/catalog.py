@@ -8,6 +8,7 @@ import sqlite3
 import pandas as pd
 import os
 import sys
+import html
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -219,12 +220,32 @@ if filtered_threats:
                     st.markdown(f"**Source:** `{threat['source']}`")
                     st.markdown(f"**Severity:** {badge(severity, severity)}", unsafe_allow_html=True)
 
+                    if threat.get('title_translated'):
+                        st.markdown(
+                            f"<details style='margin-top:8px;'>"
+                            f"<summary style='cursor:pointer;color:var(--text-secondary);font-size:13px;'>"
+                            f"Traduction automatique (EN) &mdash; titre</summary>"
+                            f"<p style='color:var(--text-secondary);margin:6px 0 0;'>{html.escape(threat['title_translated'])}</p>"
+                            f"</details>",
+                            unsafe_allow_html=True
+                        )
+
                     if threat.get('url'):
                         st.markdown(f"**[View Source]({threat['url']})**")
 
                 with col2:
                     st.markdown("<p class='asif-caption'>Description &amp; Payload</p>", unsafe_allow_html=True)
                     st.markdown(threat.get('description', 'N/A'))
+
+                    if threat.get('description_translated'):
+                        st.markdown(
+                            f"<details style='margin-top:4px;margin-bottom:8px;'>"
+                            f"<summary style='cursor:pointer;color:var(--text-secondary);font-size:13px;'>"
+                            f"Traduction automatique (EN) &mdash; description</summary>"
+                            f"<p style='color:var(--text-secondary);margin:6px 0 0;'>{html.escape(threat['description_translated'])}</p>"
+                            f"</details>",
+                            unsafe_allow_html=True
+                        )
 
                     if threat.get('test_payload'):
                         st.markdown("**Test Payload:**")

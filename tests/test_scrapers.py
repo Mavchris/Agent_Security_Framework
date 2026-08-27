@@ -352,6 +352,15 @@ class TestCIRCLVulnerabilityLookupScraper(unittest.TestCase):
         sources_seen = {t['source'] for t in self.scraper.data}
         self.assertEqual(sources_seen, {'CNVD', 'FSTEC', 'JVN', 'CERT-FR'})
 
+    def test_source_language_stamped_for_non_english_sources(self):
+        """source_language drives core/translation.py - CNVD/FSTEC/CERT-FR are
+        stamped with their actual language; JVN is already English so it's left
+        unstamped (None) rather than falsely claiming a source language."""
+        with patch.object(self.scraper, "_get", side_effect=self._mock_get):
+            self.scraper.fetch_vulnerabilities(max_per_source=5)
+        by_source = {t['source']: t.get('source_language') for t in self.scraper.data}
+        self.assertEqual(by_source, {'CNVD': 'zh', 'FSTEC': 'ru', 'JVN': None, 'CERT-FR': 'fr'})
+
     def test_save_to_json_preserves_non_ascii(self):
         with patch.object(self.scraper, "_get", side_effect=self._mock_get):
             self.scraper.fetch_vulnerabilities(sources=["fstec"], max_per_source=5)

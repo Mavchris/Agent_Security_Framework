@@ -1,0 +1,14 @@
+# Optional: enables core/translation.py (auto-translation of CNVD/FSTEC/CERT-FR
+# entries into English via Argos Translate - offline, no API key/cost).
+#
+# Not required to run the pipeline or dashboard: without it, non-English
+# entries are stored as-is (original text only), same as before this feature
+# existed. See INSTALLATION.md for how/when to install this.
+#
+# Heavy: pulls in torch and the spacy/stanza/ctranslate2 stack (~1.5GB on
+# disk once installed). Install with:
+#   pip install -r requirements-translation.txt
+# then download the language models once (see
+# scripts/maintenance/install_translation_models.py).
+
+argostranslate==1.11.0
