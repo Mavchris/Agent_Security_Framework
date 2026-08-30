@@ -8,18 +8,15 @@ importing them as a package. This is a first, targeted test on the
 single most critical/already-broken-once interaction, not a full page
 test suite.
 
-Known currently broken (StopIteration / KeyError looking up widgets):
-operations.py now gates its entire body behind a named-API-key check
-(st.session_state["api_key_label"], see the named-API-keys work in
-SECURITY.md) before rendering the tabs these tests interact with. None
-of these tests seed that session_state key, so every AppTest run here
-hits the gate's st.stop() and the widgets being searched for
-("Run Scan", "test_agent_register_agent_path", etc.) never exist. Not a
-pyarrow/pandas environment issue (that was a real, now-fixed prior cause
-of this same symptom - see requirements.txt's pyarrow pin) - fixing this
-for real means updating each test's setUp to pre-seed a valid key, which
-is exactly the AppTest gate coverage already planned as follow-up work
-for that feature, not yet done as of this comment.
+operations.py gates its entire body behind a named-API-key check
+(st.session_state["api_key_label"], see core/auth.py and SECURITY.md)
+before rendering any tab content. Every test below that isn't itself
+about the gate uses _authed_app_test() to seed a session_state label
+directly and skip past it - the gate only checks the label's presence
+once, at the top of the script, so this exercises the exact same
+post-gate code path a real unlocked session would hit without needing a
+real key in data/auth.db for every unrelated test. TestApiKeyGate below
+covers the gate itself, with a real generated key.
 """
 
 import re
@@ -31,6 +28,7 @@ from pathlib import Path
 from streamlit.testing.v1 import AppTest
 
 from core.agent_registry import get_agent_by_name
+from core.auth import generate_key
 from testing.agent_scanner import AgentVulnerabilityScanner
 from testing.agent_wrappers import get_agent_wrapper
 
@@ -38,6 +36,16 @@ OPERATIONS_PAGE = str(
     Path(__file__).resolve().parent.parent / "dashboard" / "pages" / "operations.py"
 )
 DB_PATH = "data/threats.db"
+AUTH_DB_PATH = "data/auth.db"
+
+
+def _authed_app_test():
+    """A fresh AppTest for operations.py with the API-key gate already
+    passed - see the module docstring for why this doesn't need a real key."""
+    at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
+    at.session_state["api_key_label"] = "test-suite"
+    at.run()
+    return at
 
 
 def _click_run_scan(at):
@@ -45,12 +53,34 @@ def _click_run_scan(at):
     return run_scan.click().run()
 
 
+def _click_unlock(at):
+    unlock = next(b for b in at.button if b.label == "Unlock")
+    return unlock.click().run()
+
+
+def _click_register(at, tab_index):
+    """Click "Register Agent" in a specific tab. Both tabs render a
+    same-labeled button (render_registration_form is shared, see
+    dashboard/pages/operations.py) with no explicit key - a form has only
+    one submit button, already disambiguated by its enclosing form's
+    unique name, so at.tabs[i] scoping (not a key=) is what tells them
+    apart here."""
+    submit = next(b for b in at.tabs[tab_index].button if b.label == "Register Agent")
+    return submit.click().run()
+
+
+def _gate_label(at):
+    """at.session_state has no .get() (it's Streamlit's real SessionState,
+    not a plain dict - .get would be looked up as a session key named
+    "get" and raise) - returns the api_key_label value, or None if unset."""
+    return at.session_state["api_key_label"] if "api_key_label" in at.session_state else None
+
+
 class TestOperationsRunScan(unittest.TestCase):
     """Simulate a full Mock-agent scan through the real Streamlit page"""
 
     def setUp(self):
-        self.at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
-        self.at.run()
+        self.at = _authed_app_test()
 
     def test_mock_scan_runs_without_exception(self):
         _click_run_scan(self.at)
@@ -110,8 +140,7 @@ class TestAgentRegistryEndToEnd(unittest.TestCase):
 
     def setUp(self):
         self.agent_name = f"E2E Test Agent {uuid.uuid4().hex[:8]}"
-        self.at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
-        self.at.run()
+        self.at = _authed_app_test()
 
     def tearDown(self):
         conn = sqlite3.connect(DB_PATH)
@@ -127,8 +156,7 @@ class TestAgentRegistryEndToEnd(unittest.TestCase):
         at.selectbox(key="test_agent_register_agent_type").set_value("Mock").run()
         at.text_input(key="test_agent_reg_name").set_value(self.agent_name).run()
 
-        submit = at.button(key="test_agent_register_submit")
-        at = submit.click().run()
+        at = _click_register(at, 0)
 
         self.assertEqual([str(e) for e in at.exception], [])
         self.assertTrue(
@@ -186,8 +214,7 @@ class TestAgentRegistryEndToEnd(unittest.TestCase):
             "http://localhost:8500/query"
         ).run()
 
-        submit = at.button(key="test_agent_register_submit")
-        at = submit.click().run()
+        at = _click_register(at, 0)
 
         self.assertEqual([str(e) for e in at.exception], [])
         self.assertTrue(
@@ -217,8 +244,7 @@ class TestMonitorProductionRegistration(unittest.TestCase):
 
     def setUp(self):
         self.agent_name = f"E2E Monitor Agent {uuid.uuid4().hex[:8]}"
-        self.at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
-        self.at.run()
+        self.at = _authed_app_test()
 
     def tearDown(self):
         conn = sqlite3.connect(DB_PATH)
@@ -233,8 +259,7 @@ class TestMonitorProductionRegistration(unittest.TestCase):
         at.selectbox(key="monitor_register_agent_type").set_value("Mock").run()
         at.text_input(key="monitor_reg_name").set_value(self.agent_name).run()
 
-        submit = at.button(key="monitor_register_submit")
-        at = submit.click().run()
+        at = _click_register(at, 1)
 
         self.assertEqual([str(e) for e in at.exception], [])
 
@@ -247,6 +272,78 @@ class TestMonitorProductionRegistration(unittest.TestCase):
         # having the form there instead of only in "Test Agent".
         action_select = at.selectbox(key="monitor_action_agent")
         self.assertIn(self.agent_name, action_select.options)
+
+
+class TestApiKeyGate(unittest.TestCase):
+    """The gate itself (see the module docstring) - a real generated key,
+    not the session_state shortcut _authed_app_test() uses for the other
+    test classes above."""
+
+    def setUp(self):
+        self.label = f"gate-test-{uuid.uuid4().hex[:8]}"
+        self.raw_key = generate_key(self.label, db_path=AUTH_DB_PATH)
+
+    def tearDown(self):
+        conn = sqlite3.connect(AUTH_DB_PATH)
+        conn.execute("DELETE FROM api_keys WHERE label = ?", (self.label,))
+        conn.commit()
+        conn.close()
+
+    def test_blocked_without_key(self):
+        at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
+        at.run()
+
+        self.assertEqual([str(e) for e in at.exception], [])
+        self.assertIsNone(_gate_label(at))
+        self.assertFalse(
+            any(b.label == "Run Scan" for b in at.button),
+            "Run Scan button rendered despite no API key in session",
+        )
+        self.assertTrue(
+            any(ti.label == "API key" for ti in at.text_input),
+            "Gate's API key input not shown when locked",
+        )
+
+    def test_invalid_key_stays_blocked_with_error(self):
+        at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
+        at.run()
+
+        at.text_input(key="api_key_gate_input").set_value("not-a-real-key")
+        at = _click_unlock(at)
+
+        self.assertEqual([str(e) for e in at.exception], [])
+        self.assertIsNone(_gate_label(at))
+        self.assertTrue(
+            any("Invalid or inactive API key" in e.value for e in at.error),
+            "Expected an error banner for an invalid key",
+        )
+        self.assertFalse(any(b.label == "Run Scan" for b in at.button))
+
+    def test_inactive_key_stays_blocked(self):
+        from core.auth import deactivate_key
+        deactivate_key(self.label, db_path=AUTH_DB_PATH)
+
+        at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
+        at.run()
+        at.text_input(key="api_key_gate_input").set_value(self.raw_key)
+        at = _click_unlock(at)
+
+        self.assertIsNone(_gate_label(at))
+        self.assertTrue(any("Invalid or inactive API key" in e.value for e in at.error))
+
+    def test_valid_key_unlocks_the_page(self):
+        at = AppTest.from_file(OPERATIONS_PAGE, default_timeout=30)
+        at.run()
+
+        at.text_input(key="api_key_gate_input").set_value(self.raw_key)
+        at = _click_unlock(at)
+
+        self.assertEqual([str(e) for e in at.exception], [])
+        self.assertEqual(_gate_label(at), self.label)
+        self.assertTrue(
+            any(b.label == "Run Scan" for b in at.button),
+            "Page did not render its normal content after a valid key",
+        )
 
 
 if __name__ == "__main__":

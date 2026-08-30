@@ -109,7 +109,7 @@ if not st.session_state.get("api_key_label"):
     )
 
     with st.form("api_key_gate_form"):
-        candidate_key = st.text_input("API key", type="password")
+        candidate_key = st.text_input("API key", type="password", key="api_key_gate_input")
         unlock_submitted = st.form_submit_button("Unlock")
 
     if unlock_submitted:
