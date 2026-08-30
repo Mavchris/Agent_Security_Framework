@@ -43,10 +43,16 @@ def register_agent(
     agent_type: str,
     config: Optional[Dict[str, Any]] = None,
     environment: Optional[str] = None,
+    created_by_key_label: Optional[str] = None,
     db_path: str = DB_PATH,
 ) -> Dict[str, Any]:
     """
     Register a new agent.
+
+    Args:
+        created_by_key_label: label of the API key that performed this
+            registration (see core/auth.py), or None if it predates
+            named API keys / was registered without one.
 
     Raises:
         ValueError: unknown agent_type, or a duplicate name (both are
@@ -61,9 +67,9 @@ def register_agent(
     conn = _get_connection(db_path)
     try:
         cursor = conn.execute(
-            'INSERT INTO registered_agents (name, agent_type, config, environment) '
-            'VALUES (?, ?, ?, ?)',
-            (name, agent_type, json.dumps(config or {}), environment),
+            'INSERT INTO registered_agents (name, agent_type, config, environment, created_by_key_label) '
+            'VALUES (?, ?, ?, ?, ?)',
+            (name, agent_type, json.dumps(config or {}), environment, created_by_key_label),
         )
         conn.commit()
         agent_id = cursor.lastrowid
@@ -130,14 +136,19 @@ def get_agent_by_name(name: str, db_path: str = DB_PATH) -> Optional[Dict[str, A
     return _row_to_dict(row) if row else None
 
 
-def deactivate_agent(agent_id: int, db_path: str = DB_PATH) -> bool:
+def deactivate_agent(
+    agent_id: int,
+    deactivated_by_key_label: Optional[str] = None,
+    db_path: str = DB_PATH,
+) -> bool:
     """Soft-delete: set is_active=0 rather than removing the row, so
     monitoring history tied to this agent isn't orphaned. Returns True
     if a matching row was found and updated."""
     conn = _get_connection(db_path)
     try:
         cursor = conn.execute(
-            'UPDATE registered_agents SET is_active = 0 WHERE id = ?', (agent_id,)
+            'UPDATE registered_agents SET is_active = 0, deactivated_by_key_label = ? WHERE id = ?',
+            (deactivated_by_key_label, agent_id),
         )
         conn.commit()
     finally:

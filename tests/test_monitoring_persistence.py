@@ -19,10 +19,20 @@ import uuid
 
 from fastapi.testclient import TestClient
 
-from api.app import app
+from api.app import app, require_api_key
 from monitoring import monitoring_store
 
 MONITORING_DB_PATH = "data/monitoring.db"
+
+
+def setUpModule():
+    # Cross-process consistency is what this file tests, not the
+    # X-API-Key mechanism itself (see tests/test_auth.py for that).
+    app.dependency_overrides[require_api_key] = lambda: "test-suite"
+
+
+def tearDownModule():
+    app.dependency_overrides.pop(require_api_key, None)
 
 
 class TestMonitoringCrossProcessConsistency(unittest.TestCase):

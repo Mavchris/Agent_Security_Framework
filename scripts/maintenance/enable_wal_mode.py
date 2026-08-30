@@ -2,11 +2,11 @@
 One-off manual maintenance script, not part of the automated pipeline (run from the
 repository root).
 
-Switch data/threats.db and data/monitoring.db from SQLite's default rollback-journal
-mode to WAL (write-ahead log). Journal mode is stored in the database file itself, so
-this only needs to run once per file - it is not something every connection needs to
-set. Idempotent: safe to re-run (PRAGMA journal_mode=WAL on an already-WAL database is
-a no-op that just reports the current mode back).
+Switch data/threats.db, data/monitoring.db, and data/auth.db from SQLite's default
+rollback-journal mode to WAL (write-ahead log). Journal mode is stored in the database
+file itself, so this only needs to run once per file - it is not something every
+connection needs to set. Idempotent: safe to re-run (PRAGMA journal_mode=WAL on an
+already-WAL database is a no-op that just reports the current mode back).
 
 Why: readers (dashboards, the API) and writers (the pipeline, the orchestrator) open
 the same files concurrently. In the default rollback-journal mode a writer holds an
@@ -17,7 +17,7 @@ while a writer is active.
 
 import sqlite3
 
-DB_PATHS = ['data/threats.db', 'data/monitoring.db']
+DB_PATHS = ['data/threats.db', 'data/monitoring.db', 'data/auth.db']
 
 
 def main():

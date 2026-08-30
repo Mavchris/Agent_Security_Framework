@@ -6,9 +6,10 @@ Exposes threat data from SQLite database
 import logging
 import os
 
-from fastapi import FastAPI, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 import sqlite3
 from typing import Dict, List, Optional
@@ -265,6 +266,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from monitoring.agent_monitor import AgentMonitor
+from core.auth import verify_key
 
 # One AgentMonitor per agent name, so monitoring multiple agents at once
 # doesn't overwrite each other's in-memory logs/alerts (used to be a single
@@ -278,6 +280,28 @@ def _get_or_create_monitor(agent_name: str) -> AgentMonitor:
     return monitor_instances[agent_name]
 
 
+# The threat catalog endpoints above stay open (public data - NVD, GitHub,
+# etc). Everything under /monitoring/* deals with real production agent
+# activity (see SECURITY.md) and requires a named API key, sent as
+# X-API-Key. auto_error=False so a missing header reaches require_api_key
+# as None and gets the same generic 401 as an invalid one, rather than
+# FastAPI's own not-quite-matching default error shape.
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def require_api_key(api_key: Optional[str] = Depends(_api_key_header)) -> str:
+    """FastAPI dependency: resolves to the requesting key's label if valid
+    and active, otherwise raises 401. Never echoes the candidate key or
+    any lookup detail back to the client (see the generic-error convention
+    used by unhandled_exception_handler above) - the real reason (absent,
+    unknown, or deactivated) is only in this server-side log line."""
+    label = verify_key(api_key)
+    if label is None:
+        logger.warning("Rejected request with missing or invalid API key")
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return label
+
+
 class LogRequestBody(BaseModel):
     """Request body for POST /monitoring/log-request"""
     agent_name: str
@@ -288,9 +312,9 @@ class LogRequestBody(BaseModel):
 
 
 @app.post("/monitoring/log-request")
-async def log_request(body: LogRequestBody):
+async def log_request(body: LogRequestBody, key_label: str = Depends(require_api_key)):
     """
-    Log a request for monitoring
+    Log a request for monitoring. Requires a valid X-API-Key header.
 
     POST /monitoring/log-request
     {
@@ -309,7 +333,8 @@ async def log_request(body: LogRequestBody):
         prompt=body.prompt,
         response=body.response,
         user_id=body.user_id,
-        session_id=body.session_id
+        session_id=body.session_id,
+        created_by_key_label=key_label,
     )
 
     return {
@@ -322,10 +347,10 @@ async def log_request(body: LogRequestBody):
 
 
 @app.get("/monitoring/stats/{agent_name}")
-async def get_monitoring_stats(agent_name: str):
+async def get_monitoring_stats(agent_name: str, _: str = Depends(require_api_key)):
     """
-    Get monitoring statistics for an agent
-    
+    Get monitoring statistics for an agent. Requires a valid X-API-Key header.
+
     GET /monitoring/stats/MyAgent
     """
 
@@ -343,11 +368,12 @@ async def get_monitoring_stats(agent_name: str):
 @app.get("/monitoring/alerts/{agent_name}")
 async def get_monitoring_alerts(
     agent_name: str,
-    limit: int = Query(10, ge=1, le=100)
+    limit: int = Query(10, ge=1, le=100),
+    _: str = Depends(require_api_key),
 ):
     """
-    Get recent alerts for an agent
-    
+    Get recent alerts for an agent. Requires a valid X-API-Key header.
+
     GET /monitoring/alerts/MyAgent?limit=5
     """
 
@@ -364,10 +390,10 @@ async def get_monitoring_alerts(
 
 
 @app.get("/monitoring/health/{agent_name}")
-async def get_agent_health(agent_name: str):
+async def get_agent_health(agent_name: str, _: str = Depends(require_api_key)):
     """
-    Get health status of monitored agent
-    
+    Get health status of monitored agent. Requires a valid X-API-Key header.
+
     GET /monitoring/health/MyAgent
     """
 

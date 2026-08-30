@@ -5,6 +5,12 @@ Create the registered_agents table (multi-agent registry - see
 README/ARCHITECTURE for the feature). Idempotent: safe to re-run, does
 nothing if the table already exists. No data to migrate - this is a
 fresh table, not an alteration of existing data.
+
+created_by_key_label/deactivated_by_key_label are named-API-key
+attribution columns (see core/auth.py, SECURITY.md) - present here so a
+brand-new database gets them in one shot; a database created before this
+feature existed needs
+scripts/maintenance/add_api_key_attribution_columns.py instead.
 """
 
 import sqlite3
@@ -26,7 +32,9 @@ CREATE TABLE IF NOT EXISTS registered_agents (
     config TEXT NOT NULL DEFAULT '{}',
     environment TEXT,
     is_active BOOLEAN NOT NULL DEFAULT 1,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by_key_label TEXT,
+    deactivated_by_key_label TEXT
 )
 """
 

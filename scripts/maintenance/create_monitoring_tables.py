@@ -15,6 +15,12 @@ registered_agents (in data/threats.db) is maintained at the application
 level (core/agent_registry.get_agent_by_name), not by the schema. It's
 nullable - an agent doesn't have to be pre-registered to log monitoring
 activity, matching the existing POST /monitoring/log-request behavior.
+
+created_by_key_label is the same kind of plain-TEXT, no-FK link to a
+named API key (data/auth.db, core/auth.py) - present here so a brand-new
+database gets it in one shot; a database created before this feature
+existed needs scripts/maintenance/add_api_key_attribution_columns.py
+instead.
 """
 
 import sqlite3
@@ -33,7 +39,8 @@ CREATE TABLE IF NOT EXISTS monitoring_logs (
     risk_level TEXT NOT NULL CHECK (risk_level IN ('low', 'medium', 'high', 'critical')),
     alert_triggered BOOLEAN NOT NULL DEFAULT 0,
     detected_threats TEXT NOT NULL DEFAULT '[]',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by_key_label TEXT
 )
 """
 
@@ -50,7 +57,8 @@ CREATE TABLE IF NOT EXISTS monitoring_alerts (
     message TEXT NOT NULL,
     detected_threats TEXT NOT NULL DEFAULT '[]',
     resolved BOOLEAN NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by_key_label TEXT
 )
 """
 

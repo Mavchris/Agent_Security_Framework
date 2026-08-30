@@ -20,9 +20,21 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from api.app import app
+from api.app import app, require_api_key
 
 MONITORING_DB_PATH = "data/monitoring.db"
+
+
+def setUpModule():
+    # This file exercises general request/response behavior, not the
+    # X-API-Key mechanism itself (see tests/test_auth.py for that) -
+    # override the dependency so every test here keeps working against
+    # the now-protected /monitoring/* endpoints without needing a real key.
+    app.dependency_overrides[require_api_key] = lambda: "test-suite"
+
+
+def tearDownModule():
+    app.dependency_overrides.pop(require_api_key, None)
 
 
 def _delete_monitoring_data(*agent_names):

@@ -50,6 +50,7 @@ def write_log(
     agent_id: Optional[int] = None,
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
+    created_by_key_label: Optional[str] = None,
     db_path: str = DB_PATH,
 ) -> Dict[str, Any]:
     """Persist one request/response log entry. Returns the stored row
@@ -59,11 +60,12 @@ def write_log(
         cursor = conn.execute(
             'INSERT INTO monitoring_logs '
             '(agent_id, agent_name, user_id, session_id, prompt, response, '
-            ' risk_level, alert_triggered, detected_threats) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            ' risk_level, alert_triggered, detected_threats, created_by_key_label) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             (
                 agent_id, agent_name, user_id, session_id, prompt, response,
                 risk_level, alert_triggered, json.dumps(detected_threats),
+                created_by_key_label,
             ),
         )
         conn.commit()
@@ -84,6 +86,7 @@ def write_alert(
     agent_id: Optional[int] = None,
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
+    created_by_key_label: Optional[str] = None,
     db_path: str = DB_PATH,
 ) -> Dict[str, Any]:
     """Persist one alert, linked back to the log entry that triggered it.
@@ -93,11 +96,12 @@ def write_alert(
         cursor = conn.execute(
             'INSERT INTO monitoring_alerts '
             '(log_id, agent_id, agent_name, user_id, session_id, alert_type, '
-            ' severity, message, detected_threats) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            ' severity, message, detected_threats, created_by_key_label) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             (
                 log_id, agent_id, agent_name, user_id, session_id, alert_type,
                 severity, message, json.dumps(detected_threats),
+                created_by_key_label,
             ),
         )
         conn.commit()

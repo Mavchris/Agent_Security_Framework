@@ -90,7 +90,8 @@ class AgentMonitor:
 
     def log_request(self, prompt: str, response: str,
                    user_id: Optional[str] = None,
-                   session_id: Optional[str] = None) -> Dict[str, Any]:
+                   session_id: Optional[str] = None,
+                   created_by_key_label: Optional[str] = None) -> Dict[str, Any]:
         """
         Log a request-response pair, persisting it (and any resulting
         alert) to monitoring_store immediately.
@@ -100,6 +101,9 @@ class AgentMonitor:
             response: Agent response
             user_id: Optional user identifier
             session_id: Optional session identifier
+            created_by_key_label: label of the API key that made this
+                logging call (see core/auth.py), or None if it predates
+                named API keys.
 
         Returns:
             dict: Log entry with detections
@@ -132,11 +136,12 @@ class AgentMonitor:
             agent_id=agent_id,
             user_id=user_id,
             session_id=session_id,
+            created_by_key_label=created_by_key_label,
             db_path=self.monitoring_db_path,
         )
 
         if detected:
-            self._create_alert(log_row, detected, agent_id)
+            self._create_alert(log_row, detected, agent_id, created_by_key_label)
 
         log_entry = dict(log_row)
         log_entry['alert_triggered'] = bool(detected)
@@ -213,7 +218,8 @@ class AgentMonitor:
 
         return similarity
 
-    def _create_alert(self, log_row: Dict, detected: List[Dict], agent_id: Optional[int]):
+    def _create_alert(self, log_row: Dict, detected: List[Dict], agent_id: Optional[int],
+                       created_by_key_label: Optional[str] = None):
         """Persist an alert for detected threats, linked to the log row
         that triggered it."""
 
@@ -230,6 +236,7 @@ class AgentMonitor:
             agent_id=agent_id,
             user_id=log_row.get('user_id'),
             session_id=log_row.get('session_id'),
+            created_by_key_label=created_by_key_label,
             db_path=self.monitoring_db_path,
         )
 

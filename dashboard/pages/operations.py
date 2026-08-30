@@ -38,6 +38,7 @@ try:
     from testing.agent_wrappers import get_agent_wrapper
     from testing.agent_scanner import AgentVulnerabilityScanner
     from core.agent_registry import build_wrapper, deactivate_agent, list_agents, register_agent
+    from core.auth import verify_key
     from monitoring import monitoring_store
 except ImportError as e:
     st.error(f"Import Error: {e}")
@@ -67,12 +68,6 @@ def get_all_threats():
         return []
 
 # ============================================
-# LOAD DATA
-# ============================================
-
-threats = get_all_threats()
-
-# ============================================
 # HEADER
 # ============================================
 
@@ -83,6 +78,53 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# ============================================
+# API KEY GATE
+# ============================================
+# Every action on this page - registering/listing/deactivating agents,
+# running a scan, reading production monitoring data - is sensitive (see
+# SECURITY.md, the Vague that added named API keys). The catalog pages
+# (Intelligence, Catalog) stay public; this whole page does not, so it's
+# gated as a single unit rather than per-tab/per-button.
+#
+# The key is checked once per browser session, not on every click: a
+# validated session only remembers the resulting *label* in
+# st.session_state, never the raw key. This means a key revoked mid-session
+# stays effective in a tab that already unlocked until that tab's session
+# ends (browser close, or Streamlit session expiry) - a deliberate
+# trade-off for not re-prompting/re-checking on every interaction; see
+# SECURITY.md for this limitation if a faster-acting revocation is ever
+# needed.
+
+if not st.session_state.get("api_key_label"):
+    st.markdown(
+        info_banner(
+            "This page manages registered agents, runs scans against them, and "
+            "reads production monitoring data - all of it requires a named API "
+            "key. Enter yours below (see scripts/maintenance/create_api_key.py "
+            "if you don't have one)."
+        ),
+        unsafe_allow_html=True,
+    )
+
+    with st.form("api_key_gate_form"):
+        candidate_key = st.text_input("API key", type="password")
+        unlock_submitted = st.form_submit_button("Unlock")
+
+    if unlock_submitted:
+        label = verify_key(candidate_key)
+        if label:
+            st.session_state["api_key_label"] = label
+            st.rerun()
+        else:
+            st.error("Invalid or inactive API key.")
+
+    st.stop()
+
+key_label = st.session_state["api_key_label"]
+
+threats = get_all_threats()
 
 # ============================================
 # SHARED: AGENT REGISTRATION FORM
@@ -213,9 +255,14 @@ def render_registration_form(key_prefix):
                     unsafe_allow_html=True,
                 )
 
-        register_submitted = st.form_submit_button(
-            "Register Agent", key=f"{key_prefix}_register_submit"
-        )
+        # No key= here: a form can only have one submit button, and each
+        # of the two forms this function renders already has its own
+        # unique name (f"{key_prefix}_register_agent_form" above), which
+        # Streamlit uses to disambiguate identically-labeled buttons in
+        # different forms - a widget-level key would be redundant. Also
+        # avoids depending on Streamlit 1.49+ (key= on this widget wasn't
+        # added until then; see requirements.txt's streamlit pin history).
+        register_submitted = st.form_submit_button("Register Agent")
 
     if register_submitted:
         if not reg_name:

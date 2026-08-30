@@ -8,17 +8,18 @@ importing them as a package. This is a first, targeted test on the
 single most critical/already-broken-once interaction, not a full page
 test suite.
 
-If every test in this file fails on your machine with an ImportError
-pointing at pyarrow._compute ("DLL load failed... Une strategie de
-controle d'application a bloque ce fichier" or the English equivalent),
-that's a Windows Application Control Policy (WDAC/EDR) on your machine
-blocking pyarrow's native extension - operations.py imports pandas,
-which pulls in pyarrow. It is not a bug in this repo: plain
-`python -c "import pandas"` fails the same way, with no Streamlit or
-test code involved. Resolving it means clearing the block for pyarrow's
-DLL (or the venv path) in whatever product enforces the policy, or
-installing a pyarrow build whose binary isn't flagged - neither of
-which this test suite can work around.
+Known currently broken (StopIteration / KeyError looking up widgets):
+operations.py now gates its entire body behind a named-API-key check
+(st.session_state["api_key_label"], see the named-API-keys work in
+SECURITY.md) before rendering the tabs these tests interact with. None
+of these tests seed that session_state key, so every AppTest run here
+hits the gate's st.stop() and the widgets being searched for
+("Run Scan", "test_agent_register_agent_path", etc.) never exist. Not a
+pyarrow/pandas environment issue (that was a real, now-fixed prior cause
+of this same symptom - see requirements.txt's pyarrow pin) - fixing this
+for real means updating each test's setUp to pre-seed a valid key, which
+is exactly the AppTest gate coverage already planned as follow-up work
+for that feature, not yet done as of this comment.
 """
 
 import re
