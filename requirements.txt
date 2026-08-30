@@ -1,10 +1,36 @@
 requests==2.31.0
 pandas==2.2.1
-streamlit==1.32.2
+# 1.32.2 (the previous pin here) predates st.container(key=...), which
+# dashboard/pages/catalog.py relies on - that pin was already stale before
+# this file's pyarrow entry below was added; bumped to the earliest release
+# that has it (1.39.0), confirmed via AppTest against every dashboard page.
+streamlit==1.39.0
+# pyarrow isn't imported directly anywhere in this repo (no ArrowDtype,
+# dtype_backend="pyarrow", etc.) - it's pulled in transitively by both
+# pandas (pandas.core.arrays.arrow eagerly imports pyarrow.compute whenever
+# pyarrow is present at all, even on a plain `import pandas`) and streamlit
+# itself (>=7.0, for st.dataframe/st.table serialization). Left unpinned,
+# either one will happily pull the latest release. Pinned explicitly here
+# after the latest (25.0.1) got silently installed by an out-of-band,
+# unpinned `pip install streamlit` and had its native _compute extension
+# blocked by this machine's Windows Application Control Policy - 15.0.0
+# satisfies both pandas' and streamlit's constraints and its DLL isn't
+# blocked. Not a version the dashboard needs for any Arrow feature -
+# purely picked to be an unflagged, compatible build; if this specific
+# pin ever gets flagged too, any other pyarrow release that still imports
+# cleanly on the target machine works equally well.
+pyarrow==15.0.0
 plotly==5.20.0
-fastapi==0.109.0
+# 0.109.0 (the previous pin) bundles starlette<0.36, whose TestClient
+# passes app= to httpx.Client - removed in the httpx==0.28.1 pinned below
+# ("TypeError: Client.__init__() got an unexpected keyword argument
+# 'app'"), breaking every API test's TestClient() call. Bumped to a
+# version whose starlette targets httpx>=0.28's transport=-only
+# TestClient; pydantic bumped alongside it since 0.135.1 requires newer
+# pydantic than 2.5.0. Confirmed via the full pytest suite, not just import.
+fastapi==0.135.1
 uvicorn==0.27.0
-pydantic==2.5.0
+pydantic==2.13.5
 python-dotenv==1.2.2
 schedule==1.2.2
 
