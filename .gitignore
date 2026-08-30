@@ -218,6 +218,8 @@ pipeline/VAGUE_1_DOCUMENTATION_CLAUDE_CODE.md
 
 # Runtime data, logs, and scan-result artifacts (should never have been tracked)
 data/*.db
+data/*.db-wal
+data/*.db-shm
 data/*.bak
 data/raw_*.json
 logs/
