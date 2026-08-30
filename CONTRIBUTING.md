@@ -28,6 +28,10 @@ Open a pull request against `main` with a short description of what changed and 
 - Keep functions focused; several existing functions (e.g. `pipeline/process.py`'s `run_pipeline()`) are known to do too much at once and are on the cleanup list rather than a pattern to copy.
 - SQL queries must use parameterized placeholders (`?`), never string interpolation — this is consistently followed today and should stay that way.
 
+## Commit hygiene
+
+Never commit a change you know breaks a test without fixing it in the same commit (or the test, if the test itself is what's wrong). "Note: this leaves X failing" in a commit message is not a substitute for fixing X — it just means the breakage sits there until someone else finds it and has to re-diagnose what you already knew.
+
 ## Known limitations worth knowing before you dig in
 
 See the [Known Limitations](README.md#known-limitations) section of the README — it's an honest, current list (test coverage, automation track record, unwired scrapers) rather than something scattered across issues.

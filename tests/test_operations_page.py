@@ -7,6 +7,18 @@ Streamlit's multipage runner launches them directly rather than
 importing them as a package. This is a first, targeted test on the
 single most critical/already-broken-once interaction, not a full page
 test suite.
+
+If every test in this file fails on your machine with an ImportError
+pointing at pyarrow._compute ("DLL load failed... Une strategie de
+controle d'application a bloque ce fichier" or the English equivalent),
+that's a Windows Application Control Policy (WDAC/EDR) on your machine
+blocking pyarrow's native extension - operations.py imports pandas,
+which pulls in pyarrow. It is not a bug in this repo: plain
+`python -c "import pandas"` fails the same way, with no Streamlit or
+test code involved. Resolving it means clearing the block for pyarrow's
+DLL (or the venv path) in whatever product enforces the policy, or
+installing a pyarrow build whose binary isn't flagged - neither of
+which this test suite can work around.
 """
 
 import re
