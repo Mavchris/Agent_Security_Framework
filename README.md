@@ -196,7 +196,7 @@ All documentation files live at the repository root, alongside this README (ther
 | **API** | REST interface | ✅ 10+ endpoints |
 | **Multi-Agent** | 8 LLM/HTTP engine wrappers + persistent registry | ✅ Complete |
 | **Monitoring** | Health & alerts (basic) | ⚠️ Partial (alerts coming soon) |
-| **Authentication** | User access control | ❌ Planned for v2.0 |
+| **Authentication** | Named API keys for sensitive actions | ⚠️ Partial (no RBAC/user accounts yet — see [Security & Privacy](#security--privacy)) |
 
 ### Agent Registry
 
@@ -207,6 +207,7 @@ Agents (including remote, enterprise-owned ones) can be registered once and reus
 - **`testing/agent_wrappers.py`'s `RemoteHTTPAgentWrapper`**: for a `remote_http` agent, POSTs `{request_field: prompt}` as JSON to `endpoint_url` and reads `response_field` back. Supports an internal CA bundle (`ca_cert_path`) and an `auth_env_var` — only the *name* of an environment variable is stored in the registry, never a secret itself (see [Security & Privacy](#security--privacy)).
 - **For an agent that only exists as a local script/function**: see `docs/examples/local_agent_http_wrapper.py`, a minimal template for exposing it as a local HTTP endpoint, which can then be registered as `remote_http` pointing at `http://localhost:PORT`. ASIF never executes your code directly - it only calls whatever URL you register.
 - **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
+- **Requires a named API key**: the whole "Agent Operations" dashboard page (registering/listing/deactivating an agent, running a scan, reading production monitoring) is gated behind one — see [Security & Privacy](#security--privacy) for how to create one and how the gate behaves.
 - **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s public threat catalog — see [Security & Privacy](#security--privacy) for why). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
 
 ---
@@ -452,11 +453,11 @@ Documentation-vs-code audit findings, listed plainly rather than left implicit:
 
 ⚠️ **In Progress**
 - Documentation (README, guides, API docs)
-- Security hardening (authentication, RBAC)
+- Security hardening (RBAC, encryption at rest — basic named-API-key auth for sensitive actions already ships, see [Security & Privacy](#security--privacy))
 - Deployment guides (Docker, Kubernetes)
 
 ❌ **Planned (v2.1 - 3-4 weeks)**
-- Authentication & user management
+- Full user accounts & RBAC (named API keys already ship — see [Security & Privacy](#security--privacy))
 - Email/Slack alerts
 - Advanced monitoring
 - Deployment automation
@@ -539,12 +540,30 @@ See [USAGE_GUIDE.md](USAGE_GUIDE.md) for more examples.
 ✅ Collects threat intelligence from public sources
 ✅ Stores threats in local SQLite database
 ✅ Provides visibility into agent security posture
+✅ Requires a named API key for sensitive actions (agent registration/scanning, production monitoring) — see below
 
 ### What It Doesn't Do (Yet)
-⚠️ Authenticate users (planned for v2.0)
+⚠️ Full user accounts / RBAC (named API keys are label-plus-secret, not per-user roles — planned for v2.0)
 ⚠️ Encrypt sensitive data (planned)
 ⚠️ Provide real-time alerts (planned)
 ⚠️ HIPAA/SOC 2 compliance (future)
+
+### Using named API keys
+
+The threat catalog (Intelligence/Catalog dashboards, `GET /threats`, `/stats`, etc.) stays open — it's public third-party intelligence. Everything else needs a key:
+
+```bash
+# Create one (run on the server, by an administrator - prints the raw key once)
+python scripts/maintenance/create_api_key.py my-label
+
+# Revoke one later
+python scripts/maintenance/deactivate_api_key.py my-label
+```
+
+- **API**: send it as the `X-API-Key` header on the 4 `/monitoring/*` endpoints.
+- **Dashboard**: paste it into the "Agent Operations" page's unlock form once per browser session.
+
+See [SECURITY.md](SECURITY.md#authentication-named-api-keys) for how it's stored, what's attributed, and the known trade-offs (e.g. mid-session revocation isn't instant).
 
 ### Data Privacy
 - **Local Processing**: All data stays on your machine (no cloud)
@@ -659,7 +678,7 @@ A: Optional. Some CTI sources (Censys) require free API keys, but framework work
 A: Daily at 02:00 UTC automatically, plus weekly maintenance Monday 10:00 UTC.
 
 **Q: Can I run this in production?**
-A: Yes, but you'll need Docker, authentication, and hardening. See [DEPLOYMENT.md](DEPLOYMENT.md).
+A: Yes, but you'll need Docker and further hardening (network isolation, RBAC). Named API keys already protect agent registration/scanning and production monitoring — see [SECURITY.md](SECURITY.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
 
 **Q: Is this open source?**
 A: Yes, AGPL-3.0 license. Code is on GitHub and fully transparent.

@@ -11,6 +11,13 @@ Derived from the [Known Limitations](README.md#known-limitations) audit:
 3. Get the orchestrator running unattended over an extended period to build a real reliability track record.
 4. Review the 114 threats currently `threat_type=other, ai_relevant=true` (see README Known Limitations) as candidates for a future taxonomy refinement — they're confirmed AI-relevant but don't fit one of the 9 categories cleanly.
 
+## Named API key follow-ups
+
+Identified while shipping named API keys this session (see [SECURITY.md](SECURITY.md#authentication-named-api-keys)) but deliberately not addressed as part of that work:
+
+1. Rate limiting on API keys — nothing currently stops a valid (or repeatedly-guessed) key from being hammered against `/monitoring/*`.
+2. Automatic expiration of API keys — keys are active until manually deactivated via `scripts/maintenance/deactivate_api_key.py`; there's no TTL or forced rotation.
+
 ## Future dedicated test vague
 
 Current coverage is 36% overall (see README [Known Limitations](README.md#known-limitations) for the full by-module breakdown) and concentrated in the scrapers/classifier/`POST /monitoring/log-request` paths that already have tests. The following are still largely or entirely untested and, in order of volume/criticality, are the priority targets for a future vague focused specifically on tests:
@@ -23,4 +30,4 @@ Current coverage is 36% overall (see README [Known Limitations](README.md#known-
 
 ## Longer-term (see README for full list)
 
-Authentication, ML-based classification, Docker/Kubernetes packaging.
+Full user accounts/RBAC (named API keys for sensitive actions already ship — see [SECURITY.md](SECURITY.md#authentication-named-api-keys)), ML-based classification, Docker/Kubernetes packaging.
