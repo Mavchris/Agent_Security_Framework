@@ -82,6 +82,19 @@ class TestOperationsRunScan(unittest.TestCase):
     def setUp(self):
         self.at = _authed_app_test()
 
+    def tearDown(self):
+        # "Run Scan" now persists to scan_results (see the scan-
+        # persistence vague's étape 4) - clean up what these tests wrote,
+        # scoped to the fake test label so a real 'my_agent' scan history
+        # is never at risk of being swept up by this.
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute(
+            "DELETE FROM scan_results WHERE agent_name = 'my_agent' "
+            "AND triggered_by_key_label = 'test-suite'"
+        )
+        conn.commit()
+        conn.close()
+
     def test_mock_scan_runs_without_exception(self):
         _click_run_scan(self.at)
 
@@ -143,7 +156,12 @@ class TestAgentRegistryEndToEnd(unittest.TestCase):
         self.at = _authed_app_test()
 
     def tearDown(self):
+        # test_reference_baseline_path_registers_and_scans also runs a
+        # real scan on the registered agent, persisted to scan_results -
+        # the agent_name is unique per test run (uuid-suffixed) so this
+        # can't collide with anything real.
         conn = sqlite3.connect(DB_PATH)
+        conn.execute("DELETE FROM scan_results WHERE agent_name = ?", (self.agent_name,))
         conn.execute("DELETE FROM registered_agents WHERE name = ?", (self.agent_name,))
         conn.commit()
         conn.close()
