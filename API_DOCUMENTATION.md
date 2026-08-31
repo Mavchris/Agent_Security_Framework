@@ -10,11 +10,13 @@ Complete REST API reference for the Agent Security Intelligence Framework. This 
 4. [Threat Endpoints](#threat-endpoints)
 5. [Statistics Endpoints](#statistics-endpoints)
 6. [Monitoring Endpoints](#monitoring-endpoints)
-7. [Health Endpoints](#health-endpoints)
-8. [Error Handling](#error-handling)
-9. [Rate Limiting](#rate-limiting)
-10. [Code Examples](#code-examples)
-11. [Integration Patterns](#integration-patterns)
+7. [Agent Registry Endpoints](#agent-registry-endpoints)
+8. [Scan Endpoints](#scan-endpoints)
+9. [Health Endpoints](#health-endpoints)
+10. [Error Handling](#error-handling)
+11. [Rate Limiting](#rate-limiting)
+12. [Code Examples](#code-examples)
+13. [Integration Patterns](#integration-patterns)
 
 ---
 
@@ -100,7 +102,7 @@ curl http://localhost:8001/threats  # instead of 8000
 
 ### Response Format
 
-All responses are **JSON** with standard format:
+⚠️ **This envelope below is aspirational, not what the API actually returns** - every real endpoint (see the sections below, each verified against a running server) returns its data directly as the top-level JSON object/array, with no `data`/`status`/`message` wrapper. Kept here as a known documentation gap rather than silently deleted; see each endpoint's own **Response** example for the real shape.
 
 ```json
 {
@@ -115,34 +117,43 @@ All responses are **JSON** with standard format:
 
 ## Authentication
 
-### Current Status
+### Current Status: named API keys on sensitive endpoints
 
-**No authentication required** (v2.0)
+The threat catalog (`/threats`, `/stats`, `/threat-types`, `/sources`, `/health`) has **no authentication** - it's public third-party threat intelligence, not worth gating. Everything else does:
 
-- All endpoints are public
-- No API keys needed
-- No user accounts needed
+| Requires `X-API-Key` | Public, no key needed |
+|---|---|
+| `/monitoring/*` (all 4) | `/threats`, `/threats/{id}` |
+| `/agents`, `/agents/{id}`, `/agents/{id}/deactivate` | `/stats`, `/threat-types`, `/sources` |
+| `/scan`, `/scan/results/{id}` | `/health`, `/` |
 
-### Future (v2.1)
+Send the key as an `X-API-Key` header:
+```bash
+curl http://localhost:8000/agents -H "X-API-Key: <your key>"
+```
 
-Planned authentication methods:
-- API Key authentication
-- OAuth 2.0
-- Bearer tokens
-- Role-Based Access Control (RBAC)
+A key is a label plus a high-entropy random token, created by an administrator directly on the server - there is no endpoint to create one (that would let anyone mint their own):
+```bash
+python scripts/maintenance/create_api_key.py my-label     # prints the raw key once
+python scripts/maintenance/deactivate_api_key.py my-label # revokes it
+```
+
+Missing, invalid, and deactivated keys all return the same generic response, so a client can't distinguish "wrong key" from "revoked key" from "no key at all":
+```json
+{"detail": "Invalid or missing API key"}
+```
+with HTTP `401`.
+
+**Not implemented**: OAuth, bearer tokens beyond the raw key itself, per-key rate limiting, key expiry, or RBAC (every valid key can do everything the endpoints above allow - there's no per-key permission scoping). See [SECURITY.md](SECURITY.md#authentication-named-api-keys) and [ROADMAP.md](ROADMAP.md) for what's tracked as follow-up work.
 
 ### Security Notes
 
 For production deployment:
-- Always use HTTPS
-- Implement authentication
-- Add rate limiting
-- Use API keys
-- Restrict access by IP
+- Always use HTTPS (nothing here provides TLS itself - put a reverse proxy in front)
+- Restrict network access to the host regardless of the API key (see [DEPLOYMENT.md](DEPLOYMENT.md)) - a key is a second layer, not a substitute for network isolation
+- Set `CORS_ALLOWED_ORIGINS` explicitly (comma-separated) before any browser-based client on a different origin needs to call this API - restrictive by default (no origins allowed)
 
-CORS is restrictive by default (no origins allowed) — set the `CORS_ALLOWED_ORIGINS` environment variable (comma-separated) before any browser-based client on a different origin needs to call this API.
-
-See [SECURITY.md](SECURITY.md) for hardening guide.
+See [SECURITY.md](SECURITY.md) for the full hardening guide.
 
 ---
 
@@ -816,6 +827,314 @@ print(f"Agent: {health['agent_name']}")
 print(f"Status: {health['status']}")
 print(f"Uptime: {health['uptime_seconds']} seconds")
 print(f"Response Time: {health['response_time_ms']}ms")
+```
+
+---
+
+## Agent Registry Endpoints
+
+This section (and Scan Endpoints below) documents actual, verified behavior - every request/response shown was captured from a real running server, not written by hand. Thin HTTP layer over `core/agent_registry.py`, the same shared CRUD the dashboard's registration form uses - not a reimplementation. **All 4 endpoints require a named API key** (see [Authentication](#authentication)); unlike the endpoints above, these are not public.
+
+### 11. List Registered Agents
+
+**Endpoint:**
+```
+GET /agents
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `environment` | string | No | Filter by environment (e.g. `"production"`) |
+| `active_only` | boolean | No | Exclude deactivated agents (default: `true`) |
+
+**Response (200 OK):**
+```json
+{
+  "agents": [
+    {
+      "id": 103,
+      "name": "docs-example-agent",
+      "agent_type": "mock",
+      "config": {},
+      "environment": null,
+      "is_active": true,
+      "created_at": "2026-08-31 21:02:23",
+      "created_by_key_label": "docs-example-key",
+      "deactivated_by_key_label": null
+    }
+  ]
+}
+```
+
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key
+
+**Examples:**
+```bash
+curl http://localhost:8000/agents -H "X-API-Key: <your key>"
+```
+```python
+import requests
+response = requests.get('http://localhost:8000/agents', headers={'X-API-Key': API_KEY})
+agents = response.json()['agents']
+```
+
+---
+
+### 12. Register an Agent
+
+**Endpoint:**
+```
+POST /agents
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Must be unique |
+| `agent_type` | string | Yes | One of `mock`, `claude`, `openai`, `mistral`, `llama`, `huggingface`, `remote_http` |
+| `config` | object | No | Shape depends on `agent_type` (e.g. `endpoint_url` for `remote_http`) |
+| `environment` | string | No | Free text, e.g. `"production"` |
+
+```json
+{"name": "my_agent", "agent_type": "mock"}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 103,
+  "name": "docs-example-agent",
+  "agent_type": "mock",
+  "config": {},
+  "environment": null,
+  "is_active": true,
+  "created_at": "2026-08-31 21:02:23",
+  "created_by_key_label": "docs-example-key",
+  "deactivated_by_key_label": null
+}
+```
+
+**Status Codes:** `200` Registered · `400` Duplicate `name`, or unknown `agent_type` · `401` Missing/invalid/inactive API key
+
+**Examples:**
+```bash
+curl -X POST http://localhost:8000/agents \
+  -H "X-API-Key: <your key>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my_agent", "agent_type": "mock"}'
+```
+
+---
+
+### 13. Get a Registered Agent
+
+**Endpoint:**
+```
+GET /agents/{agent_id}
+```
+
+Returns a deactivated agent too (check `is_active`) - same behavior as `core.agent_registry.get_agent_config()`.
+
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key · `404` No agent with that id
+
+**Example:**
+```bash
+curl http://localhost:8000/agents/103 -H "X-API-Key: <your key>"
+```
+
+---
+
+### 14. Deactivate an Agent
+
+**Endpoint:**
+```
+POST /agents/{agent_id}/deactivate
+```
+
+Soft-delete - the row (and its monitoring/scan history) is kept, `is_active` becomes `false`.
+
+**Response (200 OK):**
+```json
+{"id": 103, "status": "deactivated"}
+```
+
+**Status Codes:** `200` Deactivated · `401` Missing/invalid/inactive API key · `404` No agent with that id
+
+**Example:**
+```bash
+curl -X POST http://localhost:8000/agents/103/deactivate -H "X-API-Key: <your key>"
+```
+
+---
+
+## Scan Endpoints
+
+Runs **asynchronously**: a real scan against a real agent (Claude, GPT-4, a `remote_http` backend) can take **11-45 minutes** (653 threats, one sequential call each, no batching - see [ROADMAP.md](ROADMAP.md)), far past any reasonable synchronous HTTP timeout. `POST /scan` returns immediately with a scan id; poll `GET /scan/results/{id}` for progress and the final result. Both require a named API key.
+
+Runs in a background thread of the API's own process (FastAPI `BackgroundTasks`), not a real job queue - an accepted limitation at this project's scale. **A server restart while a scan is `running` loses it silently**: the row stays stuck in `running` forever, with no automatic resume (see [DEPLOYMENT.md](DEPLOYMENT.md)).
+
+### 15. Start a Scan
+
+**Endpoint:**
+```
+POST /scan
+```
+
+**Request Body:** exactly one of `agent_id` or `agent_type` is required.
+
+| Field | Type | Required | Description |
+|-------|------|----------|--------------|
+| `agent_id` | integer | One of these two | Scan a registered agent |
+| `agent_type` | string | One of these two | One-off "quick type" scan - nothing saved to the registry |
+| `agent_name` | string | No | Quick-type path only; defaults to `"{agent_type}-quick-scan"` |
+| `agent_config` | object | No | Quick-type path only, e.g. `{"endpoint_url": "..."}` for `remote_http` |
+| `limit` | integer | No | Test only the first N threats instead of all of them |
+
+Registered agent:
+```json
+{"agent_id": 103}
+```
+Quick type:
+```json
+{"agent_type": "mock", "agent_name": "my_agent", "limit": 5}
+```
+
+**Response (200 OK):**
+```json
+{"id": 34, "status": "pending", "agent_name": "docs-example-agent"}
+```
+
+**Status Codes:** `200` Scan started · `400` Neither/both of `agent_id`/`agent_type` given, or unknown `agent_type` · `401` Missing/invalid/inactive API key · `404` `agent_id` doesn't exist or is deactivated
+
+**Examples:**
+```bash
+curl -X POST http://localhost:8000/scan \
+  -H "X-API-Key: <your key>" \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id": 103}'
+```
+
+---
+
+### 16. Get Scan Results
+
+**Endpoint:**
+```
+GET /scan/results/{scan_id}
+```
+
+**Response while still running:**
+```json
+{
+  "id": 34, "agent_id": null, "agent_name": "docs-example-agent",
+  "triggered_by_key_label": "docs-example-key", "status": "running",
+  "started_at": "2026-08-31T23:02:23.211916", "completed_at": null,
+  "total_tested": null, "vulnerabilities_found": null, "safe_threats": null,
+  "technical_errors": null, "vulnerability_score": null,
+  "created_at": "2026-08-31 21:02:23", "report": null
+}
+```
+
+**Response when completed** (real example):
+```json
+{
+  "id": 34,
+  "agent_id": null,
+  "agent_name": "docs-example-agent",
+  "triggered_by_key_label": "docs-example-key",
+  "status": "completed",
+  "started_at": "2026-08-31T23:02:23.211916",
+  "completed_at": "2026-08-31T23:02:23.227167",
+  "total_tested": 5,
+  "vulnerabilities_found": 5,
+  "safe_threats": 0,
+  "technical_errors": 0,
+  "vulnerability_score": 100.0,
+  "created_at": "2026-08-31 21:02:23",
+  "report": {
+    "total_threats": 5,
+    "vulnerabilities": ["... full AgentVulnerabilityScanner.scan_all_threats() output"],
+    "safe_threats": [],
+    "technical_errors": [],
+    "by_type": {"...": "per-type total/vulnerable/errors counts"},
+    "by_severity": {"...": "per-severity total/vulnerable/errors counts"}
+  }
+}
+```
+
+#### ⚠️ `vulnerability_score` can be `null` - and `null` has two different causes
+
+You must check `status` before drawing any conclusion from `vulnerability_score`:
+
+| `status` | `vulnerability_score` | Meaning |
+|----------|------------------------|---------|
+| `pending` / `running` | `null` | Not computed yet - the scan is still going |
+| `completed` | a number | Real result: `vulnerabilities_found / (total_tested - technical_errors) * 100` |
+| `completed` | **`null`** | **Every threat technical-errored (or there were none to test) - nothing was actually measurable** |
+| `failed` | `null` | The scan crashed before producing a result |
+
+A `null` score on a `completed` scan is **not** a 0% "clean" result - it means the scan couldn't measure anything (e.g. the agent's endpoint was unreachable for every single threat). Treating it as a low score is exactly the mistake this field's `null` is designed to force you to notice.
+
+**❌ Don't do this** - reading the score without checking `status` first:
+```python
+import requests
+import time
+
+def wait_for_scan(scan_id, api_key, timeout=60 * 45):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        r = requests.get(
+            f"http://localhost:8000/scan/results/{scan_id}",
+            headers={"X-API-Key": api_key},
+        ).json()
+        if r["status"] in ("completed", "failed"):
+            return r
+        time.sleep(5)
+    raise TimeoutError("scan did not finish in time")
+
+result = wait_for_scan(scan_id, API_KEY)
+
+# BUG: if vulnerability_score is null, this comparison raises TypeError
+# in Python - and in a looser CI script (a shell test, a language that
+# coerces null to 0), the equivalent comparison can silently pass a
+# release gate that should have failed instead.
+if result["vulnerability_score"] <= 30:
+    print("Gate passed: agent is safe enough to deploy.")
+else:
+    print("Gate failed: too many vulnerabilities.")
+```
+
+**✅ Do this instead** - check `status` first, and treat `completed` + `null` score as its own case, not as "safe":
+```python
+result = wait_for_scan(scan_id, API_KEY)
+
+if result["status"] == "failed":
+    raise RuntimeError(f"Scan {scan_id} failed before producing a result")
+
+if result["status"] == "completed" and result["vulnerability_score"] is None:
+    # technical_errors == total_tested: nothing was actually testable.
+    # This must block a CI/CD gate, never pass it silently.
+    raise RuntimeError(
+        f"Scan {scan_id} completed but measured nothing "
+        f"({result['technical_errors']}/{result['total_tested']} threats "
+        f"errored) - treat as inconclusive, not as a passing score."
+    )
+
+score = result["vulnerability_score"]
+if score <= 30:
+    print(f"Gate passed: vulnerability score {score:.1f}%.")
+else:
+    print(f"Gate failed: vulnerability score {score:.1f}%.")
+```
+
+**Status Codes:** `200` Success (check `status` for progress) · `401` Missing/invalid/inactive API key · `404` No scan with that id
+
+**Examples:**
+```bash
+curl http://localhost:8000/scan/results/34 -H "X-API-Key: <your key>"
 ```
 
 ---

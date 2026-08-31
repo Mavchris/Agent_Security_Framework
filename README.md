@@ -155,6 +155,7 @@ All documentation files live at the repository root, alongside this README (ther
 │  ├─ /threats (threat database)                      │
 │  ├─ /stats (aggregated statistics)                  │
 │  ├─ /monitoring (agent health)                      │
+│  ├─ /agents (agent registry)                        │
 │  └─ /scan (vulnerability scanning)                  │
 └─────────────────────────────────────────────────────┘
                           ↓
@@ -193,7 +194,7 @@ All documentation files live at the repository root, alongside this README (ther
 | **Classifier** | 9-category threat classification | ✅ Complete (13/13 tests) |
 | **Orchestrator** | Automated pipeline scheduling | ⚠️ Implemented; 2 recorded runs (2026-03-28) |
 | **Dashboards** | Real-time visualization | ✅ 3 production dashboards |
-| **API** | REST interface | ✅ 10+ endpoints |
+| **API** | REST interface | ✅ 17 endpoints |
 | **Multi-Agent** | 8 LLM/HTTP engine wrappers + persistent registry | ✅ Complete |
 | **Monitoring** | Health & alerts (basic) | ⚠️ Partial (alerts coming soon) |
 | **Authentication** | Named API keys for sensitive actions | ⚠️ Partial (no RBAC/user accounts yet — see [Security & Privacy](#security--privacy)) |
@@ -208,7 +209,7 @@ Agents (including remote, enterprise-owned ones) can be registered once and reus
 - **For an agent that only exists as a local script/function**: see `docs/examples/local_agent_http_wrapper.py`, a minimal template for exposing it as a local HTTP endpoint, which can then be registered as `remote_http` pointing at `http://localhost:PORT`. ASIF never executes your code directly - it only calls whatever URL you register.
 - **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
 - **Requires a named API key**: the whole "Agent Operations" dashboard page (registering/listing/deactivating an agent, running a scan, reading production monitoring) is gated behind one — see [Security & Privacy](#security--privacy) for how to create one and how the gate behaves.
-- **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s public threat catalog — see [Security & Privacy](#security--privacy) for why). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
+- **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s `threats` table — see [Security & Privacy](#security--privacy) for why, and for why `data/threats.db` as a whole isn't purely public either). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
 
 ---
 
@@ -429,7 +430,7 @@ Documentation-vs-code audit findings, listed plainly rather than left implicit:
 
 - **CTI sources**: 9 scrapers are wired into `pipeline/process.py` (CVE via `cve.circl.lu`, GitHub, ArXiv, MITRE ATT&CK, NVD, OpenCTI, Censys, plus CIRCL Vulnerability-Lookup and EUVD). Of these, **Censys and OpenCTI still return synthetic/hardcoded placeholder data** rather than calling their real APIs — Censys because the stored credentials return `401 Unauthorized` when tested against the real endpoint, OpenCTI because it requires a hosted/authenticated instance rather than a simple public API. `scrapers/misp_scraper.py` exists but isn't called by the pipeline at all.
 - **Cross-source deduplication**: only exact-match on `threat_id`, via a SQLite `UNIQUE` constraint. Each scraper builds its own ID format (`NVD-CVE-2026-4182` vs `CVE-2026-4182` vs `CNVD-2026-32003` can all reference the *same* CVE), so the same vulnerability reported by multiple sources is stored as separate rows rather than merged. Confirmed, not yet fixed — needs a design decision on a canonical dedup key.
-- **Retry logic**: a shared `request_with_retry` helper (`scrapers/retry.py`, exponential backoff, 3 attempts) exists and is used by the CIRCL and EUVD scrapers. The other 7 scrapers still use a plain try/except that logs and skips on failure — not yet retrofitted.
+- **Retry logic**: a shared `request_with_retry` helper (`core/retry.py`, exponential backoff, 3 attempts) exists and is used by the CIRCL and EUVD scrapers, and by `testing/agent_scanner.py` for agent queries during a scan (see [Known Limitations](#known-limitations) on scan reliability). The other 7 scrapers still use a plain try/except that logs and skips on failure — not yet retrofitted.
 - **SQLite mode**: default journal mode; WAL is not enabled.
 - **Task scheduling**: implemented with the `schedule` library, not APScheduler.
 - **Automation track record**: the orchestrator has now completed a real run collecting genuine new data (2026-08-24: +297 threats, all 9 sources succeeded, 0 crashes) after fixing a `UnicodeEncodeError` that previously crashed `run_pipeline()` before any scraper could execute on Windows (the root cause of the earlier "0 new threats" runs). Still short on long-term unattended track record.

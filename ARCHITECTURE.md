@@ -260,7 +260,9 @@ Shared base (scrapers/base_scraper.py, BaseScraper - added Vague 3c):
     save_to_json(filename)    - UTF-8 JSON dump; default path per scraper
                                  via DEFAULT_OUTPUT_FILE
     get_stats()               - banner, totals, errors, severity breakdown
-    request_with_retry(fn)    - wraps scrapers/retry.py, no separate import needed
+    request_with_retry(fn)    - wraps core/retry.py, no separate import needed
+                                 (also used directly by testing/agent_scanner.py
+                                 for agent.query() calls, not just scrapers)
     _print_extra_stats()      - hook for scraper-specific stats (GitHub stars/
                                  languages, MITRE tactics, Censys exposure types,
                                  CIRCL by-source, ArXiv date range); no-op by default
@@ -633,9 +635,10 @@ never agreed on what had happened.
 
 Location: monitoring/monitoring_store.py
 Storage:  monitoring_logs, monitoring_alerts tables, data/monitoring.db
-          - a SEPARATE file from data/threats.db (the public threat
-          catalog), since these tables can contain real production
-          prompt/response text (see SECURITY.md).
+          - a SEPARATE file from data/threats.db's threats table, since
+          these tables can contain real production prompt/response text
+          (see SECURITY.md - data/threats.db itself isn't purely public
+          either, once registered_agents/scan_results are accounted for).
 
 Schema (monitoring_logs):
   id, agent_id (nullable, no cross-file FK - see below), agent_name,

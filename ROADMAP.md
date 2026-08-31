@@ -18,6 +18,12 @@ Identified while shipping named API keys this session (see [SECURITY.md](SECURIT
 1. Rate limiting on API keys — nothing currently stops a valid (or repeatedly-guessed) key from being hammered against `/monitoring/*`.
 2. Automatic expiration of API keys — keys are active until manually deactivated via `scripts/maintenance/deactivate_api_key.py`; there's no TTL or forced rotation.
 
+## Documentation debt
+
+Identified while adding the `/scan` and `/agents` endpoints this session — same treatment as every other limitation found along the way, not skipped just because it surfaced near the end of the vague:
+
+1. `API_DOCUMENTATION.md` needs a full audit. Most of its pre-existing response examples are fictional — a `{"data": ..., "status": ..., "message": ...}` response envelope no real endpoint actually returns, invented fields on `/health` (`uptime_seconds`, `cpu_usage`, ...), a "2.0" version that doesn't match the real root endpoint, nonexistent CLI flags (`--port`, `--debug`) — this goes well beyond the single decorative `/scan` mention in README's architecture diagram that was already fixed. A one-off ⚠️ warning was added inline (Response Format section) as a stopgap while writing this session's new endpoint sections with real, verified examples; the rest of the document still needs the same treatment.
+
 ## Future dedicated test vague
 
 Current coverage is 36% overall (see README [Known Limitations](README.md#known-limitations) for the full by-module breakdown) and concentrated in the scrapers/classifier/`POST /monitoring/log-request` paths that already have tests. The following are still largely or entirely untested and, in order of volume/criticality, are the priority targets for a future vague focused specifically on tests:
