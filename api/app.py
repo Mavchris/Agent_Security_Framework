@@ -6,13 +6,13 @@ Exposes threat data from SQLite database
 import logging
 import os
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 import sqlite3
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ async def root():
             "/threats": "Get all threats with filtering",
             "/stats": "Get statistics",
             "/threats/{threat_id}": "Get specific threat",
-            "/agents": "Get unique agents",
+            "/agents": "List registered agents (requires X-API-Key)",
             "/health": "Health check"
         }
     }
@@ -420,6 +420,200 @@ async def get_agent_health(agent_name: str, _: str = Depends(require_api_key)):
         "total_alerts": stats['total_alerts'],
         "status": "success"
     }
+
+# ============================================
+# AGENT REGISTRY ENDPOINTS
+# ============================================
+# Thin HTTP layer over core/agent_registry.py - the same shared CRUD the
+# dashboard's registration form already uses, not a reimplementation.
+# All 4 endpoints require a named API key: this is the same
+# administrative surface as the dashboard's gated "Agent Operations"
+# page (SSRF-adjacent for remote_http agents - see SECURITY.md).
+
+from core.agent_registry import deactivate_agent, get_agent_config, list_agents, register_agent
+
+
+class RegisterAgentBody(BaseModel):
+    """Request body for POST /agents - same fields as the dashboard's
+    registration form (dashboard/pages/operations.py)."""
+    name: str
+    agent_type: str
+    config: Optional[Dict[str, Any]] = None
+    environment: Optional[str] = None
+
+
+@app.get("/agents")
+async def get_agents(
+    environment: Optional[str] = Query(None, description="Filter by environment"),
+    active_only: bool = Query(True, description="Exclude deactivated agents"),
+    _: str = Depends(require_api_key),
+):
+    """
+    List registered agents. Requires a valid X-API-Key header.
+
+    GET /agents?environment=production&active_only=true
+    """
+    return {"agents": list_agents(environment=environment, active_only=active_only)}
+
+
+@app.post("/agents")
+async def create_agent(body: RegisterAgentBody, key_label: str = Depends(require_api_key)):
+    """
+    Register a new agent. Requires a valid X-API-Key header.
+
+    POST /agents
+    {"name": "my_agent", "agent_type": "mock"}
+    """
+    try:
+        return register_agent(
+            body.name, body.agent_type,
+            config=body.config, environment=body.environment,
+            created_by_key_label=key_label,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/agents/{agent_id}")
+async def get_agent(agent_id: int, _: str = Depends(require_api_key)):
+    """
+    Get a single registered agent by id. Requires a valid X-API-Key
+    header. Returns a deactivated agent too (check its is_active field) -
+    same behavior as core.agent_registry.get_agent_config().
+
+    GET /agents/3
+    """
+    agent = get_agent_config(agent_id)
+    if agent is None:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    return agent
+
+
+@app.post("/agents/{agent_id}/deactivate")
+async def deactivate_agent_endpoint(agent_id: int, key_label: str = Depends(require_api_key)):
+    """
+    Deactivate a registered agent (soft-delete - the row and its
+    monitoring/scan history are kept). Requires a valid X-API-Key header.
+
+    POST /agents/3/deactivate
+    """
+    if not deactivate_agent(agent_id, deactivated_by_key_label=key_label):
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    return {"id": agent_id, "status": "deactivated"}
+
+
+# ============================================
+# SCAN ENDPOINTS
+# ============================================
+# Runs asynchronously (a real scan against a real agent can take
+# 11-45 minutes - see ROADMAP.md/the scan-reliability vague - far past
+# any reasonable synchronous HTTP timeout). POST /scan returns
+# immediately with a scan id; GET /scan/results/{id} is polled for
+# progress/result. FastAPI's BackgroundTasks (a thread from the same
+# process) is used rather than a real job queue - deliberately, not
+# built for this project's scale - see core/scan_store.py and
+# DEPLOYMENT.md for the accepted limitation: a server restart while a
+# scan is 'running' loses it silently, no resume.
+
+from core import scan_store
+from core.agent_registry import build_wrapper
+from testing.agent_scanner import AgentVulnerabilityScanner
+from testing.agent_wrappers import get_agent_wrapper
+
+
+class ScanRequestBody(BaseModel):
+    """Request body for POST /scan - exactly one of agent_id (a
+    registered agent) or agent_type (a one-off "quick type" scan,
+    nothing saved to registered_agents) must be given, matching the two
+    entry paths already on the dashboard's "Test Agent" tab."""
+    agent_id: Optional[int] = None
+    agent_type: Optional[str] = None
+    agent_name: Optional[str] = None
+    agent_config: Optional[Dict[str, Any]] = None
+    limit: Optional[int] = None
+
+
+def _run_scan_background(scan_id: int, agent, limit: Optional[int]):
+    """Runs in a background thread (FastAPI BackgroundTasks) after
+    POST /scan has already returned its response to the client."""
+    try:
+        scan_store.mark_running(scan_id)
+        scanner = AgentVulnerabilityScanner(agent, db_path=DB_PATH)
+        results = scanner.scan_all_threats(verbose=False, limit=limit)
+        scan_store.mark_completed(scan_id, results)
+    except Exception as e:
+        logger.error("Scan %d failed", scan_id, exc_info=e)
+        scan_store.mark_failed(scan_id, str(e))
+
+
+@app.post("/scan")
+async def trigger_scan(
+    body: ScanRequestBody,
+    background_tasks: BackgroundTasks,
+    key_label: str = Depends(require_api_key),
+):
+    """
+    Start an asynchronous vulnerability scan. Requires a valid X-API-Key
+    header. Returns immediately with the new scan's id and status
+    ('pending') - poll GET /scan/results/{id} for progress/result.
+
+    POST /scan
+    {"agent_id": 3}
+    or
+    {"agent_type": "mock", "agent_name": "my_agent"}
+    """
+    if (body.agent_id is None) == (body.agent_type is None):
+        raise HTTPException(
+            status_code=400,
+            detail="Provide exactly one of agent_id or agent_type",
+        )
+
+    if body.agent_id is not None:
+        agent_row = get_agent_config(body.agent_id)
+        if agent_row is None or not agent_row['is_active']:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Registered agent {body.agent_id} not found or inactive",
+            )
+        agent = build_wrapper(agent_row)
+        agent_name = agent_row['name']
+    else:
+        try:
+            agent = get_agent_wrapper(body.agent_type, **(body.agent_config or {}))
+        except (ValueError, ImportError, TypeError) as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        agent_name = body.agent_name or f"{body.agent_type}-quick-scan"
+
+    scan_row = scan_store.create_scan(
+        agent_name=agent_name,
+        agent_id=body.agent_id,
+        triggered_by_key_label=key_label,
+    )
+    background_tasks.add_task(_run_scan_background, scan_row['id'], agent, body.limit)
+
+    return {"id": scan_row['id'], "status": scan_row['status'], "agent_name": agent_name}
+
+
+@app.get("/scan/results/{scan_id}")
+async def get_scan_results(scan_id: int, _: str = Depends(require_api_key)):
+    """
+    Get a scan's current status, or its full result once completed.
+    Requires a valid X-API-Key header.
+
+    vulnerability_score is null both while status is 'pending'/'running'
+    (not computed yet) AND when status is 'completed' but every threat
+    technical-errored (nothing was actually measurable) - always check
+    status before drawing any conclusion from a null score. See
+    API_DOCUMENTATION.md.
+
+    GET /scan/results/42
+    """
+    scan_row = scan_store.get_scan(scan_id)
+    if scan_row is None:
+        raise HTTPException(status_code=404, detail=f"Scan {scan_id} not found")
+    return scan_row
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

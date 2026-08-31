@@ -39,6 +39,7 @@ try:
     from testing.agent_scanner import AgentVulnerabilityScanner
     from core.agent_registry import build_wrapper, deactivate_agent, list_agents, register_agent
     from core.auth import verify_key
+    from core import scan_store
     from monitoring import monitoring_store
 except ImportError as e:
     st.error(f"Import Error: {e}")
@@ -403,6 +404,7 @@ with tab1:
 
     # RUN SCAN
     if test_button:
+        scan_row = None
         try:
             st.markdown(info_banner(f"Initializing {agent_type} agent..."), unsafe_allow_html=True)
 
@@ -411,6 +413,22 @@ with tab1:
                 agent = build_wrapper(selected_registered_agent)
             else:
                 agent = get_agent_wrapper(**agent_config)
+
+            # Same scan_results persistence POST /scan writes to (see
+            # core/scan_store.py) - attributed to the key that unlocked
+            # this dashboard session, same as registering/deactivating an
+            # agent already is. status transitions pending -> running ->
+            # completed/failed even though this runs synchronously in the
+            # request (no BackgroundTasks here - Streamlit has no
+            # equivalent, the page just blocks until the script finishes),
+            # so a scan triggered from the dashboard is indistinguishable
+            # via GET /scan/results/{id} from one triggered via POST /scan.
+            scan_row = scan_store.create_scan(
+                agent_name=agent_name,
+                agent_id=selected_registered_agent['id'] if selected_registered_agent else None,
+                triggered_by_key_label=key_label,
+            )
+            scan_store.mark_running(scan_row['id'])
 
             st.markdown(
                 info_banner(f"Scanning agent '{agent_name}' against {len(threats)} threats..."),
@@ -425,10 +443,13 @@ with tab1:
             scanner = AgentVulnerabilityScanner(agent, db_path='data/threats.db')
             results = scanner.scan_all_threats(verbose=False)
 
+            scan_store.mark_completed(scan_row['id'], results)
+
             # Update progress
             progress_placeholder.progress(100)
             status_placeholder.markdown(
-                f"<span class='badge badge-low'>{icon('check-circle', size=14)} Scan complete</span>",
+                f"<span class='badge badge-low'>{icon('check-circle', size=14)} "
+                f"Scan complete (#{scan_row['id']})</span>",
                 unsafe_allow_html=True
             )
 
@@ -436,7 +457,7 @@ with tab1:
             st.markdown("<div class='asif-section-title'>Test Results</div>", unsafe_allow_html=True)
 
             # KPI Cards
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3, col4, col5 = st.columns(5)
 
             with col1:
                 st.markdown(
@@ -460,6 +481,14 @@ with tab1:
 
             with col4:
                 st.metric(
+                    "Technical Errors",
+                    len(results['technical_errors']),
+                    delta="Not scored" if results['technical_errors'] else None,
+                    help="Threats that couldn't actually be tested (network/rate-limit/timeout after retries) - excluded from the vulnerability score, not counted as either vulnerable or safe.",
+                )
+
+            with col5:
+                st.metric(
                     "Total Tested",
                     results['total_threats'],
                     delta="Coverage"
@@ -472,11 +501,13 @@ with tab1:
 
             type_data = []
             for ttype, stats in results['by_type'].items():
-                vuln_pct = (stats['vulnerable'] / stats['total'] * 100) if stats['total'] > 0 else 0
+                testable = stats['total'] - stats['errors']
+                vuln_pct = (stats['vulnerable'] / testable * 100) if testable > 0 else 0
                 type_data.append({
                     'Threat Type': ttype,
                     'Vulnerable': stats['vulnerable'],
-                    'Safe': stats['total'] - stats['vulnerable'],
+                    'Safe': testable - stats['vulnerable'],
+                    'Technical Errors': stats['errors'],
                     'Total': stats['total'],
                     'Risk %': vuln_pct
                 })
@@ -486,9 +517,9 @@ with tab1:
             fig = px.bar(
                 type_df,
                 x='Threat Type',
-                y=['Vulnerable', 'Safe'],
+                y=['Vulnerable', 'Safe', 'Technical Errors'],
                 barmode='stack',
-                color_discrete_map={'Vulnerable': '#DC2626', 'Safe': '#16A34A'},
+                color_discrete_map={'Vulnerable': '#DC2626', 'Safe': '#16A34A', 'Technical Errors': '#9CA3AF'},
                 title="Vulnerability by Threat Type"
             )
             apply_plotly_theme(fig)
@@ -502,11 +533,13 @@ with tab1:
 
             severity_data = []
             for severity, stats in results['by_severity'].items():
-                vuln_pct = (stats['vulnerable'] / stats['total'] * 100) if stats['total'] > 0 else 0
+                testable = stats['total'] - stats['errors']
+                vuln_pct = (stats['vulnerable'] / testable * 100) if testable > 0 else 0
                 severity_data.append({
                     'Severity': severity,
                     'Vulnerable': stats['vulnerable'],
-                    'Safe': stats['total'] - stats['vulnerable'],
+                    'Safe': testable - stats['vulnerable'],
+                    'Technical Errors': stats['errors'],
                     'Total': stats['total'],
                     'Risk %': vuln_pct
                 })
@@ -523,9 +556,9 @@ with tab1:
             fig = px.bar(
                 severity_df,
                 x='Severity',
-                y=['Vulnerable', 'Safe'],
+                y=['Vulnerable', 'Safe', 'Technical Errors'],
                 barmode='stack',
-                color_discrete_map={'Vulnerable': '#DC2626', 'Safe': '#16A34A'},
+                color_discrete_map={'Vulnerable': '#DC2626', 'Safe': '#16A34A', 'Technical Errors': '#9CA3AF'},
                 title="Vulnerability by Severity"
             )
             apply_plotly_theme(fig)
@@ -589,6 +622,7 @@ with tab1:
             # JSON Export
             with col1:
                 report_json = json.dumps({
+                    'scan_id': scan_row['id'],
                     'agent_name': agent_name,
                     'agent_type': agent_type,
                     'timestamp': datetime.now().isoformat(),
@@ -597,6 +631,7 @@ with tab1:
                         'vulnerability_score': results['vulnerability_score'],
                         'vulnerabilities_found': len(results['vulnerabilities']),
                         'safe_threats': len(results['safe_threats']),
+                        'technical_errors': len(results['technical_errors']),
                         'by_type': results['by_type'],
                         'by_severity': results['by_severity']
                     },
@@ -631,6 +666,8 @@ with tab1:
                     )
 
         except Exception as e:
+            if scan_row is not None:
+                scan_store.mark_failed(scan_row['id'], str(e))
             st.error(f"Error during scan: {str(e)}")
             st.markdown(
                 info_banner(
