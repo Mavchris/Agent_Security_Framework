@@ -11,7 +11,7 @@ since the request shape, response format and auth differ per source.
 import json
 import os
 
-from scrapers.retry import request_with_retry as _request_with_retry
+from core.retry import request_with_retry as _request_with_retry
 
 
 class BaseScraper:
@@ -35,7 +35,7 @@ class BaseScraper:
         self.error_count = 0
 
     def request_with_retry(self, request_fn, **kwargs):
-        """Call request_fn() with exponential-backoff retry (scrapers/retry.py)"""
+        """Call request_fn() with exponential-backoff retry (core/retry.py)"""
         return _request_with_retry(request_fn, **kwargs)
 
     def _record_error(self, error, prefix="Error"):

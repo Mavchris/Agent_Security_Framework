@@ -2,11 +2,17 @@
 Unit tests for RemoteHTTPAgentWrapper (testing/agent_wrappers.py).
 
 Network calls are mocked - no real HTTP server involved. Covers the
-happy path (custom field names honored), the error paths (timeout,
-connection error, malformed/missing response field - each must raise a
-clear RuntimeError, never crash silently), and the TLS verify= wiring
-(default True, ca_cert_path passed through, verify_ssl=False logged
-loudly rather than silently accepted).
+happy path (custom field names honored), the error paths (each must
+raise a clear exception, never crash silently or return an error
+description as if it were the agent's actual answer) and the TLS
+verify= wiring (default True, ca_cert_path passed through, verify_ssl=
+False logged loudly rather than silently accepted).
+
+Errors split into two exception types (see TransientAgentError's
+docstring and testing/agent_scanner.py, which retries only the first
+kind): timeout/connection failure/5xx raise TransientAgentError (worth
+retrying); a malformed response or a 4xx raise plain RuntimeError (won't
+be fixed by retrying the identical request).
 """
 
 import logging
@@ -15,7 +21,7 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from testing.agent_wrappers import RemoteHTTPAgentWrapper, get_agent_wrapper
+from testing.agent_wrappers import RemoteHTTPAgentWrapper, TransientAgentError, get_agent_wrapper
 
 
 def _mock_response(json_data=None, json_error=False, status=200):
@@ -103,33 +109,58 @@ class TestRemoteHTTPAgentWrapperHappyPath(unittest.TestCase):
 class TestRemoteHTTPAgentWrapperErrors(unittest.TestCase):
 
     @patch("testing.agent_wrappers.requests.post")
-    def test_timeout_raises_clear_error(self, mock_post):
+    def test_timeout_raises_transient_error(self, mock_post):
         mock_post.side_effect = requests.exceptions.Timeout()
         agent = RemoteHTTPAgentWrapper(endpoint_url="http://agent.internal/query", timeout=5)
 
-        with self.assertRaises(RuntimeError) as ctx:
+        with self.assertRaises(TransientAgentError) as ctx:
             agent.query("Hello")
         self.assertIn("did not respond", str(ctx.exception))
         self.assertIn("5s", str(ctx.exception))
 
     @patch("testing.agent_wrappers.requests.post")
-    def test_connection_error_raises_clear_error(self, mock_post):
+    def test_connection_error_raises_transient_error(self, mock_post):
         mock_post.side_effect = requests.exceptions.ConnectionError("refused")
         agent = RemoteHTTPAgentWrapper(endpoint_url="http://agent.internal/query")
 
-        with self.assertRaises(RuntimeError) as ctx:
+        with self.assertRaises(TransientAgentError) as ctx:
             agent.query("Hello")
         self.assertIn("Could not connect", str(ctx.exception))
 
+    def _http_error_response(self, status):
+        """A response whose raise_for_status() raises a real HTTPError
+        with .response attached (as requests itself does) - status is
+        what query()'s except-block inspects to decide transient vs not."""
+        resp = _mock_response(status=status)
+        error = requests.exceptions.HTTPError(f"{status} Error", response=resp)
+        resp.raise_for_status.side_effect = error
+        return resp
+
     @patch("testing.agent_wrappers.requests.post")
-    def test_http_error_status_raises_clear_error(self, mock_post):
-        resp = _mock_response(status=500)
-        resp.raise_for_status.side_effect = requests.exceptions.HTTPError("500 Server Error")
-        mock_post.return_value = resp
+    def test_5xx_status_raises_transient_error(self, mock_post):
+        mock_post.return_value = self._http_error_response(500)
+        agent = RemoteHTTPAgentWrapper(endpoint_url="http://agent.internal/query")
+
+        with self.assertRaises(TransientAgentError) as ctx:
+            agent.query("Hello")
+        self.assertIn("returned an error", str(ctx.exception))
+
+    @patch("testing.agent_wrappers.requests.post")
+    def test_429_status_raises_transient_error(self, mock_post):
+        mock_post.return_value = self._http_error_response(429)
+        agent = RemoteHTTPAgentWrapper(endpoint_url="http://agent.internal/query")
+
+        with self.assertRaises(TransientAgentError):
+            agent.query("Hello")
+
+    @patch("testing.agent_wrappers.requests.post")
+    def test_4xx_status_raises_plain_runtime_error(self, mock_post):
+        mock_post.return_value = self._http_error_response(400)
         agent = RemoteHTTPAgentWrapper(endpoint_url="http://agent.internal/query")
 
         with self.assertRaises(RuntimeError) as ctx:
             agent.query("Hello")
+        self.assertNotIsInstance(ctx.exception, TransientAgentError)
         self.assertIn("returned an error", str(ctx.exception))
 
     @patch("testing.agent_wrappers.requests.post")

@@ -12,9 +12,23 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+class TransientAgentError(Exception):
+    """Raised by a wrapper's query() for a failure worth retrying - a
+    network blip, rate limit, or 5xx from the agent's backend - as
+    opposed to a genuine bad-response/config error (bad URL, missing
+    field, invalid model name) that would fail identically on retry.
+
+    testing/agent_scanner.py retries only on this type (via
+    core/retry.py) and, if every attempt still raises, records the
+    threat as a technical error rather than counting it toward the
+    vulnerability score - a query() that never got a real answer from
+    the agent proves nothing about whether it resisted the attack.
+    """
+
+
 class BaseAgentWrapper(ABC):
     """Base class for all agent wrappers"""
-    
+
     @abstractmethod
     def query(self, prompt):
         """Query the agent and return response"""
@@ -33,7 +47,14 @@ class OllamaWrapper(BaseAgentWrapper):
         self.host = host
     
     def query(self, prompt: str) -> str:
-        """Query Ollama model"""
+        """Query Ollama model.
+
+        Raises TransientAgentError on timeout/connection failure/5xx
+        (worth retrying) or RuntimeError on anything else (a 4xx or a
+        malformed response won't fix itself on retry) - never returns an
+        error description as if it were the model's actual answer, which
+        would silently get scored as "agent resisted the attack".
+        """
         import requests
         try:
             response = requests.post(
@@ -45,17 +66,23 @@ class OllamaWrapper(BaseAgentWrapper):
                 },
                 timeout=60  # 60 secondes timeout
             )
-            if response.status_code == 200:
-                result = response.json()
-                return result.get('response', 'No response')
-            else:
-                return f"Ollama error: {response.status_code}"
         except requests.exceptions.Timeout:
-            return "Ollama timeout - model too slow"
+            raise TransientAgentError("Ollama timeout - model too slow")
         except requests.exceptions.ConnectionError:
-            return "Ollama not running - start with: ollama serve"
-        except Exception as e:
-            return f"Error: {str(e)}"
+            raise TransientAgentError("Ollama not running - start with: ollama serve")
+
+        if response.status_code == 200:
+            try:
+                result = response.json()
+            except ValueError:
+                raise RuntimeError("Ollama returned a non-JSON response")
+            if 'response' not in result:
+                raise RuntimeError(f"Ollama response missing 'response' field: {result}")
+            return result['response']
+        elif response.status_code == 429 or response.status_code >= 500:
+            raise TransientAgentError(f"Ollama error: {response.status_code}")
+        else:
+            raise RuntimeError(f"Ollama error: {response.status_code}")
 
 
 # ============================================
@@ -88,19 +115,26 @@ class ClaudeAgentWrapper(BaseAgentWrapper):
     
     def __init__(self, model="claude-3-5-sonnet-20241022"):
         try:
-            from anthropic import Anthropic
+            from anthropic import Anthropic, APIConnectionError, InternalServerError, RateLimitError
             self.client = Anthropic()
             self.model = model
+            self._transient_exceptions = (APIConnectionError, InternalServerError, RateLimitError)
         except ImportError:
             raise ImportError("Install Anthropic: pip install anthropic")
-    
+
     def query(self, prompt):
-        """Query Claude API"""
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=500,
-            messages=[{"role": "user", "content": prompt}]
-        )
+        """Query Claude API. Raises TransientAgentError for a connection
+        failure/rate limit/5xx (worth retrying); anything else (e.g. a
+        bad request/auth error) propagates as-is - retrying an invalid
+        API key wastes 3x the wait for the same failure."""
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=500,
+                messages=[{"role": "user", "content": prompt}]
+            )
+        except self._transient_exceptions as e:
+            raise TransientAgentError(str(e)) from e
         return response.content[0].text
 
 
@@ -115,7 +149,8 @@ class OpenAIAgentWrapper(BaseAgentWrapper):
         try:
             import openai
             import os
-            
+            from openai import APIConnectionError, InternalServerError, RateLimitError
+
             # Get API key from environment
             api_key = os.getenv('OPENAI_API_KEY')
             if not api_key:
@@ -123,20 +158,27 @@ class OpenAIAgentWrapper(BaseAgentWrapper):
                     "OPENAI_API_KEY not found. "
                     "Set it with: $env:OPENAI_API_KEY='sk-...'"
                 )
-            
+
             self.client = openai.OpenAI(api_key=api_key)
             self.model = model
+            self._transient_exceptions = (APIConnectionError, InternalServerError, RateLimitError)
         except ImportError:
             raise ImportError("Install OpenAI: pip install openai")
-    
+
     def query(self, prompt):
-        """Query OpenAI API"""
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.7
-        )
+        """Query OpenAI API. Raises TransientAgentError for a connection
+        failure/rate limit/5xx (worth retrying); anything else (e.g. a
+        bad request/auth error) propagates as-is - retrying an invalid
+        API key wastes 3x the wait for the same failure."""
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=500,
+                temperature=0.7
+            )
+        except self._transient_exceptions as e:
+            raise TransientAgentError(str(e)) from e
         return response.choices[0].message.content
 
 
@@ -323,15 +365,24 @@ class RemoteHTTPAgentWrapper(BaseAgentWrapper):
             )
             response.raise_for_status()
         except requests.exceptions.Timeout:
-            raise RuntimeError(
+            raise TransientAgentError(
                 f"Remote agent at {self.endpoint_url} did not respond "
                 f"within {self.timeout}s"
             )
         except requests.exceptions.ConnectionError as e:
-            raise RuntimeError(
+            raise TransientAgentError(
                 f"Could not connect to remote agent at {self.endpoint_url}: {e}"
             )
         except requests.exceptions.HTTPError as e:
+            # 429/5xx are worth retrying (rate limit, transient backend
+            # failure) - a 4xx means the request itself is wrong
+            # (bad payload, auth, wrong URL) and will fail identically
+            # on retry.
+            status = e.response.status_code if e.response is not None else None
+            if status == 429 or (status is not None and status >= 500):
+                raise TransientAgentError(
+                    f"Remote agent at {self.endpoint_url} returned an error: {e}"
+                )
             raise RuntimeError(
                 f"Remote agent at {self.endpoint_url} returned an error: {e}"
             )

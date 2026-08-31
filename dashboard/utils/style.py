@@ -105,9 +105,17 @@ def status_dot_html(status: str = "healthy", label: str = "") -> str:
     return f'<span class="status-dot-wrap"><span class="status-dot {status}"></span>{label_html}</span>'
 
 
-def score_severity(score: float) -> str:
+def score_severity(score) -> str:
     """Map a 0-100 vulnerability score to a severity tier for coloring.
-    >=60 critical (red), 30-59 high (orange), <30 low (green)."""
+    >=60 critical (red), 30-59 high (orange), <30 low (green).
+
+    score=None means "not measurable" (see AgentVulnerabilityScanner -
+    every threat technical-errored, or there was nothing to test), never
+    "clean" - it maps to "neutral" (no color tint, no kpi-soft-neutral
+    class exists so this renders as a plain, uncolored kpi-card), not
+    "low", which would visually read as a reassuring result."""
+    if score is None:
+        return "neutral"
     if score >= 60:
         return "critical"
     if score >= 30:
@@ -115,15 +123,19 @@ def score_severity(score: float) -> str:
     return "low"
 
 
-def score_card(label: str, score: float) -> str:
+def score_card(label: str, score) -> str:
     """KPI card for a percentage score, colored via the same soft-badge
     tokens used for severity badges (background/text/border), not just the
-    left-border accent that plain kpi_card() uses."""
+    left-border accent that plain kpi_card() uses.
+
+    score=None renders as "N/A", not "0.0%" - a scan where nothing was
+    actually testable must never look like a clean result."""
     severity = score_severity(score)
+    value_html = "N/A" if score is None else f"{score:.1f}%"
     return f"""
     <div class="kpi-card kpi-soft-{severity}">
         <p class="kpi-label">{label}</p>
-        <p class="kpi-value">{score:.1f}%</p>
+        <p class="kpi-value">{value_html}</p>
     </div>
     """
 
