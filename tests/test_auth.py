@@ -13,7 +13,7 @@ import uuid
 from fastapi.testclient import TestClient
 
 from api.app import app
-from core.auth import deactivate_key, generate_key, verify_key
+from core.auth import deactivate_key, generate_key, list_keys, verify_key
 
 AUTH_DB_PATH = "data/auth.db"
 MONITORING_DB_PATH = "data/monitoring.db"
@@ -94,6 +94,35 @@ class TestCoreAuth(unittest.TestCase):
     def test_deactivate_unknown_label_returns_false(self):
         self.assertFalse(deactivate_key("nobody", db_path=self.db_path))
 
+    def test_key_without_expiry_stays_valid(self):
+        """No expires_in_days given - the pre-existing default, must stay
+        unaffected by adding the parameter (see generate_key's docstring)."""
+        raw_key = generate_key("no-expiry", db_path=self.db_path)
+        self.assertEqual(verify_key(raw_key, db_path=self.db_path), "no-expiry")
+
+    def test_key_with_future_expiry_is_valid(self):
+        raw_key = generate_key("future", db_path=self.db_path, expires_in_days=30)
+        self.assertEqual(verify_key(raw_key, db_path=self.db_path), "future")
+
+    def test_expired_key_is_rejected_like_a_deactivated_one(self):
+        raw_key = generate_key("already-expired", db_path=self.db_path, expires_in_days=-1)
+        self.assertIsNone(verify_key(raw_key, db_path=self.db_path))
+
+    def test_list_keys_reports_expired_status_distinctly_from_inactive(self):
+        generate_key("lk-no-expiry", db_path=self.db_path)
+        generate_key("lk-expired", db_path=self.db_path, expires_in_days=-1)
+        generate_key("lk-deactivated", db_path=self.db_path)
+        deactivate_key("lk-deactivated", db_path=self.db_path)
+
+        by_label = {row["label"]: row for row in list_keys(db_path=self.db_path)}
+        self.assertEqual(by_label["lk-no-expiry"]["status"], "active")
+        self.assertEqual(by_label["lk-expired"]["status"], "expired")
+        self.assertEqual(by_label["lk-deactivated"]["status"], "inactive")
+        # Never the raw key or anything that could reconstruct it
+        for row in by_label.values():
+            self.assertNotIn("key_hash", row)
+            self.assertNotIn("key", row)
+
 
 class TestMonitoringEndpointsRequireApiKey(unittest.TestCase):
     """api/app.py's require_api_key dependency has no db_path override
@@ -158,6 +187,21 @@ class TestMonitoringEndpointsRequireApiKey(unittest.TestCase):
                 with self.subTest(path=path):
                     response = self._call(method, path, headers={"X-API-Key": raw_key})
                     self.assertEqual(response.status_code, 401)
+        finally:
+            conn = sqlite3.connect(AUTH_DB_PATH)
+            conn.execute("DELETE FROM api_keys WHERE label = ?", (label,))
+            conn.commit()
+            conn.close()
+
+    def test_expired_key_returns_401_on_every_endpoint(self):
+        label = f"expired-{uuid.uuid4().hex[:8]}"
+        raw_key = generate_key(label, db_path=AUTH_DB_PATH, expires_in_days=-1)
+        try:
+            for method, path in self.ENDPOINTS:
+                with self.subTest(path=path):
+                    response = self._call(method, path, headers={"X-API-Key": raw_key})
+                    self.assertEqual(response.status_code, 401)
+                    self.assertEqual(response.json(), {"detail": "Invalid or missing API key"})
         finally:
             conn = sqlite3.connect(AUTH_DB_PATH)
             conn.execute("DELETE FROM api_keys WHERE label = ?", (label,))

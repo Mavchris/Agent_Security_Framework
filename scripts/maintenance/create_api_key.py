@@ -9,11 +9,17 @@ server by an administrator, is the only way to get one.
 
 Usage:
     python scripts/maintenance/create_api_key.py <label>
+    python scripts/maintenance/create_api_key.py <label> --expires-in-days 90
+
+Without --expires-in-days, the key never expires - the same behavior as
+before this flag existed, so existing usage of this script (and every
+already-issued key) is unaffected; expiration is opt-in per key.
 
 The generated key is printed once, in full, and never stored or shown
 again - only its SHA-256 hash is persisted. Copy it immediately.
 """
 
+import argparse
 import sys
 
 sys.path.insert(0, '.')
@@ -22,18 +28,25 @@ from core.auth import generate_key
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python scripts/maintenance/create_api_key.py <label>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Create a named API key (see core/auth.py, SECURITY.md)."
+    )
+    parser.add_argument('label', help="Unique label to identify this key")
+    parser.add_argument(
+        '--expires-in-days', type=int, default=None, metavar='N',
+        help="Key stops working N days from now. Omit for no expiration (default).",
+    )
+    args = parser.parse_args()
 
-    label = sys.argv[1]
     try:
-        raw_key = generate_key(label)
+        raw_key = generate_key(args.label, expires_in_days=args.expires_in_days)
     except ValueError as e:
         print(f"Error: {e}")
         sys.exit(1)
 
-    print(f"Created API key for label {label!r}.")
+    print(f"Created API key for label {args.label!r}.")
+    if args.expires_in_days is not None:
+        print(f"Expires in {args.expires_in_days} day(s).")
     print()
     print(raw_key)
     print()
