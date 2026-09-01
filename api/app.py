@@ -228,16 +228,12 @@ async def get_stats():
 
 @app.get("/threat-types")
 async def get_threat_types():
-    """Get list of available threat types"""
+    """Get list of available threat types - the classifier's own taxonomy
+    (core.classifier.ImprovedThreatClassifier.categories), not a separately
+    maintained list, so this can't drift from what /stats.by_threat_type
+    actually reports."""
     return {
-        "threat_types": [
-            "prompt_injection",
-            "tool_abuse",
-            "data_leakage",
-            "model_extraction",
-            "behavioral_anomaly",
-            "other"
-        ]
+        "threat_types": _classifier.categories
     }
 
 
@@ -267,6 +263,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from monitoring.agent_monitor import AgentMonitor
 from core.auth import verify_key
+from core.classifier import ImprovedThreatClassifier
+
+_classifier = ImprovedThreatClassifier()
 
 # One AgentMonitor per agent name, so monitoring multiple agents at once
 # doesn't overwrite each other's in-memory logs/alerts (used to be a single

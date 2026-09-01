@@ -228,6 +228,41 @@ class TestMultiAgentMonitoring(unittest.TestCase):
         self.assertEqual(stats_b["total_requests_logged"], 1)
 
 
+class TestThreatTypesTaxonomyConsistency(unittest.TestCase):
+    """GET /threat-types used to be a separately maintained hardcoded list
+    that had silently drifted from the classifier's real taxonomy (it still
+    listed 'tool_abuse'/'data_leakage'/'behavioral_anomaly', categories that
+    no longer exist post the 2026-08 OWASP-aligned revision - see
+    core/classifier.py). It's now derived directly from
+    ImprovedThreatClassifier.categories, so this test guards against that
+    drift ever happening again silently: every category /stats actually
+    reports must be a subset of what /threat-types advertises."""
+
+    def setUp(self):
+        self.client = TestClient(app)
+
+    def test_threat_types_matches_classifier_categories(self):
+        from core.classifier import ImprovedThreatClassifier
+
+        response = self.client.get("/threat-types")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["threat_types"],
+            ImprovedThreatClassifier().categories,
+        )
+
+    def test_stats_categories_are_subset_of_threat_types(self):
+        threat_types = set(self.client.get("/threat-types").json()["threat_types"])
+        by_threat_type = self.client.get("/stats").json()["by_threat_type"]
+        observed_categories = set(by_threat_type.keys())
+
+        self.assertTrue(
+            observed_categories.issubset(threat_types),
+            f"/stats reports categories not advertised by /threat-types: "
+            f"{observed_categories - threat_types}",
+        )
+
+
 class TestCORSPolicy(unittest.TestCase):
     """No permissive allow_origins=['*'] - restrictive by default (see SECURITY.md)"""
 

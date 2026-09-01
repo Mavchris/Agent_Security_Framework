@@ -136,6 +136,14 @@ class ImprovedThreatClassifier:
 
         return str(threat_input).lower()
 
+    @property
+    def categories(self):
+        """All possible classify() outputs: every keyword category plus the
+        'other' fallback used when nothing matches. Single source of truth
+        for the taxonomy - anything listing threat types (e.g. GET
+        /threat-types) should read this instead of duplicating the list."""
+        return list(self.keywords.keys()) + ['other']
+
     def classify(self, threat_input):
         """Classify with improved keywords"""
 
