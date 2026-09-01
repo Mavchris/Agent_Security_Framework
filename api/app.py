@@ -264,6 +264,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from monitoring.agent_monitor import AgentMonitor
 from core.auth import verify_key
 from core.classifier import ImprovedThreatClassifier
+from core.rate_limit import check_rate_limit
 
 _classifier = ImprovedThreatClassifier()
 
@@ -301,6 +302,19 @@ def require_api_key(api_key: Optional[str] = Depends(_api_key_header)) -> str:
     return label
 
 
+def rate_limited(category: str):
+    """Returns a FastAPI dependency that authenticates via require_api_key
+    (so an absent/invalid/expired key is rejected with 401 before ever
+    reaching the limiter - it never counts toward any label's quota) and
+    then enforces the per-key, per-category limit from core/rate_limit.py.
+    See SECURITY.md for the category thresholds and why log_request is
+    unlimited by default."""
+    def _dependency(key_label: str = Depends(require_api_key)) -> str:
+        check_rate_limit(key_label, category)
+        return key_label
+    return _dependency
+
+
 class LogRequestBody(BaseModel):
     """Request body for POST /monitoring/log-request"""
     agent_name: str
@@ -311,7 +325,7 @@ class LogRequestBody(BaseModel):
 
 
 @app.post("/monitoring/log-request")
-async def log_request(body: LogRequestBody, key_label: str = Depends(require_api_key)):
+async def log_request(body: LogRequestBody, key_label: str = Depends(rate_limited("log_request"))):
     """
     Log a request for monitoring. Requires a valid X-API-Key header.
 
@@ -346,7 +360,7 @@ async def log_request(body: LogRequestBody, key_label: str = Depends(require_api
 
 
 @app.get("/monitoring/stats/{agent_name}")
-async def get_monitoring_stats(agent_name: str, _: str = Depends(require_api_key)):
+async def get_monitoring_stats(agent_name: str, _: str = Depends(rate_limited("read"))):
     """
     Get monitoring statistics for an agent. Requires a valid X-API-Key header.
 
@@ -368,7 +382,7 @@ async def get_monitoring_stats(agent_name: str, _: str = Depends(require_api_key
 async def get_monitoring_alerts(
     agent_name: str,
     limit: int = Query(10, ge=1, le=100),
-    _: str = Depends(require_api_key),
+    _: str = Depends(rate_limited("read")),
 ):
     """
     Get recent alerts for an agent. Requires a valid X-API-Key header.
@@ -389,7 +403,7 @@ async def get_monitoring_alerts(
 
 
 @app.get("/monitoring/health/{agent_name}")
-async def get_agent_health(agent_name: str, _: str = Depends(require_api_key)):
+async def get_agent_health(agent_name: str, _: str = Depends(rate_limited("read"))):
     """
     Get health status of monitored agent. Requires a valid X-API-Key header.
 
@@ -445,7 +459,7 @@ class RegisterAgentBody(BaseModel):
 async def get_agents(
     environment: Optional[str] = Query(None, description="Filter by environment"),
     active_only: bool = Query(True, description="Exclude deactivated agents"),
-    _: str = Depends(require_api_key),
+    _: str = Depends(rate_limited("read")),
 ):
     """
     List registered agents. Requires a valid X-API-Key header.
@@ -456,7 +470,7 @@ async def get_agents(
 
 
 @app.post("/agents")
-async def create_agent(body: RegisterAgentBody, key_label: str = Depends(require_api_key)):
+async def create_agent(body: RegisterAgentBody, key_label: str = Depends(rate_limited("write"))):
     """
     Register a new agent. Requires a valid X-API-Key header.
 
@@ -474,7 +488,7 @@ async def create_agent(body: RegisterAgentBody, key_label: str = Depends(require
 
 
 @app.get("/agents/{agent_id}")
-async def get_agent(agent_id: int, _: str = Depends(require_api_key)):
+async def get_agent(agent_id: int, _: str = Depends(rate_limited("read"))):
     """
     Get a single registered agent by id. Requires a valid X-API-Key
     header. Returns a deactivated agent too (check its is_active field) -
@@ -489,7 +503,7 @@ async def get_agent(agent_id: int, _: str = Depends(require_api_key)):
 
 
 @app.post("/agents/{agent_id}/deactivate")
-async def deactivate_agent_endpoint(agent_id: int, key_label: str = Depends(require_api_key)):
+async def deactivate_agent_endpoint(agent_id: int, key_label: str = Depends(rate_limited("write"))):
     """
     Deactivate a registered agent (soft-delete - the row and its
     monitoring/scan history are kept). Requires a valid X-API-Key header.
@@ -549,7 +563,7 @@ def _run_scan_background(scan_id: int, agent, limit: Optional[int]):
 async def trigger_scan(
     body: ScanRequestBody,
     background_tasks: BackgroundTasks,
-    key_label: str = Depends(require_api_key),
+    key_label: str = Depends(rate_limited("scan")),
 ):
     """
     Start an asynchronous vulnerability scan. Requires a valid X-API-Key
@@ -594,7 +608,7 @@ async def trigger_scan(
 
 
 @app.get("/scan/results/{scan_id}")
-async def get_scan_results(scan_id: int, _: str = Depends(require_api_key)):
+async def get_scan_results(scan_id: int, _: str = Depends(rate_limited("read"))):
     """
     Get a scan's current status, or its full result once completed.
     Requires a valid X-API-Key header.
