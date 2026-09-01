@@ -13,10 +13,10 @@ Derived from the [Known Limitations](README.md#known-limitations) audit:
 
 ## Named API key follow-ups
 
-Identified while shipping named API keys this session (see [SECURITY.md](SECURITY.md#authentication-named-api-keys)) but deliberately not addressed as part of that work:
+Identified while shipping named API keys (see [SECURITY.md](SECURITY.md#authentication-named-api-keys)) but not addressed as part of that work at the time - both since done, in a later session:
 
-1. Rate limiting on API keys — nothing currently stops a valid (or repeatedly-guessed) key from being hammered against `/monitoring/*`.
-2. Automatic expiration of API keys — keys are active until manually deactivated via `scripts/maintenance/deactivate_api_key.py`; there's no TTL or forced rotation.
+1. ~~Rate limiting on API keys.~~ **Done**: per-key (not per-IP - see [SECURITY.md](SECURITY.md#rate-limiting) for why per-IP wasn't judged necessary against key brute-forcing given 256-bit key entropy), in-memory fixed-window counters in `core/rate_limit.py`, applied via a `rate_limited(category)` FastAPI dependency in `api/app.py`. Configurable thresholds per endpoint category (`scan`/`read`/`write`/`log_request`, the last unlimited by default) via `RATE_LIMIT_*` environment variables.
+2. ~~Automatic expiration of API keys.~~ **Done**: `api_keys.expires_at` (nullable, `NULL` = never expires, backward compatible with every key issued before this column existed), settable via `create_api_key.py --expires-in-days N`, checked by `verify_key`. `scripts/maintenance/list_api_keys.py` added alongside it (previously no way to see what keys exist without querying `data/auth.db` directly).
 
 ## Documentation debt
 

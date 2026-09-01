@@ -22,7 +22,7 @@ git push origin feature/my-feature
 
 Open a pull request against `main` with a short description of what changed and why.
 
-If your change touches agent registration/scanning, production monitoring, or the 4 `/monitoring/*` API endpoints, you'll need a named API key to exercise it locally: `python scripts/maintenance/create_api_key.py my-label` (see [SECURITY.md](SECURITY.md#authentication-named-api-keys)). The test suite doesn't need this — it creates and cleans up its own throwaway keys.
+If your change touches agent registration/scanning, production monitoring, or the 4 `/monitoring/*` API endpoints, you'll need a named API key to exercise it locally: `python scripts/maintenance/create_api_key.py my-label` (add `--expires-in-days N` for a key that expires automatically; `python scripts/maintenance/list_api_keys.py` shows every key's label/status without ever printing the key itself - see [SECURITY.md](SECURITY.md#authentication-named-api-keys)). The test suite doesn't need this — it creates and cleans up its own throwaway keys.
 
 ## Code style
 

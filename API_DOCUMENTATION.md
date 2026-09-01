@@ -140,17 +140,21 @@ curl http://localhost:8000/agents -H "X-API-Key: <your key>"
 
 A key is a label plus a high-entropy random token, created by an administrator directly on the server - there is no endpoint to create one (that would let anyone mint their own):
 ```bash
-python scripts/maintenance/create_api_key.py my-label     # prints the raw key once
-python scripts/maintenance/deactivate_api_key.py my-label # revokes it
+python scripts/maintenance/create_api_key.py my-label                        # never expires
+python scripts/maintenance/create_api_key.py my-label --expires-in-days 90   # stops working automatically after 90 days
+python scripts/maintenance/deactivate_api_key.py my-label                    # revokes it immediately
+python scripts/maintenance/list_api_keys.py                                  # label, created, last used, status - never the key itself
 ```
 
-Missing, invalid, and deactivated keys all return the same generic response, so a client can't distinguish "wrong key" from "revoked key" from "no key at all":
+Missing, invalid, deactivated, and expired keys all return the same generic response, so a client can't distinguish "wrong key" from "revoked key" from "expired key" from "no key at all":
 ```json
 {"detail": "Invalid or missing API key"}
 ```
-with HTTP `401`.
+with HTTP `401`. (The server-side log line does distinguish them - see [SECURITY.md](SECURITY.md#key-expiration).)
 
-**Not implemented**: OAuth, bearer tokens beyond the raw key itself, per-key rate limiting, key expiry, or RBAC (every valid key can do everything the endpoints above allow - there's no per-key permission scoping). See [SECURITY.md](SECURITY.md#authentication-named-api-keys) and [ROADMAP.md](ROADMAP.md) for what's tracked as follow-up work.
+Every one of these endpoints is also rate-limited **per key label** - see [Rate Limiting](#rate-limiting) below for the thresholds and the `429` response shape.
+
+**Not implemented**: OAuth, bearer tokens beyond the raw key itself, or RBAC (every valid key can do everything the endpoints above allow - there's no per-key permission scoping). See [SECURITY.md](SECURITY.md#authentication-named-api-keys) and [ROADMAP.md](ROADMAP.md) for what's tracked as follow-up work.
 
 ### Security Notes
 
@@ -578,7 +582,7 @@ Requires a valid `X-API-Key` header (see [Authentication](#authentication)) - wi
 }
 ```
 
-**Status Codes:** `200` Logged · `401` Missing/invalid/inactive API key · `422` Missing/invalid body field (see [Error Handling](#error-handling))
+**Status Codes:** `200` Logged · `401` Missing/invalid/inactive/expired API key · `422` Missing/invalid body field (see [Error Handling](#error-handling)) · `429` Rate limit exceeded (`log_request` category is **unlimited by default** - see [Rate Limiting](#rate-limiting) - so this only happens if an operator has explicitly set `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS`)
 
 **Examples:**
 
@@ -663,7 +667,7 @@ Requires a valid `X-API-Key` header.
 
 (`by_threat_type` counts matched *threat catalog entries*, not distinct requests - a single logged prompt/response pair can match many entries at once, as in the example above.)
 
-**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive/expired API key · `429` Rate limit exceeded for this key (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 
@@ -744,7 +748,7 @@ Requires a valid `X-API-Key` header.
 }
 ```
 
-**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive/expired API key · `429` Rate limit exceeded for this key (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 
@@ -880,7 +884,7 @@ Same agent after a request that triggered an alert (see [Get Agent Alerts](#8-ge
 
 There is no `uptime_seconds`, `last_heartbeat`, `response_time_ms`, `error_rate`, `cpu_usage`, or `memory_usage_mb` field. `alert_rate` is a formatted **string** (`"0.0%"`), not a number.
 
-**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive/expired API key · `429` Rate limit exceeded for this key (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 
@@ -944,7 +948,7 @@ GET /agents
 }
 ```
 
-**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive/expired API key · `429` Rate limit exceeded for this key (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 ```bash
@@ -993,7 +997,7 @@ POST /agents
 }
 ```
 
-**Status Codes:** `200` Registered · `400` Duplicate `name`, or unknown `agent_type` · `401` Missing/invalid/inactive API key
+**Status Codes:** `200` Registered · `400` Duplicate `name`, or unknown `agent_type` · `401` Missing/invalid/inactive/expired API key · `429` Rate limit exceeded (`write` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 ```bash
@@ -1014,7 +1018,7 @@ GET /agents/{agent_id}
 
 Returns a deactivated agent too (check `is_active`) - same behavior as `core.agent_registry.get_agent_config()`.
 
-**Status Codes:** `200` Success · `401` Missing/invalid/inactive API key · `404` No agent with that id
+**Status Codes:** `200` Success · `401` Missing/invalid/inactive/expired API key · `404` No agent with that id · `429` Rate limit exceeded for this key (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Example:**
 ```bash
@@ -1037,7 +1041,7 @@ Soft-delete - the row (and its monitoring/scan history) is kept, `is_active` bec
 {"id": 103, "status": "deactivated"}
 ```
 
-**Status Codes:** `200` Deactivated · `401` Missing/invalid/inactive API key · `404` No agent with that id
+**Status Codes:** `200` Deactivated · `401` Missing/invalid/inactive/expired API key · `404` No agent with that id · `429` Rate limit exceeded (`write` category - see [Rate Limiting](#rate-limiting))
 
 **Example:**
 ```bash
@@ -1083,7 +1087,7 @@ Quick type:
 {"id": 34, "status": "pending", "agent_name": "docs-example-agent"}
 ```
 
-**Status Codes:** `200` Scan started · `400` Neither/both of `agent_id`/`agent_type` given, or unknown `agent_type` · `401` Missing/invalid/inactive API key · `404` `agent_id` doesn't exist or is deactivated
+**Status Codes:** `200` Scan started · `400` Neither/both of `agent_id`/`agent_type` given, or unknown `agent_type` · `401` Missing/invalid/inactive/expired API key · `404` `agent_id` doesn't exist or is deactivated · `429` Rate limit exceeded (`scan` category, default 10/hour - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 ```bash
@@ -1206,7 +1210,7 @@ else:
     print(f"Gate failed: vulnerability score {score:.1f}%.")
 ```
 
-**Status Codes:** `200` Success (check `status` for progress) · `401` Missing/invalid/inactive API key · `404` No scan with that id
+**Status Codes:** `200` Success (check `status` for progress) · `401` Missing/invalid/inactive/expired API key · `404` No scan with that id · `429` Rate limit exceeded (`read` category - see [Rate Limiting](#rate-limiting))
 
 **Examples:**
 ```bash
@@ -1266,6 +1270,20 @@ Every endpoint with a Pydantic request body — `POST /monitoring/log-request`, 
 Status: 422
 ```
 
+### Rate limit exceeded (429)
+
+Every `X-API-Key`-protected endpoint enforces a per-key limit (see [Rate Limiting](#rate-limiting) for the thresholds by category). A request over the limit gets:
+
+```json
+{"detail": "Rate limit exceeded for this API key. Retry after 37 second(s)."}
+```
+```
+Status: 429
+Retry-After: 37
+```
+
+The `Retry-After` header (seconds) is the authoritative value to wait on - don't parse it out of the `detail` string, which is meant for humans, not machines.
+
 ### Error Handling Example
 
 ```python
@@ -1292,19 +1310,40 @@ except requests.exceptions.ConnectionError:
 
 ### Current Status
 
-**No rate limiting.** Verified by reading `api/app.py` - no rate-limiting middleware or dependency (e.g. `slowapi`) is present anywhere in the codebase. Unlimited requests allowed, including repeated `X-API-Key` guesses against `/monitoring/*`, `/agents`, and `/scan`.
+Every endpoint that requires `X-API-Key` is rate-limited **per key label** (not per IP - consistent with attribution already being by-label everywhere else, see [Authentication](#authentication)). Implemented as a small in-memory fixed-window counter in `core/rate_limit.py`, deliberately without a new dependency or infrastructure (no `slowapi`, no Redis) - state is process-local and does not survive a restart. The public threat catalog (`/threats`, `/stats`, `/threat-types`, `/sources`, `/health`, `/`) has no key to rate-limit against and is unaffected.
 
-### Planned
+An invalid, unknown, or expired key is rejected with `401` **before** it ever reaches the limiter - a failed attempt never consumes, or is blocked by, any real key's quota.
 
-Tracked as a real, open item in [ROADMAP.md](ROADMAP.md#named-api-key-follow-ups) (not a version-numbered release): per-key rate limiting on the authenticated endpoints, since nothing currently stops a valid (or repeatedly-guessed) key from being hammered. No committed timeline.
+**Default thresholds** (all configurable via environment variables - restart the server after changing one):
+
+| Category | Endpoints | Default | Env vars |
+|---|---|---|---|
+| `scan` | `POST /scan` | 10 / hour | `RATE_LIMIT_SCAN_MAX_REQUESTS`, `RATE_LIMIT_SCAN_WINDOW_SECONDS` |
+| `read` | `GET /agents`, `GET /agents/{id}`, `GET /monitoring/stats/{agent}`, `GET /monitoring/alerts/{agent}`, `GET /monitoring/health/{agent}`, `GET /scan/results/{id}` | 120 / minute | `RATE_LIMIT_READ_MAX_REQUESTS`, `RATE_LIMIT_READ_WINDOW_SECONDS` |
+| `write` | `POST /agents`, `POST /agents/{id}/deactivate` | 20 / minute | `RATE_LIMIT_WRITE_MAX_REQUESTS`, `RATE_LIMIT_WRITE_WINDOW_SECONDS` |
+| `log_request` | `POST /monitoring/log-request` | **unlimited** (`0`) | `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS`, `RATE_LIMIT_LOG_REQUEST_WINDOW_SECONDS` |
+
+`log_request` is unlimited by default on purpose, not an oversight - it exists to receive potentially every interaction of a production agent, continuously; capping it by default would risk silently dropping monitoring data exactly when an agent's behavior spikes, which is the scenario monitoring exists to catch. Set `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS` to a positive number to cap it anyway. Any category's env var accepts `0` to disable that category's limit the same way.
+
+**Exceeding a limit** returns `429` with a `Retry-After` header (seconds) and a generic-but-useful body - no internal counts or thresholds are echoed back:
+```json
+{"detail": "Rate limit exceeded for this API key. Retry after 37 second(s)."}
+```
+```
+Status: 429
+Retry-After: 37
+```
+
+**Deliberately not covered**: per-IP limiting against key brute-forcing. A per-key limiter only engages once a request already carries a *valid* label, so it does nothing against repeated guesses of an unknown key - see [SECURITY.md](SECURITY.md#rate-limiting) for why that gap is judged acceptable (256-bit key entropy, not rate limiting, is what actually makes brute force infeasible here).
 
 ### Best Practices
 
-Even without rate limiting:
+Even with generous limits on most categories:
 - Don't make unnecessary requests
 - Cache responses when possible
 - Batch requests efficiently
 - Use pagination for large datasets
+- Handle `429` by honoring `Retry-After` rather than retrying immediately in a loop
 
 ### Caching Example
 
@@ -1657,7 +1696,8 @@ monitor_agents(['agent1', 'agent2', 'agent3'], api_key=API_KEY, interval_seconds
 - Real-time monitoring (`/monitoring/*`) with keyword-based threat detection against the live threat catalog.
 - Agent registry (`/agents/*`) backed by `core/agent_registry.py`, shared with the dashboard.
 - Asynchronous vulnerability scanning (`/scan`, `/scan/results/{id}`) against registered or one-off agents.
-- No rate limiting, no key expiry, no RBAC - see [Rate Limiting](#rate-limiting) and [ROADMAP.md](ROADMAP.md#named-api-key-follow-ups) for what's tracked as real follow-up work, not speculative version numbers.
+- Per-key rate limiting (see [Rate Limiting](#rate-limiting)) and optional key expiration (see [Authentication](#authentication)) implemented.
+- No RBAC - every valid key can do everything the gated endpoints allow. See [ROADMAP.md](ROADMAP.md#named-api-key-follow-ups) for what's tracked as real follow-up work, not speculative version numbers.
 
 ---
 

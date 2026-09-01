@@ -556,6 +556,10 @@ The threat catalog (Intelligence/Catalog dashboards, `GET /threats`, `/stats`, e
 ```bash
 # Create one (run on the server, by an administrator - prints the raw key once)
 python scripts/maintenance/create_api_key.py my-label
+python scripts/maintenance/create_api_key.py my-label --expires-in-days 90  # optional: auto-expires
+
+# See what keys exist (label, created, last used, status) - never the key itself
+python scripts/maintenance/list_api_keys.py
 
 # Revoke one later
 python scripts/maintenance/deactivate_api_key.py my-label
