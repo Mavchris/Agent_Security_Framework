@@ -11,6 +11,7 @@ Derived from the [Known Limitations](README.md#known-limitations) audit:
 3. Get the orchestrator running unattended over an extended period to build a real reliability track record.
 4. Review the 114 threats currently `threat_type=other, ai_relevant=true` (see README Known Limitations) as candidates for a future taxonomy refinement — they're confirmed AI-relevant but don't fit one of the 9 categories cleanly.
 5. `dashboard/pages/operations.py`'s `get_all_threats()` runs `SELECT * FROM threats` just to compute `len(threats)` for the "Scanning agent X against N threats" status message — loads every column of every row into Python memory for what should be a `SELECT COUNT(*)`. Found during the index/cache vague, deliberately not fixed there to keep that vague's scope to indexing and caching.
+6. `pipeline/process.py`'s `run_pipeline()` is a 260-line function mixing scrape/classify/store in one body (9 near-identical scraper blocks, then classification, then DB storage). Deliberately left unrefactored during the test-coverage vague that added `tests/test_pipeline.py`/`tests/test_orchestrator.py` (see that vague's checkpoint): refactoring and adding tests in the same pass is riskier than either alone, and this file has a real production incident history (the `UnicodeEncodeError` that crashed the orchestrator for 5 months). It's now covered by tests as-is with the 9 scrapers mocked, so a future refactor into separate scrape/classify/store functions has a safety net to refactor against - do it as its own, test-covered change, not bundled with unrelated work.
 
 ## Named API key follow-ups
 
@@ -27,13 +28,13 @@ Identified while adding the `/scan` and `/agents` endpoints this session — sam
 
 ## Future dedicated test vague
 
-Current coverage is 36% overall (see README [Known Limitations](README.md#known-limitations) for the full by-module breakdown) and concentrated in the scrapers/classifier/`POST /monitoring/log-request` paths that already have tests. The following are still largely or entirely untested and, in order of volume/criticality, are the priority targets for a future vague focused specifically on tests:
+Current coverage is **84% overall** (up from 36% - see README [Known Limitations](README.md#known-limitations) for the full by-module breakdown), after several vagues each closing out one gap from the list this section used to track:
 
-1. `pipeline/process.py` — the ETL core, 212 lines at 0% coverage.
-2. `api/app.py` — the public HTTP surface. `POST /monitoring/log-request` got a test in Vague 3c (30% coverage), but the `GET` endpoints (`/threats`, `/stats`, `/threat-types`, `/sources`, `/monitoring/stats/{agent}`, etc.) remain untested — a priority if the project is ever exposed beyond local use.
-3. `orchestrator.py` — the scheduling/run-loop entry point.
-4. `testing/` (`agent_scanner.py`, `agent_wrappers.py`, `cli.py`) — the agent-scanning toolchain itself.
-5. `dashboard/pages/*` — structurally excluded from standard coverage tooling (Streamlit multipage files are launched by Streamlit's own runner, not imported as a Python package), so this would need a different measurement approach (e.g. `AppTest`-based tests) rather than plain `pytest --cov`.
+1. ~~`pipeline/process.py` — the ETL core, 212 lines at 0% coverage.~~ **Done**: 88%. `run_pipeline()` (260 lines, 9 near-identical scrape blocks + classify + store inline) deliberately tested as-is rather than refactored in the same pass - see item 6 under Near-term priorities above for that refactor, tracked separately with this test file as its safety net.
+2. ~~`api/app.py` — the public HTTP surface.~~ **Done**: 93%, across the named-API-key, rate-limiting, and doc-audit vagues - every endpoint, not just `POST /monitoring/log-request`.
+3. ~~`orchestrator.py` — the scheduling/run-loop entry point.~~ **Done**: 87%. Also fixed along the way (found while writing these tests, not planned beforehand): `get_threat_count()` used to return `0` on a DB read failure (indistinguishable from a real empty table) instead of `None`; `run_weekly_pipeline()`'s 3 steps each swallowed their own exceptions with no way for the caller to know, so a run where all 3 failed still logged "✅ réussi" and updated no metric - both now surfaced correctly, and a resource leak (DB connections never closed on a query-error path in `get_threat_count`/`validate_data_quality`/`deduplicate_threats`/`generate_weekly_report`) found and fixed in the process.
+4. `testing/` (`agent_scanner.py` 83%, `agent_wrappers.py` 49%, `cli.py` 0%) — the agent-scanning toolchain itself. Partially done; `cli.py` still entirely untested.
+5. `dashboard/pages/*` — partially resolved: `AppTest`-based tests (`tests/test_operations_page.py`, `tests/test_main_page.py`) turned out to make `operations.py` (81%) and `main.py` (88%) visible to `pytest --cov` after all, contrary to what this item used to claim about Streamlit multipage files being structurally invisible to coverage tooling. `catalog.py` and `intelligence.py` still have no `AppTest`-based tests (only their `@st.cache_data` TTLs are tested, via an isolated subprocess that coverage.py can't see into - see `tests/test_dashboard_cache.py`) and so still don't appear in the report at all.
 
 ## Longer-term (see README for full list)
 

@@ -435,22 +435,25 @@ Documentation-vs-code audit findings, listed plainly rather than left implicit:
 - **Task scheduling**: implemented with the `schedule` library, not APScheduler.
 - **Automation track record**: the orchestrator has now completed a real run collecting genuine new data (2026-08-24: +297 threats, all 9 sources succeeded, 0 crashes) after fixing a `UnicodeEncodeError` that previously crashed `run_pipeline()` before any scraper could execute on Windows (the root cause of the earlier "0 new threats" runs). Still short on long-term unattended track record.
 - **Classification**: keyword-based by design (see roadmap below, this isn't hidden). The taxonomy was revised 2026-08-24 (9 categories aligned to OWASP LLM Top 10 2025 v2.0, plus a new `ai_relevant` boolean field) after a data-driven review of the 440/653 (67.4%) threats that were landing in `other` under the original 8-category taxonomy from the defended thesis report — see DATA_SOURCES.md for the corpus analysis. After reclassifying the full database, `other` is **405/653 (62.0%)** — a real but modest improvement, not the 35-45% initially guessed before verifying against the full corpus. Of those 405, 114 are `ai_relevant=true` (genuine AI-adjacent content that doesn't fit one of the 9 categories cleanly) and 291 are `ai_relevant=false` (confirmed off-topic: pre-2000 generic NVD CVEs, classic non-AI MITRE ATT&CK techniques, JVN/FSTEC/CNVD vendor bugs unrelated to AI). Roughly half the "other" rate is a structural property of broad-coverage sources like NVD/MITRE/JVN returning everything they have, not a taxonomy gap.
-- **Test coverage**: `pytest --cov=. --cov-report=term-missing` (45 tests: `tests/test_classifier.py`, `tests/test_scrapers.py`, `tests/test_api.py`, network mocked) reports **36% overall (2343 statements, 1508 missed)**. By module:
+- **Test coverage**: `pytest tests/ --cov=. --cov-report=term-missing` (212 tests, network mocked; 8 more `integration`-marked tests need real network/heavy optional deps and are excluded by default - run with `-m integration`) reports **84% overall (5056 statements, 816 missed)**, up from 36% earlier this session - most recently by closing out `pipeline/process.py` and `orchestrator.py`, the two modules where this session's most serious bugs actually lived (the `UnicodeEncodeError` that silently crashed `run_pipeline()` for 5 months; `run_weekly_pipeline()` swallowing every one of its 3 steps' failures and always logging "success" regardless). By module:
 
   | Module | Coverage | Notes |
   |---|---|---|
-  | `tests/` | 95–98% | the test suite itself |
-  | `scrapers/circl_vulnerability_lookup_scraper.py`, `cve_scraper.py` | 71–73% | mocked, exercised |
-  | `scrapers/arxiv_scraper.py`, `euvd_scraper.py` | 57–62% | mocked, exercised |
-  | `monitoring/agent_monitor.py` | 43% | exercised indirectly via the `test_api.py` `POST /monitoring/log-request` tests |
-  | `scrapers/github_scraper.py`, `opencti_scraper.py`, `retry.py` | 50–56% | mocked, exercised |
-  | `core/classifier.py` | 69% | mocked, exercised |
-  | `scrapers/censys_scraper.py` | 42% | mocked, exercised |
-  | `api/app.py` | 30% | `POST /monitoring/log-request` covered (Vague 3c); the `GET` endpoints (`/threats`, `/stats`, etc.) still have no tests |
-  | `scrapers/misp_scraper.py`, `mitre_scraper.py`, `nvd_scraper.py` | 0% | no tests written |
-  | `pipeline/process.py`, `orchestrator.py`, `testing/*.py`, `dashboard/main.py`, `dashboard/utils/style.py` | 0% | no tests written |
+  | `core/agent_registry.py`, `core/rate_limit.py`, `core/retry.py`, `monitoring/monitoring_store.py` | 100% | |
+  | `core/auth.py`, `core/translation.py` | 96–99% | |
+  | `api/app.py` | 93% | up from 30% across later vagues - every endpoint (not just `POST /monitoring/log-request`), rate limiting, and key expiry all covered now |
+  | `core/scan_store.py` | 90% | |
+  | `pipeline/process.py` | **88%** | up from 0% this vague - 9 scrapers mocked, dedup/classification/per-scraper-failure-isolation exercised; the 9 near-identical per-scraper `except` blocks aren't each individually exercised (redundant - they're structurally identical), and the `if __name__` guard isn't |
+  | `dashboard/main.py` | 88% | |
+  | `orchestrator.py` | **87%** | up from 0% this vague - every job's logic (`run_daily_pipeline`, `run_weekly_pipeline` and its 3 steps, metrics persistence, health status) tested in isolation; the real scheduling loop and CLI argparse block are excluded on purpose (real triggering already verified manually, see Known Limitations) |
+  | `dashboard/pages/operations.py` | 81% | via `streamlit.testing.v1.AppTest` (see below) |
+  | `core/classifier.py`, `testing/agent_scanner.py`, most scrapers | 50–83% | mocked, exercised at varying depth per source |
+  | `testing/agent_wrappers.py` | 49% | |
+  | `scrapers/mitre_scraper.py`, `nvd_scraper.py` | 17–21% | thin on tests, not 0% |
+  | `scrapers/misp_scraper.py`, `testing/cli.py` | 0% | no tests written (`misp_scraper.py` also isn't wired into the pipeline at all - see Known Limitations) |
+  | `scripts/maintenance/*.py` | mostly 0–32% | one-off/admin scripts, largely untested by design |
 
-  `testing/` and `monitoring/` appear in the report at their real coverage (added empty `__init__.py` package markers so `pytest --cov` auto-discovers them — previously they were silently omitted from the report entirely rather than shown as untested). `dashboard/pages/*.py` (`catalog.py`, `intelligence.py`, `operations.py` — 1,414 lines combined) cannot be made to appear even with an explicit `--cov=dashboard.pages` flag (`CoverageWarning: Module dashboard.pages was never imported`): Streamlit's multipage runner launches these files directly rather than importing them as a Python package, so they structurally escape standard coverage measurement — not a bug to fix, a tooling limitation to live with. See [ROADMAP.md](ROADMAP.md) for the priority order for a future dedicated test vague.
+  `testing/` and `monitoring/` appear in the report at their real coverage (empty `__init__.py` package markers let `pytest --cov` auto-discover them). `dashboard/pages/operations.py` **does** appear now (a claim in this table used to say no `dashboard/pages/*.py` file ever could) - `streamlit.testing.v1.AppTest`, used by `tests/test_operations_page.py`, actually imports and executes the page as real Python code, which coverage.py can trace; `dashboard/main.py` reaches the report the same way via `tests/test_main_page.py`. `catalog.py` and `intelligence.py` still don't appear - no `AppTest`-based test exists for either yet (their `@st.cache_data` TTLs are tested, but via an isolated subprocess - see `tests/test_dashboard_cache.py` - which coverage.py can't see into). See [ROADMAP.md](ROADMAP.md) for the priority order for a future dedicated test vague.
 
 ⚠️ **In Progress**
 - Documentation (README, guides, API docs)
@@ -719,7 +722,7 @@ A: Absolutely! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```
 Code Lines:          4000+
-Test Coverage:       13/13 passing ✅
+Test Coverage:       212 tests passing, 84% overall (see Status & Roadmap above)
 Documentation:       In progress
 Dashboards:          3 (production-ready)
 API Endpoints:       10+
