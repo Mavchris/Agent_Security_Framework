@@ -13,6 +13,12 @@ turns it on (PRAGMA foreign_keys) - the REFERENCES clause here is
 documentation of intent, not an enforced constraint.
 
 Idempotent: safe to re-run, does nothing if the table already exists.
+
+No index on agent_id/status: audited (see scripts/maintenance/add_query_indexes.py)
+and confirmed nothing anywhere in the codebase ever filters this table by
+either column - every real access goes through the primary key `id`. Indexing
+them added write overhead for zero read benefit, so they were dropped there
+and are not created here either.
 """
 
 import sqlite3
@@ -46,12 +52,6 @@ CREATE TABLE IF NOT EXISTS scan_results (
 )
 """
 
-CREATE_INDEXES_SQL = [
-    "CREATE INDEX IF NOT EXISTS idx_scan_results_agent_id ON scan_results(agent_id)",
-    "CREATE INDEX IF NOT EXISTS idx_scan_results_status ON scan_results(status)",
-]
-
-
 def main():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -62,8 +62,6 @@ def main():
     already_exists = cursor.fetchone() is not None
 
     cursor.execute(CREATE_TABLE_SQL)
-    for stmt in CREATE_INDEXES_SQL:
-        cursor.execute(stmt)
     conn.commit()
     conn.close()
 

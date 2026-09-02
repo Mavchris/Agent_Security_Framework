@@ -21,6 +21,14 @@ named API key (data/auth.db, core/auth.py) - present here so a brand-new
 database gets it in one shot; a database created before this feature
 existed needs scripts/maintenance/add_api_key_attribution_columns.py
 instead.
+
+No index on monitoring_alerts.log_id: audited (see
+scripts/maintenance/add_query_indexes.py) and confirmed nothing anywhere
+in the codebase ever filters this table by log_id - it's only ever
+written (via write_alert), never queried on. Indexing it added write
+overhead for zero read benefit, so it was dropped there and is not
+created here either. agent_name on both tables is kept - that one is a
+real, frequently-used filter (see monitoring/monitoring_store.py).
 """
 
 import sqlite3
@@ -65,7 +73,6 @@ CREATE TABLE IF NOT EXISTS monitoring_alerts (
 CREATE_INDEXES_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_monitoring_logs_agent_name ON monitoring_logs(agent_name)",
     "CREATE INDEX IF NOT EXISTS idx_monitoring_alerts_agent_name ON monitoring_alerts(agent_name)",
-    "CREATE INDEX IF NOT EXISTS idx_monitoring_alerts_log_id ON monitoring_alerts(log_id)",
 ]
 
 
