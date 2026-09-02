@@ -35,8 +35,12 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@st.cache_data(ttl=300)
 def get_all_threats():
-    """Get all threats"""
+    """Get all threats - cached 5min: re-run on every keystroke in the
+    search box otherwise (Streamlit reruns the whole script per
+    interaction); the underlying data only changes on an orchestrator
+    run, so 5 minutes is well within the real freshness need."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -47,8 +51,10 @@ def get_all_threats():
         st.error(f"Error loading threats: {e}")
         return []
 
+@st.cache_data(ttl=300)
 def get_filter_options():
-    """Get unique values for filters"""
+    """Get unique values for filters - cached 5min, same reasoning as
+    get_all_threats() above."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()

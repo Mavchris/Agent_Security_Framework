@@ -38,8 +38,12 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@st.cache_data(ttl=300)
 def get_threat_stats():
-    """Obtenir statistiques menaces"""
+    """Obtenir statistiques menaces - cached 5min: only changes on an
+    orchestrator run (daily/weekly), so a 5-minute window is well within
+    the real freshness need while cutting repeated full-table scans on
+    every tab/widget interaction (Streamlit reruns the whole script)."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -81,8 +85,10 @@ def get_orchestrator_metrics():
         pass
     return None
 
+@st.cache_data(ttl=300)
 def get_latest_threats(limit=10):
-    """Obtenir les menaces les plus récentes"""
+    """Obtenir les menaces les plus récentes - cached 5min, keyed by
+    limit (Streamlit hashes function arguments into the cache key)."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -98,8 +104,11 @@ def get_latest_threats(limit=10):
         st.error(f"Erreur: {e}")
         return []
 
+@st.cache_data(ttl=300)
 def get_threat_trends(days=30):
-    """Obtenir les tendances menaces"""
+    """Obtenir les tendances menaces - cached 5min, keyed by days (the
+    slider driving this genuinely varies it - each distinct value gets
+    its own cache entry, verified in tests/test_dashboard_cache.py)."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()

@@ -38,8 +38,16 @@ def get_db_connection():
     return conn
 
 
+@st.cache_data(ttl=30)
 def get_platform_stats():
-    """Real counts from data/threats.db, computed on every page load."""
+    """Real counts from data/threats.db. Cached for 30s - short on purpose:
+    this dashboard previously showed genuinely hardcoded numbers (fixed
+    earlier this session), so a long or unbounded TTL here specifically
+    risks recreating the same "looks live but isn't" symptom. The real
+    data only changes on an orchestrator run (daily/weekly) or a manual
+    agent registration, so even 30s is generous re: actual freshness
+    need - it's chosen for safety margin, not because the data changes
+    that fast."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()

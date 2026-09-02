@@ -56,8 +56,11 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@st.cache_data(ttl=300)
 def get_all_threats():
-    """Get all threats"""
+    """Get all threats - only used for len() below, but cached the same
+    5min as the other pages' copy of this query for consistency; the
+    underlying data only changes on an orchestrator run."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -67,6 +70,39 @@ def get_all_threats():
     except Exception as e:
         st.error(f"Error: {e}")
         return []
+
+
+@st.cache_data(ttl=60)
+def _cached_list_agents(environment=None, active_only=True):
+    """Thin cached wrapper around core.agent_registry.list_agents() -
+    cached here rather than decorating that shared function directly, so
+    core/agent_registry.py (also used by api/app.py) stays Streamlit-
+    agnostic. 60s TTL is a fallback safety net only: register/deactivate
+    below explicitly call .clear() on this the moment they mutate the
+    registry, so this page reflects its own actions immediately rather
+    than waiting out the TTL; the 60s window only matters for a mutation
+    made from elsewhere (the API, another browser tab)."""
+    return list_agents(environment=environment, active_only=active_only)
+
+
+@st.cache_data(ttl=30)
+def _cached_get_statistics(agent_name):
+    """Thin cached wrapper around monitoring_store.get_statistics() for
+    the per-agent status-tile loop below (same not-Streamlit-agnostic
+    reasoning as _cached_list_agents above). 30s, not 5min: this is the
+    one view in the app meant to look close to live production
+    monitoring - see the "Run Health Check" button, which deliberately
+    calls the uncached function directly instead of this wrapper, so a
+    user who explicitly asks for a check always gets a fresh read."""
+    return monitoring_store.get_statistics(agent_name)
+
+
+@st.cache_data(ttl=30)
+def _cached_get_alerts(agent_name, limit=20):
+    """Thin cached wrapper around monitoring_store.get_alerts() - same
+    30s "near-live production monitoring" reasoning as
+    _cached_get_statistics above."""
+    return monitoring_store.get_alerts(agent_name=agent_name, limit=limit)
 
 # ============================================
 # HEADER
@@ -276,6 +312,11 @@ def render_registration_form(key_prefix):
                     config=clean_config,
                     environment=reg_environment or None,
                 )
+                # Invalidate the cached agent list now, not after its 60s
+                # TTL - otherwise the just-registered agent wouldn't show
+                # up in either tab until the cache expired, exactly the
+                # kind of stale-but-looks-fine symptom caching must avoid.
+                _cached_list_agents.clear()
                 # st.rerun() below discards any st.success() called before
                 # it, so the confirmation is shown after the rerun instead
                 # (see the session_state check at the top of this function).
@@ -309,7 +350,7 @@ with tab1:
         key="agent_source",
     )
 
-    registered_agents = list_agents()
+    registered_agents = _cached_list_agents()
     selected_registered_agent = None
 
     with st.container(border=True):
@@ -687,7 +728,7 @@ with tab2:
     with st.expander("Register a new agent"):
         render_registration_form("monitor")
 
-    monitored_agents = list_agents()
+    monitored_agents = _cached_list_agents()
 
     # Reads straight from monitoring_store (data/monitoring.db) - the same
     # persistence api/app.py's /monitoring/* endpoints write to, so this
@@ -712,7 +753,7 @@ with tab2:
 
         cols = st.columns(min(4, len(monitored_agents)))
         for idx, agent in enumerate(monitored_agents):
-            stats = monitoring_store.get_statistics(agent['name'])
+            stats = _cached_get_statistics(agent['name'])
             status = 'healthy' if stats['alert_rate'] <= 30 else 'warning'
             with cols[idx % len(cols)]:
                 st.markdown(
@@ -738,7 +779,7 @@ with tab2:
 
         all_alerts = []
         for agent in monitored_agents:
-            for alert in monitoring_store.get_alerts(agent_name=agent['name'], limit=20):
+            for alert in _cached_get_alerts(agent_name=agent['name'], limit=20):
                 all_alerts.append({**alert, "agent_display_name": agent["name"]})
         all_alerts.sort(key=lambda a: a["created_at"], reverse=True)
 
@@ -813,6 +854,7 @@ with tab2:
         with col3:
             if st.button("Deactivate Monitoring", use_container_width=True):
                 deactivate_agent(selected_action_agent["id"])
+                _cached_list_agents.clear()  # see the register handler above
                 st.success(f"{selected_action_agent['name']} deactivated.")
                 st.rerun()
 
