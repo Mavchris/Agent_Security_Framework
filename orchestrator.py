@@ -72,17 +72,28 @@ class PipelineOrchestrator:
             logger.error(f"Erreur sauvegarde métriques: {e}")
     
     def get_threat_count(self):
-        """Obtenir le nombre de menaces en BD"""
+        """Obtenir le nombre de menaces en BD.
+
+        Returns None on a DB read failure, not 0 - same convention as
+        scan_results.vulnerability_score (see API_DOCUMENTATION.md):
+        0 would be indistinguishable from a real empty table, and a
+        caller computing a before/after delta must be able to tell
+        "couldn't measure" apart from "measured, and it's zero"."""
+        conn = None
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute('SELECT COUNT(*) FROM threats')
-            count = cursor.fetchone()[0]
-            conn.close()
-            return count
+            return cursor.fetchone()[0]
         except Exception as e:
             logger.error(f"Erreur lecture BD: {e}")
-            return 0
+            return None
+        finally:
+            # conn.close() used to only run on the success path above - a
+            # query failure (e.g. missing table) left the connection open,
+            # a real leak found while adding tests for this method.
+            if conn is not None:
+                conn.close()
     
     def run_daily_pipeline(self):
         """Exécute le pipeline quotidien (sources quotidiennes)"""
@@ -93,24 +104,35 @@ class PipelineOrchestrator:
         try:
             # Importer et exécuter le pipeline
             from pipeline.process import run_pipeline
-            
+
             threats_before = self.get_threat_count()
             logger.info(f"Menaces avant: {threats_before}")
-            
+
             # Exécuter pipeline
             run_pipeline()
-            
+
             threats_after = self.get_threat_count()
-            new_threats = threats_after - threats_before
-            
             logger.info(f"Menaces après: {threats_after}")
-            logger.info(f"✅ Nouvelles menaces: {new_threats}")
-            
+
+            # None means a DB read failed (see get_threat_count) - propagate
+            # None rather than let `None - None`/`None - int` raise, or
+            # silently coerce to a 0 that would look like "no new threats"
+            # when it actually means "couldn't measure".
+            if threats_before is None or threats_after is None:
+                new_threats = None
+                logger.warning(
+                    "⚠️ Impossible de mesurer les nouvelles menaces "
+                    "(lecture BD échouée avant et/ou après le pipeline)"
+                )
+            else:
+                new_threats = threats_after - threats_before
+                logger.info(f"✅ Nouvelles menaces: {new_threats}")
+
             # Mettre à jour métriques
             self.metrics['successful_runs'] += 1
             self.metrics['last_threats_collected'] = new_threats
             self.metrics['last_run_time'] = datetime.now().isoformat()
-            
+
             logger.info("✅ Pipeline quotidien réussi!")
             
         except Exception as e:
@@ -122,101 +144,134 @@ class PipelineOrchestrator:
             self.save_metrics()
     
     def run_weekly_pipeline(self):
-        """Exécute le pipeline hebdomadaire (maintenance)"""
+        """Exécute le pipeline hebdomadaire (maintenance).
+
+        Each of the 3 steps below catches its own exceptions internally
+        (for a step-specific error message) and returns True/False rather
+        than swallowing the failure entirely - this function used to
+        always reach "✅ réussi" and never update metrics, even when
+        every step had failed, since nothing ever propagated up to the
+        try/except that used to wrap this. Now the summary and the
+        metrics both reflect what actually happened."""
         logger.info("=" * 70)
         logger.info("🔄 DÉMARRAGE PIPELINE HEBDOMADAIRE (MAINTENANCE)")
         logger.info("=" * 70)
-        
-        try:
-            # Valider qualité données
-            self.validate_data_quality()
-            
-            # Dédupliquer
-            self.deduplicate_threats()
-            
-            # Générer rapport
-            self.generate_weekly_report()
-            
+
+        steps = [
+            ('validate_data_quality', self.validate_data_quality()),
+            ('deduplicate_threats', self.deduplicate_threats()),
+            ('generate_weekly_report', self.generate_weekly_report()),
+        ]
+        failed_steps = [name for name, ok in steps if not ok]
+        all_ok = not failed_steps
+
+        if all_ok:
             logger.info("✅ Pipeline hebdomadaire réussi!")
-            
-        except Exception as e:
-            logger.error(f"❌ Erreur pipeline hebdomadaire: {e}")
+            self.metrics['successful_runs'] += 1
+        else:
+            logger.error(
+                f"❌ Pipeline hebdomadaire échoué (étape(s) en échec: {', '.join(failed_steps)})"
+            )
+            self.metrics['failed_runs'] += 1
+
+        self.metrics['total_runs'] += 1
+        self.save_metrics()
+
+        return all_ok
     
     def validate_data_quality(self):
-        """Valider la qualité des données"""
+        """Valider la qualité des données. Returns True on success, False
+        on a DB error - surfaced to run_weekly_pipeline() instead of
+        being swallowed here silently."""
         logger.info("🔍 Validation qualité données...")
-        
+
+        conn = None
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            
+
             # Statistiques
             cursor.execute('SELECT COUNT(*) FROM threats')
             total = cursor.fetchone()[0]
-            
+
             cursor.execute('SELECT threat_type, COUNT(*) FROM threats GROUP BY threat_type')
             by_type = cursor.fetchall()
-            
+
             cursor.execute('SELECT severity, COUNT(*) FROM threats GROUP BY severity')
             by_severity = cursor.fetchall()
-            
-            conn.close()
-            
+
             logger.info(f"  Total menaces: {total}")
             logger.info(f"  Par type: {dict(by_type)}")
             logger.info(f"  Par sévérité: {dict(by_severity)}")
-            
+            return True
+
         except Exception as e:
             logger.error(f"  Erreur validation: {e}")
+            return False
+        finally:
+            # See get_threat_count() above - conn.close() used to only run
+            # on the success path, leaking the connection on a query error.
+            if conn is not None:
+                conn.close()
     
     def deduplicate_threats(self):
-        """Dédupliquer les menaces"""
+        """Dédupliquer les menaces. Returns True on success, False on a
+        DB error - surfaced to run_weekly_pipeline() instead of being
+        swallowed here silently."""
         logger.info("🧹 Déduplication menaces...")
-        
+
+        conn = None
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            
+
             # Trouver et supprimer les doublons (garder le plus récent)
             cursor.execute('''
-                DELETE FROM threats 
+                DELETE FROM threats
                 WHERE id NOT IN (
                     SELECT MAX(id) FROM threats GROUP BY threat_id
                 )
             ''')
-            
+
             deleted = cursor.rowcount
             conn.commit()
-            conn.close()
-            
+
             logger.info(f"  ✅ {deleted} doublons supprimés")
-            
+            return True
+
         except Exception as e:
             logger.error(f"  Erreur déduplication: {e}")
+            return False
+        finally:
+            # See get_threat_count() above - conn.close() used to only run
+            # on the success path, leaking the connection on a query error.
+            if conn is not None:
+                conn.close()
     
     def generate_weekly_report(self):
-        """Générer rapport hebdomadaire"""
+        """Générer rapport hebdomadaire. Returns True on success, False
+        on a DB/file error - surfaced to run_weekly_pipeline() instead
+        of being swallowed here silently."""
         logger.info("📊 Génération rapport hebdomadaire...")
-        
+
+        conn = None
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            
+
             # Statistiques
             cursor.execute('SELECT COUNT(*) FROM threats')
             total = cursor.fetchone()[0]
-            
+
             cursor.execute('SELECT COUNT(*) FROM threats WHERE severity="critical"')
             critical = cursor.fetchone()[0]
-            
+
             cursor.execute('SELECT COUNT(*) FROM threats WHERE severity="high"')
             high = cursor.fetchone()[0]
-            
+
             cursor.execute('SELECT source, COUNT(*) FROM threats GROUP BY source')
             by_source = cursor.fetchall()
-            
-            conn.close()
-            
+
             # Créer rapport
             report = {
                 'timestamp': datetime.now().isoformat(),
@@ -231,10 +286,17 @@ class PipelineOrchestrator:
                 json.dump(report, f, indent=2)
             
             logger.info(f"  ✅ Rapport: {total} menaces ({critical} critiques, {high} hautes)")
-            
+            return True
+
         except Exception as e:
             logger.error(f"  Erreur rapport: {e}")
-    
+            return False
+        finally:
+            # See get_threat_count() above - conn.close() used to only run
+            # on the success path, leaking the connection on a query error.
+            if conn is not None:
+                conn.close()
+
     def get_health_status(self):
         """Obtenir le statut du pipeline"""
         threat_count = self.get_threat_count()
