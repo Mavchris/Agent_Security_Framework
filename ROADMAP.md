@@ -10,6 +10,7 @@ Derived from the [Known Limitations](README.md#known-limitations) audit:
 2. Add retry/backoff for scraper HTTP calls (currently: log and skip on failure).
 3. Get the orchestrator running unattended over an extended period to build a real reliability track record.
 4. Review the 114 threats currently `threat_type=other, ai_relevant=true` (see README Known Limitations) as candidates for a future taxonomy refinement — they're confirmed AI-relevant but don't fit one of the 9 categories cleanly.
+5. `dashboard/pages/operations.py`'s `get_all_threats()` runs `SELECT * FROM threats` just to compute `len(threats)` for the "Scanning agent X against N threats" status message — loads every column of every row into Python memory for what should be a `SELECT COUNT(*)`. Found during the index/cache vague, deliberately not fixed there to keep that vague's scope to indexing and caching.
 
 ## Named API key follow-ups
 

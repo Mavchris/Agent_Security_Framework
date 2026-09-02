@@ -1180,16 +1180,55 @@ Best for: Production, multi-tenant
 ### Optimization Strategies
 
 ```
-1. DATABASE:
-   - Index on threat_id (primary key)
-   - Index on type (frequent filter)
-   - Index on severity (frequent filter)
-   - SQLite default journal mode (no WAL configured)
+1. DATABASE (see scripts/maintenance/add_query_indexes.py):
+   - Indexes on threats(threat_type), threats(source), threats(severity),
+     threats(created_at), registered_agents(created_at) - added from an
+     audit of the query patterns actually used across the codebase
+     (grepped pipeline/, api/, dashboard/, core/, monitoring/,
+     scripts/maintenance/), not preventively. At the current scale
+     (~650 threats) the effect isn't measurable - this is preparation
+     for growth, not a fix for an observed slowdown.
+   - threats.threat_id/id, registered_agents.name, and api_keys.key_hash/
+     label are already indexed for free via PRIMARY KEY/UNIQUE
+     constraints. monitoring_logs.agent_name and
+     monitoring_alerts.agent_name are indexed too (the real hot filter
+     on those tables).
+   - Deliberately NOT indexed: scan_results.agent_id/status and
+     monitoring_alerts.log_id used to have indexes, but the same audit
+     found no query anywhere actually filters on them (every access
+     goes through the primary key `id`) - pure write overhead for zero
+     read benefit, so those 3 were dropped rather than kept "just in
+     case". Also not indexed: threats.ai_relevant and
+     registered_agents.is_active - both near-boolean, poor-selectivity
+     columns where an index rarely helps SQLite's planner.
+   - WAL journal mode is enabled on all three database files (see
+     scripts/maintenance/enable_wal_mode.py) - readers (dashboards, API)
+     don't block behind a concurrent writer (pipeline, orchestrator).
 
 2. CACHING:
-   - Cache /stats endpoint (5 min)
-   - Cache /threat-types (24h)
-   - Cache threat list in memory
+   - The API itself caches nothing - every request re-queries the
+     database directly (see API_DOCUMENTATION.md's Rate Limiting
+     section: this is a single-process, low-traffic service, not one
+     bottlenecked on DB reads).
+   - Dashboard only, via @st.cache_data (previously only the DB
+     connection object was cached, via @st.cache_resource - no query
+     result was):
+     - dashboard/main.py get_platform_stats(): 30s TTL - deliberately
+       the shortest in the app. This exact function used to display
+       hardcoded metrics (fixed earlier in the project's history), so a
+       long or unbounded TTL here specifically risked recreating a
+       "looks live but isn't" symptom.
+     - dashboard/pages/intelligence.py and dashboard/pages/catalog.py:
+       300s (5 min) TTL on their stats/filter/listing queries - all
+       driven by data that only changes on an orchestrator run
+       (daily/weekly).
+     - dashboard/pages/operations.py: 30s TTL on the per-agent
+       monitoring stats/alerts loop (the one view meant to look close
+       to live production monitoring), 300s on its threat-count query,
+       and 60s on the registered-agent list - but that list is also
+       explicitly invalidated (.clear()) the instant this page
+       registers or deactivates an agent itself, so its own actions
+       show up immediately rather than waiting out the TTL.
 
 3. PAGINATION:
    - Limit default: 100 items
