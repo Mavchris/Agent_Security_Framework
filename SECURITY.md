@@ -40,6 +40,7 @@ Default thresholds, one bucket per category (all configurable via environment va
 | Category | Endpoints | Default | Env vars |
 |---|---|---|---|
 | `scan` | `POST /scan` | 10 / hour | `RATE_LIMIT_SCAN_MAX_REQUESTS`, `RATE_LIMIT_SCAN_WINDOW_SECONDS` |
+| `test_connection` | `POST /test-connection` | 20 / minute | `RATE_LIMIT_TEST_CONNECTION_MAX_REQUESTS`, `RATE_LIMIT_TEST_CONNECTION_WINDOW_SECONDS` |
 | `read` | `GET /agents`, `GET /agents/{id}`, `GET /monitoring/stats\|alerts\|health/{agent}`, `GET /scan/results/{id}` | 120 / minute | `RATE_LIMIT_READ_MAX_REQUESTS`, `RATE_LIMIT_READ_WINDOW_SECONDS` |
 | `write` | `POST /agents`, `POST /agents/{id}/deactivate` | 20 / minute | `RATE_LIMIT_WRITE_MAX_REQUESTS`, `RATE_LIMIT_WRITE_WINDOW_SECONDS` |
 | `log_request` | `POST /monitoring/log-request` | **unlimited by default** (`0`) | `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS`, `RATE_LIMIT_LOG_REQUEST_WINDOW_SECONDS` |

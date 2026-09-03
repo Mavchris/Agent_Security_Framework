@@ -156,6 +156,7 @@ All documentation files live at the repository root, alongside this README (ther
 │  ├─ /stats (aggregated statistics)                  │
 │  ├─ /monitoring (agent health)                      │
 │  ├─ /agents (agent registry)                        │
+│  ├─ /test-connection (fast pre-flight check)        │
 │  └─ /scan (vulnerability scanning)                  │
 └─────────────────────────────────────────────────────┘
                           ↓
@@ -194,7 +195,7 @@ All documentation files live at the repository root, alongside this README (ther
 | **Classifier** | 9-category threat classification | ✅ Complete (13/13 tests) |
 | **Orchestrator** | Automated pipeline scheduling | ⚠️ Implemented; 2 recorded runs (2026-03-28) |
 | **Dashboards** | Real-time visualization | ✅ 3 production dashboards |
-| **API** | REST interface | ✅ 17 endpoints |
+| **API** | REST interface | ✅ 18 endpoints |
 | **Multi-Agent** | 8 LLM/HTTP engine wrappers + persistent registry | ✅ Complete |
 | **Monitoring** | Health & alerts (basic) | ⚠️ Partial (alerts coming soon) |
 | **Authentication** | Named API keys for sensitive actions | ⚠️ Partial (no RBAC/user accounts yet — see [Security & Privacy](#security--privacy)) |
@@ -207,7 +208,7 @@ Agents (including remote, enterprise-owned ones) can be registered once and reus
 - **`core/agent_registry.py`**: shared CRUD (`register_agent`, `list_agents`, `get_agent_config`, `deactivate_agent`, `build_wrapper`) — used by both dashboard tabs so they read from the same source of truth instead of each keeping their own agent list.
 - **`testing/agent_wrappers.py`'s `RemoteHTTPAgentWrapper`**: for a `remote_http` agent, POSTs `{request_field: prompt}` as JSON to `endpoint_url` and reads `response_field` back. Supports an internal CA bundle (`ca_cert_path`) and an `auth_env_var` — only the *name* of an environment variable is stored in the registry, never a secret itself (see [Security & Privacy](#security--privacy)).
 - **For an agent that only exists as a local script/function**: see `docs/examples/local_agent_http_wrapper.py`, a minimal template for exposing it as a local HTTP endpoint, which can then be registered as `remote_http` pointing at `http://localhost:PORT`. ASIF never executes your code directly - it only calls whatever URL you register.
-- **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
+- **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. Both paths have a **"Test Connection"** button before "Run Scan": a single, fast `agent.query()` call (`testing/agent_wrappers.py`'s `test_agent_connection()`, also exposed as `POST /test-connection`) that surfaces a bad API key, unreachable URL, or missing SDK immediately instead of partway through a scan that can take 11-45 minutes. A failed/transient result is shown as a badge but never blocks "Run Scan" — the user can still launch the real scan regardless. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
 - **Requires a named API key**: the whole "Agent Operations" dashboard page (registering/listing/deactivating an agent, running a scan, reading production monitoring) is gated behind one — see [Security & Privacy](#security--privacy) for how to create one and how the gate behaves.
 - **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s `threats` table — see [Security & Privacy](#security--privacy) for why, and for why `data/threats.db` as a whole isn't purely public either). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
 

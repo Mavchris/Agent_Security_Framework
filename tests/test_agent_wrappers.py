@@ -21,7 +21,18 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from testing.agent_wrappers import RemoteHTTPAgentWrapper, TransientAgentError, get_agent_wrapper
+from testing.agent_wrappers import (
+    BaseAgentWrapper,
+    CONNECTION_TEST_PROMPT,
+    RemoteHTTPAgentWrapper,
+    TransientAgentError,
+    get_agent_wrapper,
+    # Aliased: pytest collects any module-level `test_`-prefixed name as
+    # a test function, and this one takes a required `agent` argument -
+    # left as `test_agent_connection` it gets picked up and fails
+    # collection with "fixture 'agent' not found".
+    test_agent_connection as check_agent_connection,
+)
 
 
 def _mock_response(json_data=None, json_error=False, status=200):
@@ -219,6 +230,102 @@ class TestRemoteHTTPAgentWrapperTLS(unittest.TestCase):
             self.assertTrue(any("DISABLED" in msg for msg in cm.output))
 
         self.assertEqual(mock_post.call_args.kwargs["verify"], False)
+
+
+class _FakeAgent(BaseAgentWrapper):
+    """Minimal agent double for test_agent_connection() tests - query()
+    does whatever fn returns/raises, so one small class covers the
+    success and both failure paths without a mock framework."""
+
+    def __init__(self, fn):
+        self._fn = fn
+        self.received_prompt = None
+
+    def query(self, prompt):
+        self.received_prompt = prompt
+        return self._fn()
+
+
+class TestAgentConnection(unittest.TestCase):
+    """Unit tests for testing.agent_wrappers.test_agent_connection() - the
+    single-call pre-flight check used by both the dashboard's "Test
+    Connection" button and POST /test-connection (api/app.py)."""
+
+    def test_success_reports_latency_and_response(self):
+        agent = _FakeAgent(lambda: "PONG, connection confirmed")
+
+        result = check_agent_connection(agent)
+
+        self.assertTrue(result["success"])
+        self.assertIsNone(result["error_category"])
+        self.assertEqual(result["response"], "PONG, connection confirmed")
+        self.assertIsInstance(result["latency_ms"], float)
+        self.assertGreaterEqual(result["latency_ms"], 0)
+        self.assertIn("ms", result["message"])
+        self.assertEqual(agent.received_prompt, CONNECTION_TEST_PROMPT)
+
+    def test_transient_error_is_categorized_as_transient(self):
+        def _raise():
+            raise TransientAgentError("Ollama not running - start with: ollama serve")
+
+        agent = _FakeAgent(_raise)
+
+        result = check_agent_connection(agent)
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["error_category"], "transient")
+        self.assertIsNone(result["response"])
+        self.assertIn("retrying will probably work", result["message"])
+        self.assertIn("Ollama not running", result["message"])
+
+    def test_non_transient_error_is_categorized_as_configuration(self):
+        def _raise():
+            raise RuntimeError("Remote agent response is missing expected field 'response'")
+
+        agent = _FakeAgent(_raise)
+
+        result = check_agent_connection(agent)
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["error_category"], "configuration")
+        self.assertIsNone(result["response"])
+        self.assertIn("won't be fixed by retrying", result["message"])
+
+    def test_uses_custom_prompt_when_given(self):
+        agent = _FakeAgent(lambda: "ok")
+
+        check_agent_connection(agent, prompt="custom probe")
+
+        self.assertEqual(agent.received_prompt, "custom probe")
+
+    def test_latency_is_measured_even_on_failure(self):
+        def _raise():
+            raise TransientAgentError("timeout")
+
+        agent = _FakeAgent(_raise)
+
+        result = check_agent_connection(agent)
+
+        self.assertIsInstance(result["latency_ms"], float)
+        self.assertGreaterEqual(result["latency_ms"], 0)
+
+    def test_does_not_retry_on_transient_failure(self):
+        """Deliberately a single attempt (see test_agent_connection's
+        docstring) - a caller wanting retry semantics should route through
+        core.retry.request_with_retry itself, not get it silently baked
+        in here."""
+        call_count = 0
+
+        def _raise():
+            nonlocal call_count
+            call_count += 1
+            raise TransientAgentError("blip")
+
+        agent = _FakeAgent(_raise)
+
+        check_agent_connection(agent)
+
+        self.assertEqual(call_count, 1)
 
 
 if __name__ == "__main__":

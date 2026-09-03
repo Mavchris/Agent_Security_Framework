@@ -481,6 +481,22 @@ Agents Supported:
 Can be used either as a one-off ("quick type", nothing saved) or via a
 registered agent from core/agent_registry.py (see "Agent Registry" below).
 
+Connection Test (pre-flight check):
+A full scan can take 11-45 minutes (653 sequential agent.query() calls) -
+too long to discover a bad API key or unreachable URL only once the scan
+is already running. testing/agent_wrappers.py's test_agent_connection()
+sends ONE lightweight, neutral prompt ("Reply with exactly one word:
+PONG") and returns {success, message, latency_ms, error_category,
+response} - error_category is "transient" (network blip/rate limit -
+TransientAgentError, see below) or "configuration" (bad key, unreachable
+URL, missing SDK - won't be fixed by retrying). Deliberately a single
+immediate attempt, not routed through core/retry.py's backoff loop - the
+whole point is an honest "does this work right now" answer, not one
+padded with retries. Exposed as the dashboard's "Test Connection" button
+(both entry paths, before "Run Scan" - never blocks it) and as
+POST /test-connection (synchronous, unlike POST /scan - see
+API_DOCUMENTATION.md).
+
 Output:
 {
   "scan_date": "2026-03-28T14:30:00Z",

@@ -516,6 +516,72 @@ async def deactivate_agent_endpoint(agent_id: int, key_label: str = Depends(rate
 
 
 # ============================================
+# TEST CONNECTION ENDPOINT
+# ============================================
+# A fast, synchronous pre-flight check - unlike POST /scan below, which
+# can take 11-45 minutes and must run asynchronously, this is exactly the
+# opposite: a single agent.query() call, meant to surface a config
+# problem (bad key, unreachable URL, missing SDK) immediately instead of
+# 20 minutes into a real scan. See testing/agent_wrappers.py's
+# test_agent_connection() for why this is one immediate attempt, not
+# routed through core/retry.py.
+
+from core.agent_registry import build_wrapper
+from testing.agent_wrappers import get_agent_wrapper, test_agent_connection
+
+
+class TestConnectionRequestBody(BaseModel):
+    """Request body for POST /test-connection - exactly one of agent_id
+    (a registered agent) or agent_type (a one-off "quick type" check,
+    nothing saved) must be given, the same two entry paths as POST /scan
+    (see ScanRequestBody below)."""
+    agent_id: Optional[int] = None
+    agent_type: Optional[str] = None
+    agent_config: Optional[Dict[str, Any]] = None
+
+
+@app.post("/test-connection")
+async def trigger_connection_test(
+    body: TestConnectionRequestBody,
+    _: str = Depends(rate_limited("test_connection")),
+):
+    """
+    Run a single, fast connectivity/config check against an agent and
+    return the result immediately - no scan id, no polling. Requires a
+    valid X-API-Key header.
+
+    POST /test-connection
+    {"agent_id": 3}
+    or
+    {"agent_type": "mock"}
+    """
+    if (body.agent_id is None) == (body.agent_type is None):
+        raise HTTPException(
+            status_code=400,
+            detail="Provide exactly one of agent_id or agent_type",
+        )
+
+    if body.agent_id is not None:
+        agent_row = get_agent_config(body.agent_id)
+        if agent_row is None or not agent_row['is_active']:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Registered agent {body.agent_id} not found or inactive",
+            )
+        try:
+            agent = build_wrapper(agent_row)
+        except (ValueError, ImportError, TypeError) as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        try:
+            agent = get_agent_wrapper(body.agent_type, **(body.agent_config or {}))
+        except (ValueError, ImportError, TypeError) as e:
+            raise HTTPException(status_code=400, detail=str(e))
+
+    return test_agent_connection(agent)
+
+
+# ============================================
 # SCAN ENDPOINTS
 # ============================================
 # Runs asynchronously (a real scan against a real agent can take
@@ -529,9 +595,7 @@ async def deactivate_agent_endpoint(agent_id: int, key_label: str = Depends(rate
 # scan is 'running' loses it silently, no resume.
 
 from core import scan_store
-from core.agent_registry import build_wrapper
 from testing.agent_scanner import AgentVulnerabilityScanner
-from testing.agent_wrappers import get_agent_wrapper
 
 
 class ScanRequestBody(BaseModel):

@@ -11,12 +11,13 @@ Complete REST API reference for the Agent Security Intelligence Framework. This 
 5. [Statistics Endpoints](#statistics-endpoints)
 6. [Monitoring Endpoints](#monitoring-endpoints)
 7. [Agent Registry Endpoints](#agent-registry-endpoints)
-8. [Scan Endpoints](#scan-endpoints)
-9. [Health Endpoints](#health-endpoints)
-10. [Error Handling](#error-handling)
-11. [Rate Limiting](#rate-limiting)
-12. [Code Examples](#code-examples)
-13. [Integration Patterns](#integration-patterns)
+8. [Connection Test Endpoint](#connection-test-endpoint)
+9. [Scan Endpoints](#scan-endpoints)
+10. [Health Endpoints](#health-endpoints)
+11. [Error Handling](#error-handling)
+12. [Rate Limiting](#rate-limiting)
+13. [Code Examples](#code-examples)
+14. [Integration Patterns](#integration-patterns)
 
 ---
 
@@ -94,7 +95,7 @@ python -m uvicorn api.app:app --host 0.0.0.0 --port 8001
 
 **Endpoint:** `GET /`
 
-Returns basic API metadata. Not one of the 17 numbered endpoints below since it exists mainly for humans/tooling probing the root path, but it's real and public (no `X-API-Key` needed).
+Returns basic API metadata. Not one of the 18 numbered endpoints below since it exists mainly for humans/tooling probing the root path, but it's real and public (no `X-API-Key` needed).
 
 **Response (200 OK)** - real example:
 ```json
@@ -111,7 +112,7 @@ Returns basic API metadata. Not one of the 17 numbered endpoints below since it 
 }
 ```
 
-That `endpoints` map is a partial, hand-maintained summary baked into `api/app.py` itself (5 of the 17 real endpoints) - not a live or complete API index. Use this document for the full list.
+That `endpoints` map is a partial, hand-maintained summary baked into `api/app.py` itself (5 of the 18 real endpoints) - not a live or complete API index. Use this document for the full list.
 
 ### Response Format
 
@@ -1050,13 +1051,99 @@ curl -X POST http://localhost:8000/agents/103/deactivate -H "X-API-Key: <your ke
 
 ---
 
+## Connection Test Endpoint
+
+A full scan (`POST /scan` below) can take **11-45 minutes** - too long to discover a bad API key, an unreachable URL, or a missing SDK only after the scan is already running. `POST /test-connection` sends a **single, lightweight, non-adversarial prompt** ("Reply with exactly one word: PONG") to the agent and returns immediately - **synchronous**, unlike `POST /scan`, since that's the whole point: a fast, direct answer, not a scan id to poll.
+
+Deliberately **one immediate attempt**, not routed through the retry-with-backoff pipeline `POST /scan` uses internally - retrying would only delay an honest "does this work right now" answer. Instead, a failure is split into two categories so you know whether retrying is worth it at all:
+
+| `error_category` | Meaning | Worth retrying? |
+|-------------------|---------|------------------|
+| `"transient"` | Network blip, rate limit, 5xx from the agent's backend | Probably - try again |
+| `"configuration"` | Bad API key, unreachable URL, missing SDK, malformed response | No - fix the config first |
+| `null` | Success | N/A |
+
+### 15. Test Agent Connection
+
+**Endpoint:**
+```
+POST /test-connection
+```
+
+**Request Body:** exactly one of `agent_id` or `agent_type` is required - same two entry paths as `POST /scan` below.
+
+| Field | Type | Required | Description |
+|-------|------|----------|--------------|
+| `agent_id` | integer | One of these two | Test a registered agent |
+| `agent_type` | string | One of these two | One-off "quick type" check - nothing saved to the registry |
+| `agent_config` | object | No | Quick-type path only, e.g. `{"endpoint_url": "..."}` for `remote_http` |
+
+Registered agent:
+```json
+{"agent_id": 103}
+```
+Quick type:
+```json
+{"agent_type": "mock"}
+```
+
+**Response (200 OK) - real example, Mock agent (success):**
+```json
+{
+  "success": true,
+  "message": "Agent responded in 0ms",
+  "latency_ms": 0.0021,
+  "error_category": null,
+  "response": "I don't understand this request"
+}
+```
+
+**Response (200 OK) - real example, unreachable `remote_http` agent (configuration error):**
+```json
+{
+  "success": false,
+  "message": "Configuration error - Remote agent at http://127.0.0.1:50358/query returned an error: 400 Client Error: Bad Request for url: http://127.0.0.1:50358/query (won't be fixed by retrying - check the agent's config)",
+  "latency_ms": 3.88,
+  "error_category": "configuration",
+  "response": null
+}
+```
+
+Note the **status code is `200` in both cases** - a failed connection test is not itself an API error, it's a successful check that reported a problem with the *agent*. `success: false` is what tells you the agent itself is unreachable/misconfigured. A `400`/`404`/`401` from this endpoint means the *request to ASIF itself* was malformed (see Status Codes below), not that the agent failed.
+
+**Status Codes:** `200` Check completed (see `success`/`error_category` in the body for the actual result) · `400` Neither/both of `agent_id`/`agent_type` given, or unknown `agent_type`/bad `agent_config` · `401` Missing/invalid/inactive/expired API key · `404` `agent_id` doesn't exist or is deactivated · `429` Rate limit exceeded (`test_connection` category, default 20/min - see [Rate Limiting](#rate-limiting))
+
+**Examples:**
+```bash
+curl -X POST http://localhost:8000/test-connection \
+  -H "X-API-Key: <your key>" \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id": 103}'
+```
+```python
+import requests
+response = requests.post(
+    'http://localhost:8000/test-connection',
+    json={'agent_type': 'mock'},
+    headers={'X-API-Key': API_KEY},
+)
+result = response.json()
+if not result['success']:
+    if result['error_category'] == 'transient':
+        print(f"Transient failure, retry: {result['message']}")
+    else:
+        print(f"Fix the agent config before scanning: {result['message']}")
+```
+
+---
+
 ## Scan Endpoints
 
 Runs **asynchronously**: a real scan against a real agent (Claude, GPT-4, a `remote_http` backend) can take **11-45 minutes** (653 threats, one sequential call each, no batching - see [ROADMAP.md](ROADMAP.md)), far past any reasonable synchronous HTTP timeout. `POST /scan` returns immediately with a scan id; poll `GET /scan/results/{id}` for progress and the final result. Both require a named API key.
 
 Runs in a background thread of the API's own process (FastAPI `BackgroundTasks`), not a real job queue - an accepted limitation at this project's scale. **A server restart while a scan is `running` loses it silently**: the row stays stuck in `running` forever, with no automatic resume (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
-### 15. Start a Scan
+### 16. Start a Scan
 
 **Endpoint:**
 ```
@@ -1099,7 +1186,7 @@ curl -X POST http://localhost:8000/scan \
 
 ---
 
-### 16. Get Scan Results
+### 17. Get Scan Results
 
 **Endpoint:**
 ```
@@ -1319,11 +1406,14 @@ An invalid, unknown, or expired key is rejected with `401` **before** it ever re
 | Category | Endpoints | Default | Env vars |
 |---|---|---|---|
 | `scan` | `POST /scan` | 10 / hour | `RATE_LIMIT_SCAN_MAX_REQUESTS`, `RATE_LIMIT_SCAN_WINDOW_SECONDS` |
+| `test_connection` | `POST /test-connection` | 20 / minute | `RATE_LIMIT_TEST_CONNECTION_MAX_REQUESTS`, `RATE_LIMIT_TEST_CONNECTION_WINDOW_SECONDS` |
 | `read` | `GET /agents`, `GET /agents/{id}`, `GET /monitoring/stats/{agent}`, `GET /monitoring/alerts/{agent}`, `GET /monitoring/health/{agent}`, `GET /scan/results/{id}` | 120 / minute | `RATE_LIMIT_READ_MAX_REQUESTS`, `RATE_LIMIT_READ_WINDOW_SECONDS` |
 | `write` | `POST /agents`, `POST /agents/{id}/deactivate` | 20 / minute | `RATE_LIMIT_WRITE_MAX_REQUESTS`, `RATE_LIMIT_WRITE_WINDOW_SECONDS` |
 | `log_request` | `POST /monitoring/log-request` | **unlimited** (`0`) | `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS`, `RATE_LIMIT_LOG_REQUEST_WINDOW_SECONDS` |
 
 `log_request` is unlimited by default on purpose, not an oversight - it exists to receive potentially every interaction of a production agent, continuously; capping it by default would risk silently dropping monitoring data exactly when an agent's behavior spikes, which is the scenario monitoring exists to catch. Set `RATE_LIMIT_LOG_REQUEST_MAX_REQUESTS` to a positive number to cap it anyway. Any category's env var accepts `0` to disable that category's limit the same way.
+
+`test_connection` sits deliberately between `scan` and `read`: each call still reaches a real external agent/LLM API (unlike `read`, which only touches local SQLite, hence its much higher 120/minute), but it's a single query rather than up to 653 of them, so it doesn't need `scan`'s tight hourly cap either. Same threshold as `write` - both are "costs something externally, still fine to hit often while iterating" (e.g. a user tweaking agent config and re-testing).
 
 **Exceeding a limit** returns `429` with a `Retry-After` header (seconds) and a generic-but-useful body - no internal counts or thresholds are echoed back:
 ```json
@@ -1691,10 +1781,11 @@ monitor_agents(['agent1', 'agent2', 'agent3'], api_key=API_KEY, interval_seconds
 
 ### Current state (app version `1.0.0`, per `api/app.py`)
 
-- **17 real endpoints** across threat catalog, statistics, monitoring, agent registry, and scan.
+- **18 real endpoints** across threat catalog, statistics, monitoring, agent registry, connection test, and scan.
 - **Named API key authentication implemented** (not planned) on every endpoint except the public threat catalog (`/threats`, `/threats/{id}`, `/stats`, `/threat-types`, `/sources`, `/health`, `/`) - see [Authentication](#authentication).
 - Real-time monitoring (`/monitoring/*`) with keyword-based threat detection against the live threat catalog.
 - Agent registry (`/agents/*`) backed by `core/agent_registry.py`, shared with the dashboard.
+- Fast, synchronous connection pre-flight check (`/test-connection`) against registered or one-off agents - a single `agent.query()` call, meant to surface a config problem before a scan wastes 11-45 minutes finding it.
 - Asynchronous vulnerability scanning (`/scan`, `/scan/results/{id}`) against registered or one-off agents.
 - Per-key rate limiting (see [Rate Limiting](#rate-limiting)) and optional key expiration (see [Authentication](#authentication)) implemented.
 - No RBAC - every valid key can do everything the gated endpoints allow. See [ROADMAP.md](ROADMAP.md#named-api-key-follow-ups) for what's tracked as real follow-up work, not speculative version numbers.

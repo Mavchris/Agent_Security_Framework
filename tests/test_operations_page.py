@@ -25,9 +25,10 @@ import unittest
 import uuid
 from pathlib import Path
 
+import streamlit as st
 from streamlit.testing.v1 import AppTest
 
-from core.agent_registry import get_agent_by_name
+from core.agent_registry import deactivate_agent, get_agent_by_name, register_agent
 from core.auth import generate_key
 from testing.agent_scanner import AgentVulnerabilityScanner
 from testing.agent_wrappers import get_agent_wrapper
@@ -290,6 +291,101 @@ class TestMonitorProductionRegistration(unittest.TestCase):
         # having the form there instead of only in "Test Agent".
         action_select = at.selectbox(key="monitor_action_agent")
         self.assertIn(self.agent_name, action_select.options)
+
+
+class TestOperationsTestConnection(unittest.TestCase):
+    """AppTest coverage for the "Test Connection" button on both entry
+    paths - Quick type (Mock, no registration) and a Registered agent -
+    plus the requirement that a failed test never blocks Run Scan."""
+
+    def setUp(self):
+        self.at = _authed_app_test()
+
+    def test_quick_type_mock_agent_shows_success_badge(self):
+        at = self.at
+        # Quick type + Mock (Demo) is the default selection already - no
+        # need to touch the (unkeyed) agent-type selectbox.
+        at = at.button(key="test_connection_quick").click().run()
+
+        self.assertEqual(
+            [str(e) for e in at.exception], [],
+            "Test Connection raised an unhandled exception",
+        )
+        self.assertTrue(
+            any("badge-low" in m.value and "Connected" in m.value for m in at.markdown),
+            "Success badge not rendered for the Mock agent connection test",
+        )
+        # A connection test must never run a full scan - no vulnerability
+        # score card should appear as a side effect of clicking it.
+        self.assertFalse(
+            any("Vulnerability Score" in m.value for m in at.markdown),
+            "Test Connection unexpectedly triggered a full scan",
+        )
+
+    def test_registered_agent_shows_success_badge(self):
+        agent_name = f"conn-test-ok-{uuid.uuid4().hex[:8]}"
+        agent = register_agent(agent_name, "mock")
+        # Registered directly via core.agent_registry, bypassing the
+        # dashboard's own registration form (which clears this cache
+        # itself on submit - see render_registration_form) - clear it
+        # here too, or _cached_list_agents' 60s TTL can serve a stale
+        # list that doesn't include this agent yet.
+        st.cache_data.clear()
+        try:
+            at = self.at
+            at = at.radio(key="agent_source").set_value("Registered agent").run()
+            select = at.selectbox(key="registered_agent_select")
+            matching = [o for o in select.options if agent_name in o]
+            self.assertTrue(matching, "Registered agent not found in the selector")
+            at = select.set_value(matching[0]).run()
+
+            at = at.button(key="test_connection_registered").click().run()
+
+            self.assertEqual([str(e) for e in at.exception], [])
+            self.assertTrue(
+                any("badge-low" in m.value and "Connected" in m.value for m in at.markdown),
+                "Success badge not rendered for the registered agent connection test",
+            )
+        finally:
+            deactivate_agent(agent["id"])
+            conn = sqlite3.connect(DB_PATH)
+            conn.execute("DELETE FROM registered_agents WHERE id = ?", (agent["id"],))
+            conn.commit()
+            conn.close()
+
+    def test_failed_connection_shows_error_badge_and_does_not_block_run_scan(self):
+        agent_name = f"conn-test-fail-{uuid.uuid4().hex[:8]}"
+        # Port 1 (reserved, nothing listens there) - refuses the
+        # connection immediately, no timeout to wait out.
+        agent = register_agent(
+            agent_name, "remote_http", config={"endpoint_url": "http://127.0.0.1:1/nope"}
+        )
+        st.cache_data.clear()  # see test_registered_agent_shows_success_badge
+        try:
+            at = self.at
+            at = at.radio(key="agent_source").set_value("Registered agent").run()
+            select = at.selectbox(key="registered_agent_select")
+            matching = [o for o in select.options if agent_name in o]
+            self.assertTrue(matching, "Registered agent not found in the selector")
+            at = select.set_value(matching[0]).run()
+
+            at = at.button(key="test_connection_registered").click().run()
+
+            self.assertEqual([str(e) for e in at.exception], [])
+            self.assertTrue(
+                any("Connection test failed" in m.value for m in at.markdown),
+                "Failure badge not rendered for an unreachable agent",
+            )
+            self.assertTrue(
+                any(b.label == "Run Scan" for b in at.button),
+                "A failed connection test must not remove/block the Run Scan button",
+            )
+        finally:
+            deactivate_agent(agent["id"])
+            conn = sqlite3.connect(DB_PATH)
+            conn.execute("DELETE FROM registered_agents WHERE id = ?", (agent["id"],))
+            conn.commit()
+            conn.close()
 
 
 class TestApiKeyGate(unittest.TestCase):

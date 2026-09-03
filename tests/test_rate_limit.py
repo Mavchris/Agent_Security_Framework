@@ -201,6 +201,29 @@ class TestRateLimitedDependencyIntegration(unittest.TestCase):
         )
         self.assertEqual(second.status_code, 429)
 
+    def test_test_connection_endpoint_uses_its_own_category(self):
+        rate_limit.CATEGORIES["test_connection"] = {"max_requests": 1, "window_seconds": 60}
+
+        first = self.client.post(
+            "/test-connection", json={"agent_type": "mock"}, headers=self.headers
+        )
+        self.assertEqual(first.status_code, 200)
+
+        second = self.client.post(
+            "/test-connection", json={"agent_type": "mock"}, headers=self.headers
+        )
+        self.assertEqual(second.status_code, 429)
+
+        # scan's own quota (exhausted separately above) is untouched -
+        # test_connection's cap doesn't bleed into other categories
+        rate_limit.CATEGORIES["scan"] = {"max_requests": 1, "window_seconds": 3600}
+        scan_response = self.client.post(
+            "/scan",
+            json={"agent_type": "mock", "agent_name": self.agent_name, "limit": 1},
+            headers=self.headers,
+        )
+        self.assertEqual(scan_response.status_code, 200)
+
 
 if __name__ == "__main__":
     unittest.main()

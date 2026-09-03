@@ -47,6 +47,13 @@ CATEGORIES: Dict[str, Dict[str, int]] = {
     "read": _category_from_env("READ", default_max=120, default_window=60),
     "write": _category_from_env("WRITE", default_max=20, default_window=60),
     "log_request": _category_from_env("LOG_REQUEST", default_max=0, default_window=60),
+    # A single call to a real external agent/LLM API - unlike "read"
+    # (local SQLite only), so not as free as 120/min, but 653x cheaper
+    # than a full scan (1 call vs up to 653), so it doesn't need "scan"'s
+    # tight hourly cap either. Same threshold as "write": both are
+    # "costs something externally, still fine to hit often while
+    # iterating" (a user tweaking agent config and re-testing).
+    "test_connection": _category_from_env("TEST_CONNECTION", default_max=20, default_window=60),
 }
 
 _lock = threading.Lock()

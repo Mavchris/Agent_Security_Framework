@@ -35,7 +35,7 @@ load_theme()
 # ============================================
 
 try:
-    from testing.agent_wrappers import get_agent_wrapper
+    from testing.agent_wrappers import get_agent_wrapper, test_agent_connection
     from testing.agent_scanner import AgentVulnerabilityScanner
     from core.agent_registry import build_wrapper, deactivate_agent, list_agents, register_agent
     from core.auth import verify_key
@@ -327,6 +327,55 @@ def render_registration_form(key_prefix):
 
 
 # ============================================
+# SHARED: CONNECTION TEST
+# ============================================
+
+def _run_connection_test(build_agent_fn):
+    """Build the agent via build_agent_fn (either build_wrapper() for a
+    registered agent or get_agent_wrapper() for a quick-type one) and run
+    test_agent_connection() on it. A construction failure (missing SDK,
+    bad agent_type, bad kwargs) is a config problem exactly like a
+    connection failure, so it's folded into the same result shape rather
+    than raised - see trigger_scan()'s identical (ValueError, ImportError,
+    TypeError) handling in api/app.py for POST /scan's agent construction."""
+    try:
+        agent = build_agent_fn()
+    except (ValueError, ImportError, TypeError) as e:
+        return {
+            "success": False,
+            "message": f"Configuration error - {e} (won't be fixed by retrying - check the agent's config)",
+            "latency_ms": 0.0,
+            "error_category": "configuration",
+            "response": None,
+        }
+    return test_agent_connection(agent)
+
+
+def _render_connection_test_result(result):
+    """Render a test_agent_connection()/_run_connection_test() result as a
+    badge, colored consistently with the vulnerability score card (green =
+    good, amber = transient/probably-fine-on-retry, red = configuration
+    problem worth fixing before running a real scan)."""
+    if result["success"]:
+        st.markdown(
+            f"<span class='badge badge-low'>{icon('check-circle', size=14)} "
+            f"Connected — {result['message']}</span>",
+            unsafe_allow_html=True,
+        )
+    else:
+        severity = "medium" if result["error_category"] == "transient" else "critical"
+        st.markdown(
+            f"<span class='badge badge-{severity}'>{icon('alert-triangle', size=14)} "
+            f"Connection test failed</span>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<p style='color:var(--text-secondary);font-size:13px;margin:4px 0 0;'>{result['message']}</p>",
+            unsafe_allow_html=True,
+        )
+
+
+# ============================================
 # TABS
 # ============================================
 
@@ -356,7 +405,7 @@ with tab1:
     with st.container(border=True):
         if agent_source == "Quick type (no registration)":
             # Agent selection
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
 
             with col1:
                 agent_type = st.selectbox(
@@ -369,6 +418,12 @@ with tab1:
                 agent_name = st.text_input("Agent Name", value="my_agent", help="Name for your agent")
 
             with col3:
+                st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+                test_connection_button = st.button(
+                    "Test Connection", use_container_width=True, key="test_connection_quick"
+                )
+
+            with col4:
                 st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
                 test_button = st.button("Run Scan", use_container_width=True, key="run_test", type="primary")
 
@@ -418,9 +473,10 @@ with tab1:
                 )
                 agent_name = None
                 agent_type = None
+                test_connection_button = False
                 test_button = False
             else:
-                col1, col2 = st.columns([3, 1])
+                col1, col2, col3 = st.columns([3, 1, 1])
                 with col1:
                     labels = [
                         f"{a['name']} ({a['agent_type']}"
@@ -434,11 +490,26 @@ with tab1:
                     selected_registered_agent = registered_agents[labels.index(selected_label)]
                 with col2:
                     st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
+                    test_connection_button = st.button(
+                        "Test Connection", use_container_width=True, key="test_connection_registered"
+                    )
+                with col3:
+                    st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
                     test_button = st.button(
                         "Run Scan", use_container_width=True, key="run_test_registered", type="primary"
                     )
                 agent_name = selected_registered_agent["name"]
                 agent_type = selected_registered_agent["agent_type"]
+
+    # TEST CONNECTION - a fast, single-call pre-flight check, independent
+    # of Run Scan below (a failed/transient connection test never blocks
+    # Run Scan - the user stays free to launch the real scan anyway).
+    if test_connection_button:
+        if selected_registered_agent is not None:
+            connection_result = _run_connection_test(lambda: build_wrapper(selected_registered_agent))
+        else:
+            connection_result = _run_connection_test(lambda: get_agent_wrapper(**agent_config))
+        _render_connection_test_result(connection_result)
 
     with st.expander("Register a new agent"):
         render_registration_form("test_agent")

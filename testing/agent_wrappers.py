@@ -5,6 +5,7 @@ Allows Scanner to work with any AI agent (Claude, Llama, GPT-4, etc)
 
 import logging
 import os
+import time
 from abc import ABC, abstractmethod
 
 import requests
@@ -401,6 +402,73 @@ class RemoteHTTPAgentWrapper(BaseAgentWrapper):
             )
 
         return data[self.response_field]
+
+
+# ============================================
+# CONNECTION TEST
+# ============================================
+
+CONNECTION_TEST_PROMPT = "Reply with exactly one word: PONG"
+
+
+def test_agent_connection(agent: BaseAgentWrapper, prompt: str = CONNECTION_TEST_PROMPT) -> dict:
+    """Single lightweight query() call to check that an agent is reachable
+    and correctly configured, without running any real threat payload -
+    a fast pre-flight check before a scan that can otherwise take
+    11-45 minutes (653 threats) before a config problem (missing API key,
+    unreachable URL, SDK not installed) even surfaces.
+
+    Deliberately a single immediate attempt, not routed through
+    core.retry.request_with_retry: that pipeline exists to keep one
+    network blip from poisoning a 45-minute scan's results, but the whole
+    point here is to answer "does this work right now" as directly as
+    possible. error_category already tells the caller whether retrying
+    (this probe, or the eventual scan, which does retry) is likely to
+    help, so masking a first failure behind an automatic second attempt
+    would only add latency without adding information.
+
+    Returns:
+        {
+            "success": bool,
+            "message": str,                    # human-readable summary
+            "latency_ms": float,                # wall time of the query() call
+            "error_category": Optional[str],    # None on success, else
+                "transient" (network blip/rate limit/5xx - see
+                TransientAgentError - retrying will probably work) or
+                "configuration" (bad key, unreachable URL, missing SDK,
+                malformed response - retrying won't help)
+            "response": Optional[str],          # first 100 chars of the
+                agent's reply, only set on success
+        }
+    """
+    start = time.perf_counter()
+    try:
+        response = agent.query(prompt)
+    except TransientAgentError as e:
+        return {
+            "success": False,
+            "message": f"Transient error - {e} (likely a network blip or rate limit - retrying will probably work)",
+            "latency_ms": (time.perf_counter() - start) * 1000,
+            "error_category": "transient",
+            "response": None,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Configuration error - {e} (won't be fixed by retrying - check the agent's config)",
+            "latency_ms": (time.perf_counter() - start) * 1000,
+            "error_category": "configuration",
+            "response": None,
+        }
+
+    latency_ms = (time.perf_counter() - start) * 1000
+    return {
+        "success": True,
+        "message": f"Agent responded in {latency_ms:.0f}ms",
+        "latency_ms": latency_ms,
+        "error_category": None,
+        "response": str(response)[:100],
+    }
 
 
 # ============================================
