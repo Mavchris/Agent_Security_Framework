@@ -75,7 +75,7 @@ def main():
             except ImportError as e:
                 print(f"[ERROR] Agent type '{args.scan_agent}' not available")
                 print(f"   Error: {e}")
-                print(f"   Available: mock, mistral (via Ollama), claude, gpt-4, llama, huggingface")
+                print(f"   Available: mock, mistral (via Ollama), claude, gpt-4, llama, remote_http")
                 return 1
             except Exception as e:
                 print(f"[ERROR] Error loading agent: {e}")

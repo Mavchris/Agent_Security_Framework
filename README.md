@@ -18,7 +18,7 @@ A comprehensive security framework for testing, monitoring, and validating AI ag
 - **Scheduled Collection**: designed to run daily (02:00 UTC) + weekly maintenance (Monday 10:00 UTC) via the `schedule` library — see [Known Limitations](#known-limitations) for actual run history
 
 ### 🧪 Agent Testing
-- **Multi-Agent Support**: Mock, Claude, GPT-4 (OpenAI), Llama, Mistral, HuggingFace, and `remote_http` for any agent reachable over HTTP (including your own, via the `docs/examples/local_agent_http_wrapper.py` template)
+- **Multi-Agent Support**: Mock, Claude, GPT-4 (OpenAI), Llama, Mistral, and `remote_http` for any agent reachable over HTTP (including your own, via the `docs/examples/local_agent_http_wrapper.py` template — or a local HuggingFace model via `docs/examples/huggingface_agent_server.py`, run as its own process to sidestep a torch/pandas DLL conflict, see [Architecture](#architecture))
 - **Persistent Agent Registry**: register agents once (`registered_agents` table), reuse them from both "Test Agent" and "Monitor Production" instead of re-typing a name per scan — see [Architecture](#architecture)
 - **Nessus-like Scanner**: Comprehensive vulnerability assessment
 - **Real-time Results**: JSON/CSV export with detailed breakdowns
@@ -204,10 +204,11 @@ All documentation files live at the repository root, alongside this README (ther
 
 Agents (including remote, enterprise-owned ones) can be registered once and reused, instead of re-typing a name/config for every scan:
 
-- **`registered_agents`** (SQLite table, `data/threats.db`): `name`, `agent_type` (`mock`/`claude`/`openai`/`mistral`/`llama`/`huggingface`/`remote_http`), `config` (JSON, shape depends on `agent_type`), `environment` (free text, e.g. "production"), `is_active`.
+- **`registered_agents`** (SQLite table, `data/threats.db`): `name`, `agent_type` (`mock`/`claude`/`openai`/`mistral`/`llama`/`remote_http`), `config` (JSON, shape depends on `agent_type`), `environment` (free text, e.g. "production"), `is_active`.
 - **`core/agent_registry.py`**: shared CRUD (`register_agent`, `list_agents`, `get_agent_config`, `deactivate_agent`, `build_wrapper`) — used by both dashboard tabs so they read from the same source of truth instead of each keeping their own agent list.
 - **`testing/agent_wrappers.py`'s `RemoteHTTPAgentWrapper`**: for a `remote_http` agent, POSTs `{request_field: prompt}` as JSON to `endpoint_url` and reads `response_field` back. Supports an internal CA bundle (`ca_cert_path`) and an `auth_env_var` — only the *name* of an environment variable is stored in the registry, never a secret itself (see [Security & Privacy](#security--privacy)).
 - **For an agent that only exists as a local script/function**: see `docs/examples/local_agent_http_wrapper.py`, a minimal template for exposing it as a local HTTP endpoint, which can then be registered as `remote_http` pointing at `http://localhost:PORT`. ASIF never executes your code directly - it only calls whatever URL you register.
+- **No built-in HuggingFace agent type**: `torch` and `pandas`/`pyarrow` (already imported by every dashboard page) crash when loaded into the same process on this project's Windows environment — Windows' own Application Error log names pyarrow's bundled `MSVCP140.dll` as the faulting module when `torch` is imported afterward. Pinning compatible versions doesn't fix this (both DLLs are correct for their own package, they just can't coexist in one process), so a HuggingFace model runs as its own dedicated process instead: see `docs/examples/huggingface_agent_server.py` (install its dependencies from `requirements-huggingface.txt`, kept separate from `requirements-translation.txt` even though both pull in `torch` — see that file for why) and register the resulting URL as a `remote_http` agent, same as any other external agent.
 - **"Test Agent"** dashboard tab can scan either a quick, unregistered type (Mock/Claude/etc., for a one-off test) or a registered agent. Both paths have a **"Test Connection"** button before "Run Scan": a single, fast `agent.query()` call (`testing/agent_wrappers.py`'s `test_agent_connection()`, also exposed as `POST /test-connection`) that surfaces a bad API key, unreachable URL, or missing SDK immediately instead of partway through a scan that can take 11-45 minutes. A failed/transient result is shown as a badge but never blocks "Run Scan" — the user can still launch the real scan regardless. **"Monitor Production"** lists registered agents and reads their real monitoring history from `data/monitoring.db` — the same file `POST /monitoring/log-request` writes to, so activity logged by a production agent via the API is visible in the dashboard without either process needing to be restarted or aware of the other (see [Agent Monitoring Persistence](#architecture) below).
 - **Requires a named API key**: the whole "Agent Operations" dashboard page (registering/listing/deactivating an agent, running a scan, reading production monitoring) is gated behind one — see [Security & Privacy](#security--privacy) for how to create one and how the gate behaves.
 - **Agent monitoring persistence**: `AgentMonitor` (`monitoring/agent_monitor.py`) no longer keeps logs/alerts in memory — every `log_request()` call writes through to `monitoring_store.py` (`monitoring_logs`/`monitoring_alerts` tables, `data/monitoring.db`, deliberately a **separate file** from `data/threats.db`'s `threats` table — see [Security & Privacy](#security--privacy) for why, and for why `data/threats.db` as a whole isn't purely public either). Both `api/app.py` and the dashboard read from this same store, so they show consistent data. `AgentMonitor` still caches the loaded threat-detection patterns per instance (real perf win, from `data/threats.db`, unrelated to log/alert storage) — only the logs/alerts themselves moved to the DB.
@@ -313,7 +314,7 @@ Health Checks:              Hourly (while the scheduler process is running)
 | **Automation** | `schedule` (Python task scheduling library) |
 | **Database** | SQLite3 |
 | **Language** | Python 3.11 |
-| **Agent Support** | Anthropic, OpenAI, Ollama, HuggingFace |
+| **Agent Support** | Anthropic, OpenAI, Ollama, `remote_http` (HuggingFace runs as its own process — see [Agent Registry](#agent-registry)) |
 | **Data** | Pandas, JSON |
 | **Logging** | Python logging |
 
@@ -678,7 +679,7 @@ See [ACADEMIC.md](ACADEMIC.md) for research context.
 ## ❓ FAQ
 
 **Q: Can I use this with my own agents?**
-A: Yes! We support Claude, GPT-4, Llama, Mistral, HuggingFace, and custom agents.
+A: Yes! We support Claude, GPT-4, Llama, Mistral, any custom agent reachable over HTTP (`remote_http` — including a local HuggingFace model, run as its own process via `docs/examples/huggingface_agent_server.py`).
 
 **Q: Do I need API keys?**
 A: Optional. Some CTI sources (Censys) require free API keys, but framework works without.

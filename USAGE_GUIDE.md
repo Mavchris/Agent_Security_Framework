@@ -128,7 +128,6 @@ Dropdown: Select agent type
 ├─ GPT-4 (requires OPENAI_API_KEY)
 ├─ Llama (requires Ollama installed)
 ├─ Mistral (requires Ollama installed)
-├─ HuggingFace (requires transformers installed)
 └─ Custom (auto-detect your agent)
 ```
 

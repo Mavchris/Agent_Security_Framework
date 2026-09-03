@@ -53,6 +53,15 @@ class TestAgentRegistry(unittest.TestCase):
         with self.assertRaises(ValueError):
             register_agent("Bad", "not_a_real_type", db_path=self.db_path)
 
+    def test_register_rejects_huggingface(self):
+        """'huggingface' isn't a made-up type name (unlike the case above) -
+        it used to be valid and was deliberately removed (torch/pandas
+        DLL conflict, see testing.agent_wrappers.HuggingFaceAgentWrapper's
+        docstring) - a HuggingFace-backed agent is now registered as
+        remote_http, pointing at docs/examples/huggingface_agent_server.py."""
+        with self.assertRaises(ValueError):
+            register_agent("HF Agent", "huggingface", db_path=self.db_path)
+
     def test_register_rejects_duplicate_name(self):
         register_agent("Dup", "mock", db_path=self.db_path)
         with self.assertRaises(ValueError):

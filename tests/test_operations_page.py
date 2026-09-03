@@ -139,6 +139,29 @@ class TestOperationsRunScan(unittest.TestCase):
         self.assertAlmostEqual(displayed_score, expected["vulnerability_score"], places=1)
 
 
+class TestHuggingFaceRemovedFromDashboard(unittest.TestCase):
+    """HuggingFace was removed as an in-process agent type (torch/pandas-
+    pyarrow DLL conflict, see testing.agent_wrappers.
+    HuggingFaceAgentWrapper's docstring) - neither selector that used to
+    offer it should list it any more."""
+
+    def setUp(self):
+        self.at = _authed_app_test()
+
+    def test_not_in_quick_type_selector(self):
+        agent_type_select = next(
+            sb for sb in self.at.selectbox if sb.label == "Choose Agent Type"
+        )
+        self.assertNotIn("HuggingFace", agent_type_select.options)
+
+    def test_not_in_reference_baseline_model_selector(self):
+        at = self.at.radio(key="test_agent_register_agent_path").set_value(
+            "Reference baseline model"
+        ).run()
+        reg_type_select = at.selectbox(key="test_agent_register_agent_type")
+        self.assertNotIn("HuggingFace", reg_type_select.options)
+
+
 class TestAgentRegistryEndToEnd(unittest.TestCase):
     """Full path through the real dashboard: register an agent via the
     "Register a new agent" form (in the "Test Agent" tab), confirm it

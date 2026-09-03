@@ -20,8 +20,20 @@ DB_PATH = 'data/threats.db'
 # Mirrors the CHECK constraint on registered_agents.agent_type
 # (scripts/maintenance/create_registered_agents_table.py) and what
 # testing/agent_wrappers.py's get_agent_wrapper() actually supports.
+#
+# 'huggingface' deliberately excluded (was present here previously) -
+# torch and pandas/pyarrow crash when loaded into the same process on
+# this project's Windows environment (see testing.agent_wrappers.
+# HuggingFaceAgentWrapper's docstring); a HuggingFace-backed agent is now
+# always registered as 'remote_http', pointing at
+# docs/examples/huggingface_agent_server.py running as its own process.
+# The live registered_agents table's CHECK constraint still lists
+# 'huggingface' too (SQLite can't narrow a CHECK constraint without
+# rebuilding the table, and nothing in the live DB uses that value) -
+# this set is what actually enforces the restriction for every normal
+# write path (register_agent() below checks this before any DB call).
 VALID_AGENT_TYPES = {
-    'mock', 'claude', 'openai', 'mistral', 'llama', 'huggingface', 'remote_http',
+    'mock', 'claude', 'openai', 'mistral', 'llama', 'remote_http',
 }
 
 

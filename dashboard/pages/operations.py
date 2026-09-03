@@ -209,7 +209,7 @@ def render_registration_form(key_prefix):
     else:
         reg_type_label = st.selectbox(
             "Reference model",
-            ["Mock", "Claude", "GPT-4 (OpenAI)", "Llama (Local)", "Mistral", "HuggingFace"],
+            ["Mock", "Claude", "GPT-4 (OpenAI)", "Llama (Local)", "Mistral"],
             key=f"{key_prefix}_register_agent_type",
         )
         reg_type_map = {
@@ -218,7 +218,6 @@ def render_registration_form(key_prefix):
             "GPT-4 (OpenAI)": "openai",
             "Llama (Local)": "llama",
             "Mistral": "mistral",
-            "HuggingFace": "huggingface",
         }
         reg_agent_type = reg_type_map[reg_type_label]
         st.markdown(
@@ -226,6 +225,16 @@ def render_registration_form(key_prefix):
             "Tests the raw model via a generic API key — without your system "
             "prompt, tools, or business logic. Useful as a comparison baseline, "
             "not for scanning your own agent."
+            "</p>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "<p style='color:var(--text-tertiary);font-size:13px;margin:-4px 0 12px;'>"
+            "Looking for HuggingFace? It's no longer a built-in type here - torch "
+            "crashes when loaded into the same process as this dashboard's pandas/"
+            "pyarrow. Run it as its own process instead: see "
+            "docs/examples/huggingface_agent_server.py, then register the resulting "
+            "URL under \"My own agent\" as a remote_http agent."
             "</p>",
             unsafe_allow_html=True,
         )
@@ -245,11 +254,6 @@ def render_registration_form(key_prefix):
         elif reg_agent_type == "llama":
             reg_config["model"] = st.text_input(
                 "Model name", value="llama2", key=f"{key_prefix}_reg_llama_model"
-            )
-        elif reg_agent_type == "huggingface":
-            reg_config["model_name"] = st.text_input(
-                "Model name", value="mistralai/Mistral-7B-Instruct-v0.1",
-                key=f"{key_prefix}_reg_hf_model",
             )
         elif reg_agent_type == "remote_http":
             reg_config["endpoint_url"] = st.text_input(
@@ -410,7 +414,7 @@ with tab1:
             with col1:
                 agent_type = st.selectbox(
                     "Choose Agent Type",
-                    ["Mock (Demo)", "Claude", "GPT-4", "Llama (Local)", "Mistral", "HuggingFace"],
+                    ["Mock (Demo)", "Claude", "GPT-4", "Llama (Local)", "Mistral"],
                     help="Select the type of agent to test"
                 )
 
@@ -451,15 +455,6 @@ with tab1:
             elif agent_type == "Mistral":
                 agent_config = {"agent_type": "mistral"}
                 st.markdown(info_banner("Requires MISTRAL_API_KEY environment variable"), unsafe_allow_html=True)
-
-            elif agent_type == "HuggingFace":
-                model = st.text_input(
-                    "Model name",
-                    value="mistralai/Mistral-7B-Instruct-v0.1",
-                    help="HuggingFace model identifier"
-                )
-                agent_config = {"agent_type": "hf", "model_name": model}
-                st.markdown(info_banner("Downloads model locally (may be large)"), unsafe_allow_html=True)
 
         else:
             agent_config = {}

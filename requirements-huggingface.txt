@@ -1,0 +1,41 @@
+# Optional: run docs/examples/huggingface_agent_server.py to host a local
+# HuggingFace model as its own process, registered in ASIF as a
+# `remote_http` agent.
+#
+# Not required to run the pipeline, dashboard, or API - without it, ASIF
+# simply has no built-in HuggingFace agent type (see
+# testing/agent_wrappers.py's HuggingFaceAgentWrapper docstring and
+# get_agent_wrapper()'s explicit 'huggingface'/'hf' rejection for why:
+# torch and pandas/pyarrow crash when loaded into the same process on
+# this project's Windows environment).
+#
+# Deliberately a SEPARATE file from requirements-translation.txt, even
+# though that one also pulls in torch (transitively, via argostranslate ->
+# stanza, unpinned there): the two features have nothing in common besides
+# torch, and requirements-translation.txt drags in ~1.5GB of unrelated
+# NLP tooling (spacy/stanza/ctranslate2/sentencepiece/sacremoses) that a
+# HuggingFace-agent-only install has no reason to carry. `stanza` declares
+# `torch` with no version constraint, so the explicit pin below is
+# compatible with both files being installed together in the same venv.
+#
+# torch==2.13.0 and transformers==5.16.1 are pinned explicitly (not left
+# to whatever gets transitively resolved, which is exactly the unpinned-
+# dependency drift that caused this project's pyarrow/torch DLL incident
+# in the first place) - both versions confirmed importing and working
+# cleanly in isolation on this machine. PyPI's plain "torch==2.13.0" is
+# the CPU-only build (torch.__version__ reports "2.13.0+cpu" at runtime,
+# but that suffix is not part of the installable version string/wheel
+# name - no custom index or extra flag needed to get this exact build).
+# transformers itself doesn't declare torch as a hard dependency (only as
+# an optional "torch"/"all" extra, `torch>=2.5`) - pip's resolver cannot
+# catch a mismatch between the two on its own, so this pairing must be
+# verified by hand rather than trusted to install correctly by default.
+#
+# Install with:
+#   pip install -r requirements-huggingface.txt
+# then run docs/examples/huggingface_agent_server.py (see its module
+# docstring for usage) and register the resulting URL in ASIF as a
+# `remote_http` agent.
+
+torch==2.13.0
+transformers==5.16.1

@@ -473,10 +473,32 @@ Agents Supported:
 - GPT-4:       OpenAI API
 - Mistral:     Ollama local
 - Llama:       Ollama local
-- HuggingFace: Local model
 - Remote HTTP: Any agent reachable over HTTP (POST prompt, read response) -
                see "Agent Registry" below and docs/examples/local_agent_http_wrapper.py
-               for wrapping a local script this way
+               for wrapping a local script this way, or
+               docs/examples/huggingface_agent_server.py for a local
+               HuggingFace model specifically (its own process, not the
+               in-process path the others above use - see below)
+
+No built-in HuggingFace agent type (removed - previously in-process, like
+the others above): torch and pandas/pyarrow each bundle their own,
+incompatible copy of Windows' MSVCP140.dll, and any process that has
+already imported pandas/pyarrow (every dashboard page, at module-import
+time) crashes with "OSError: [WinError 1114] ... torch\lib\c10.dll" the
+instant torch is imported afterward - confirmed via Windows' Application
+Error log, which names pyarrow's bundled msvcp140.dll (not torch's) as
+the faulting module: a real access violation (0xc0000005), not a mere
+DLL-init-failed symptom. Pinning compatible versions doesn't fix this -
+both DLLs are correct for their own package, they just can't coexist in
+one process. testing.agent_wrappers.HuggingFaceAgentWrapper's model-
+loading logic still exists (reused directly, not duplicated, by
+docs/examples/huggingface_agent_server.py) but is no longer reachable via
+get_agent_wrapper() - calling it with 'huggingface'/'hf' raises a
+ValueError pointing at the isolated-process script instead. See
+requirements-huggingface.txt (deliberately separate from
+requirements-translation.txt, which also pulls in torch transitively via
+argostranslate -> stanza, unpinned there - the two features share nothing
+but torch) for the pinned torch/transformers versions this needs.
 
 Can be used either as a one-off ("quick type", nothing saved) or via a
 registered agent from core/agent_registry.py (see "Agent Registry" below).
@@ -616,7 +638,7 @@ Storage:  registered_agents table, data/threats.db
 
 Schema:
   id, name (unique), agent_type (mock/claude/openai/mistral/llama/
-  huggingface/remote_http, CHECK-constrained), config (JSON, shape
+  remote_http, CHECK-constrained), config (JSON, shape
   depends on agent_type), environment (free text), is_active,
   created_at
 
@@ -821,7 +843,7 @@ CREATE TABLE registered_agents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     agent_type TEXT NOT NULL CHECK (agent_type IN (
-        'mock', 'claude', 'openai', 'mistral', 'llama', 'huggingface', 'remote_http'
+        'mock', 'claude', 'openai', 'mistral', 'llama', 'remote_http'
     )),
     config TEXT NOT NULL DEFAULT '{}',   -- JSON, shape depends on agent_type
     environment TEXT,                     -- free text, e.g. "production"

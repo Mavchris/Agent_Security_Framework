@@ -47,3 +47,10 @@ httpx==0.28.1
 # Optional: offline translation of non-English sources (CNVD/FSTEC/CERT-FR).
 # Not installed by default - pulls in torch and ~1GB of ML dependencies.
 # See requirements-translation.txt.
+
+# Optional: run a local HuggingFace model as its own process, registered
+# in ASIF as a remote_http agent (no built-in in-process HuggingFace type
+# - see testing/agent_wrappers.py's HuggingFaceAgentWrapper docstring).
+# Deliberately a separate file from requirements-translation.txt above,
+# even though both pull in torch - see requirements-huggingface.txt for
+# why. See docs/examples/huggingface_agent_server.py.

@@ -328,5 +328,40 @@ class TestAgentConnection(unittest.TestCase):
         self.assertEqual(call_count, 1)
 
 
+class TestHuggingFaceRemovedFromFactory(unittest.TestCase):
+    """get_agent_wrapper('huggingface'/'hf') used to build an in-process
+    HuggingFaceAgentWrapper - removed (not just renamed) because torch and
+    pandas/pyarrow crash when loaded into the same process on this
+    project's Windows environment (see HuggingFaceAgentWrapper's
+    docstring). Both names must raise a specific, actionable ValueError -
+    never a KeyError, and never silently fall through to the generic
+    "unknown agent type" message, which wouldn't explain why or what to
+    do instead."""
+
+    def test_huggingface_raises_specific_error(self):
+        with self.assertRaises(ValueError) as ctx:
+            get_agent_wrapper('huggingface')
+        message = str(ctx.exception)
+        self.assertIn('remote_http', message)
+        self.assertIn('docs/examples/huggingface_agent_server.py', message)
+
+    def test_hf_alias_raises_the_same_specific_error(self):
+        with self.assertRaises(ValueError) as ctx:
+            get_agent_wrapper('hf')
+        self.assertIn('remote_http', str(ctx.exception))
+
+    def test_case_insensitive(self):
+        with self.assertRaises(ValueError) as ctx:
+            get_agent_wrapper('HuggingFace')
+        self.assertIn('remote_http', str(ctx.exception))
+
+    def test_huggingface_wrapper_class_still_importable_directly(self):
+        """Not reachable via the factory, but still needed as the model-
+        loading logic reused (not duplicated) by
+        docs/examples/huggingface_agent_server.py."""
+        from testing.agent_wrappers import HuggingFaceAgentWrapper
+        self.assertTrue(issubclass(HuggingFaceAgentWrapper, BaseAgentWrapper))
+
+
 if __name__ == "__main__":
     unittest.main()

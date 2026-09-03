@@ -975,7 +975,7 @@ POST /agents
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Must be unique |
-| `agent_type` | string | Yes | One of `mock`, `claude`, `openai`, `mistral`, `llama`, `huggingface`, `remote_http` |
+| `agent_type` | string | Yes | One of `mock`, `claude`, `openai`, `mistral`, `llama`, `remote_http` (no built-in `huggingface` type - run a HuggingFace model as its own process via `docs/examples/huggingface_agent_server.py` and register the result as `remote_http`; see `torch`/`pyarrow` DLL conflict note in ARCHITECTURE.md) |
 | `config` | object | No | Shape depends on `agent_type` (e.g. `endpoint_url` for `remote_http`) |
 | `environment` | string | No | Free text, e.g. `"production"` |
 

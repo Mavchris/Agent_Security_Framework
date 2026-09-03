@@ -222,21 +222,45 @@ class MistralAgentWrapper(BaseAgentWrapper):
 # ============================================
 
 class HuggingFaceAgentWrapper(BaseAgentWrapper):
-    """Hugging Face models (local transformers)"""
-    
+    """Hugging Face models (local transformers).
+
+    Not reachable via get_agent_wrapper() (see its 'huggingface'/'hf'
+    handling below) - torch and pyarrow each bundle their own,
+    incompatible copy of Windows' MSVCP140.dll, and a process that has
+    already imported pandas/pyarrow (the dashboard, always; potentially
+    the API, depending what else it imports) crashes with
+    "OSError: [WinError 1114] ... torch\\lib\\c10.dll" the instant torch
+    is imported afterward - confirmed via Windows' Application Error log,
+    which names pyarrow's bundled msvcp140.dll as the faulting module.
+    Pinning compatible versions doesn't fix this: both DLLs are correct
+    for their own package, they just can't coexist in one process.
+
+    This class still exists, and still works, as the model-loading logic
+    reused (imported directly, not duplicated) by
+    docs/examples/huggingface_agent_server.py, which runs it in its own,
+    dedicated process and exposes it as a `remote_http` agent instead.
+    """
+
     def __init__(self, model_name="mistralai/Mistral-7B-Instruct-v0.1"):
         try:
+            import torch
             from transformers import pipeline
+            # device=0 unconditionally (the previous behavior here) forces
+            # a CUDA GPU and hard-fails on a CPU-only torch build (the one
+            # requirements-huggingface.txt pins) with "Torch not compiled
+            # with CUDA enabled" - auto-detect instead, same as the
+            # library's own recommended pattern.
+            device = 0 if torch.cuda.is_available() else -1
             self.pipeline = pipeline(
                 "text-generation",
                 model=model_name,
-                device=0  # GPU if available
+                device=device,
             )
         except ImportError:
             raise ImportError(
-                "Install Transformers: pip install transformers torch"
+                "Install Transformers: pip install -r requirements-huggingface.txt"
             )
-    
+
     def query(self, prompt):
         """Query Hugging Face model"""
         result = self.pipeline(prompt, max_length=500, do_sample=True)
@@ -500,18 +524,35 @@ def get_agent_wrapper(agent_type="mock", **kwargs):
         'gpt-4': OpenAIAgentWrapper,
         'llama': LlamaAgentWrapper,
         'mistral': MistralAgentWrapper,
-        'huggingface': HuggingFaceAgentWrapper,
-        'hf': HuggingFaceAgentWrapper,
         'remote_http': RemoteHTTPAgentWrapper,
     }
-    
-    if agent_type.lower() not in agents:
+
+    normalized = agent_type.lower()
+
+    # 'huggingface'/'hf' used to be in `agents` above - removed, not just
+    # renamed, so give a specific, actionable error instead of falling
+    # through to the generic "unknown type" message below (which would be
+    # technically true but wouldn't explain why, or what to do instead).
+    # See HuggingFaceAgentWrapper's docstring for the DLL conflict this
+    # sidesteps.
+    if normalized in ('huggingface', 'hf'):
+        raise ValueError(
+            "'huggingface'/'hf' are no longer available as an in-process agent "
+            "type - torch and pandas/pyarrow crash when loaded into the same "
+            "process on this project's Windows environment (see "
+            "testing.agent_wrappers.HuggingFaceAgentWrapper's docstring). Run "
+            "docs/examples/huggingface_agent_server.py as its own process "
+            "instead, then register it in ASIF as a 'remote_http' agent "
+            "pointing at that process's URL."
+        )
+
+    if normalized not in agents:
         raise ValueError(
             f"Unknown agent type: {agent_type}\n"
             f"Available: {list(agents.keys())}"
         )
-    
-    agent_class = agents[agent_type.lower()]
+
+    agent_class = agents[normalized]
     return agent_class(**kwargs)
 
 

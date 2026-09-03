@@ -20,14 +20,17 @@ DB_PATH = 'data/threats.db'
 # agent_type is constrained to what testing/agent_wrappers.py's
 # get_agent_wrapper() actually supports as a registry entry (canonical
 # names only - 'gpt-4'/'hf' aliases are a get_agent_wrapper() convenience,
-# not stored here).
+# not stored here). No 'huggingface' - it crashes when loaded into the
+# same process as pandas/pyarrow on this project's Windows environment;
+# a HuggingFace-backed agent is registered as 'remote_http' instead, see
+# docs/examples/huggingface_agent_server.py and core/agent_registry.py's
+# VALID_AGENT_TYPES.
 CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS registered_agents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     agent_type TEXT NOT NULL CHECK (agent_type IN (
-        'mock', 'claude', 'openai', 'mistral', 'llama', 'huggingface',
-        'remote_http'
+        'mock', 'claude', 'openai', 'mistral', 'llama', 'remote_http'
     )),
     config TEXT NOT NULL DEFAULT '{}',
     environment TEXT,
